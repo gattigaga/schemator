@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tooltip should renders default 1`] = `
+<styled.div>
+  <styled.div />
+  <styled.span>
+    My Tooltip
+  </styled.span>
+</styled.div>
+`;
+
+exports[`Tooltip should renders with addtional class 1`] = `
+<styled.div
+  className="my-class"
+>
+  <styled.div />
+  <styled.span>
+    My Tooltip
+  </styled.span>
+</styled.div>
+`;
