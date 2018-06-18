@@ -1,5 +1,6 @@
 export const SET_TABLES = "SET_TABLES";
 export const ADD_TABLE = "ADD_TABLE";
+export const REMOVE_TABLE = "REMOVE_TABLE";
 
 /**
  * Get action to set tables
@@ -41,4 +42,14 @@ export const setTables = tables => ({
 export const addTable = table => ({
   type: ADD_TABLE,
   payload: table
+});
+
+/**
+ * Get action to remove existing table
+ *
+ * @param {string} tableID Table ID
+ */
+export const removeTable = tableID => ({
+  type: REMOVE_TABLE,
+  payload: tableID
 });
