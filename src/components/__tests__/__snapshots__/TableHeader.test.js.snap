@@ -2,8 +2,10 @@
 
 exports[`TableHeader should renders default 1`] = `
 <styled.div>
-  <styled.p>
-    User
-  </styled.p>
+  <styled.input
+    onChange={[Function]}
+    type="text"
+    value="User"
+  />
 </styled.div>
 `;

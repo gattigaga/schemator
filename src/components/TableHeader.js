@@ -15,22 +15,27 @@ const Header = styled.div`
   cursor: pointer;
 `;
 
-const Caption = styled.p`
+export const Caption = styled.input`
   color: white;
+  border: 0px;
+  width: 50%;
+  outline: none;
+  background: none;
   font-size: 12px;
   font-family: Roboto;
   font-weight: bold;
-  user-select: none;
+  text-align: center;
 `;
 
-const TableHeader = ({ caption }) => (
+const TableHeader = ({ caption, onChangeCaption }) => (
   <Header>
-    <Caption>{caption}</Caption>
+    <Caption type="text" value={caption} onChange={onChangeCaption} />
   </Header>
 );
 
 TableHeader.propTypes = {
-  caption: PropTypes.string
+  caption: PropTypes.string,
+  onChangeCaption: PropTypes.func
 };
 
 export default TableHeader;

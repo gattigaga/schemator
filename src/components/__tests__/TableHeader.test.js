@@ -2,12 +2,13 @@ import React from "react";
 import { shallow } from "enzyme";
 import toJSON from "enzyme-to-json";
 
-import TableHeader from "../TableHeader";
+import TableHeader, { Caption } from "../TableHeader";
 
 describe("TableHeader", () => {
   const setup = propOverrides => {
     const props = {
       caption: "User",
+      onChangeCaption: jest.fn(),
       ...propOverrides
     };
 
@@ -23,5 +24,18 @@ describe("TableHeader", () => {
     const { wrapper } = setup();
 
     expect(toJSON(wrapper)).toMatchSnapshot();
+  });
+
+  it("should calls 'onChangeCaption' while caption changed", () => {
+    const { wrapper, props } = setup();
+    const event = {
+      target: {
+        value: "Comment"
+      }
+    };
+
+    wrapper.find(Caption).simulate("change", event);
+
+    expect(props.onChangeCaption).toBeCalledWith(event);
   });
 });
