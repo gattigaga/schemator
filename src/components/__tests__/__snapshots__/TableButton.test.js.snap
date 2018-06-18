@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableButton should renders default 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <styled.p>
+    Add New Field
+  </styled.p>
+</styled.div>
+`;
