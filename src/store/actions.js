@@ -1,4 +1,5 @@
 export const SET_TABLES = "SET_TABLES";
+export const CLEAR_TABLES = "CLEAR_TABLES";
 export const ADD_TABLE = "ADD_TABLE";
 export const REMOVE_TABLE = "REMOVE_TABLE";
 export const UPDATE_TABLE = "UPDATE_TABLE";
@@ -69,4 +70,13 @@ export const updateTable = (tableID, data) => ({
     data,
     id: tableID
   }
+});
+
+/**
+ * Get action to clear all tables
+ *
+ * @returns {object} Action
+ */
+export const clearTables = () => ({
+  type: CLEAR_TABLES
 });
