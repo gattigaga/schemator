@@ -6,6 +6,7 @@
     "d3": "^5.5.0",
     "date-fns": "^1.29.0",
     "normalize.css": "^8.0.0",
+    "pluralize": "^7.0.0",
     "prop-types": "^15.6.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
