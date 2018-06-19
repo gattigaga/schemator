@@ -11,13 +11,13 @@ import {
 } from "react-icons/lib/md";
 
 import Tool from "./components/Tool";
+import WorkArea from "./components/WorkArea";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  background: #444;
 `;
 
 const Toolbar = styled.div`
@@ -53,6 +53,7 @@ class App extends Component {
           <Separator />
           <Tool tooltip="Help" icon={MdHelp} />
         </Toolbar>
+        <WorkArea />
       </Container>
     );
   }
