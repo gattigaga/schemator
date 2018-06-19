@@ -7,11 +7,12 @@ import "typeface-roboto";
 
 const Container = styled.div`
   width: 100%;
-  height: 32px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: stretch;
-  padding: 0px 8px;
+  padding: 0px 4px;
+  box-sizing: border-box;
 `;
 
 export const Select = styled.select`
@@ -41,7 +42,6 @@ export const CloseButton = styled(MdClose)`
   color: #444;
   font-size: 16px;
   padding: 8px;
-  margin-right: 8px;
   cursor: pointer;
 `;
 
