@@ -5,6 +5,7 @@ export const REMOVE_TABLE = "REMOVE_TABLE";
 export const UPDATE_TABLE = "UPDATE_TABLE";
 
 export const SET_FIELDS = "SET_FIELDS";
+export const CLEAR_FIELDS = "CLEAR_FIELDS";
 
 /**
  * Get action to set tables
@@ -92,4 +93,13 @@ export const clearTables = () => ({
 export const setFields = fields => ({
   type: SET_FIELDS,
   payload: fields
+});
+
+/**
+ * Get action to clear all fields
+ *
+ * @returns {object} Action
+ */
+export const clearFields = () => ({
+  type: CLEAR_FIELDS
 });
