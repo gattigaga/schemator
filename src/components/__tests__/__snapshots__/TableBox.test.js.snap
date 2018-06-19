@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableBox should renders default 1`] = `
+<foreignObject
+  height={148}
+  onMouseDown={[Function]}
+  onMouseMove={[Function]}
+  width={240}
+  x={32}
+  y={32}
+>
+  <styled.div>
+    <TableHeader
+      caption="User"
+      onChangeCaption={[Function]}
+    />
+    <TableInput
+      key="1"
+      name="id"
+      onChangeName={[Function]}
+      onChangeType={[Function]}
+      onClickRemove={[Function]}
+      type="INCREMENT"
+    />
+    <TableInput
+      key="2"
+      name="username"
+      onChangeName={[Function]}
+      onChangeType={[Function]}
+      onClickRemove={[Function]}
+      type="VARCHAR"
+    />
+    <TableButton
+      caption="Add New Field"
+      onClick={[Function]}
+    />
+  </styled.div>
+</foreignObject>
+`;
