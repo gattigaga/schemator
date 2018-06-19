@@ -5,7 +5,12 @@ import * as d3 from "d3";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 
-import { updateTable } from "../store/actions";
+import {
+  addField,
+  updateField,
+  removeField,
+  updateTable
+} from "../store/actions";
 import TableBox from "./TableBox";
 
 const Container = styled.div`
@@ -36,7 +41,6 @@ class WorkArea extends Component {
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
     this.addField = this.addField.bind(this);
-    this.removeField = this.removeField.bind(this);
     this.updateField = this.updateField.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
@@ -132,67 +136,32 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addField(tableID) {
-    const { tables, modifyTable } = this.props;
-    const table = tables.find(item => item.id === tableID);
+    const { createField } = this.props;
     const data = {
-      fields: [
-        ...table.fields,
-        {
-          id: uuid(),
-          name: "field",
-          type: "INTEGER"
-        }
-      ]
+      tableID,
+      id: uuid(),
+      name: "field",
+      type: "INTEGER"
     };
 
-    modifyTable(tableID, data);
+    createField(data);
   }
 
   /**
-   * Remove existing field inside table
+   * Update field data inside table
    *
-   * @param {number} tableID Table ID
-   * @memberof WorkArea
-   */
-  removeField(tableID) {
-    const { tables, modifyTable } = this.props;
-    const table = tables.find(item => item.id === tableID);
-
-    return fieldID => {
-      const data = {
-        fields: table.fields.filter(item => item.id !== fieldID)
-      };
-
-      modifyTable(tableID, data);
-    };
-  }
-
-  /**
-   * Remove existing field inside table
-   *
-   * @param {number} tableID Table ID
    * @param {string} type Input type
    * @memberof WorkArea
    */
-  updateField(tableID, type) {
-    const { tables, modifyTable } = this.props;
-    const table = tables.find(item => item.id === tableID);
+  updateField(type) {
+    const { modifyField } = this.props;
 
     return (event, fieldID) => {
       const data = {
-        fields: table.fields.map(item => {
-          if (item.id === fieldID) {
-            return {
-              ...item,
-              [type]: event.target.value
-            };
-          }
-
-          return item;
-        })
+        [type]: event.target.value
       };
 
-      modifyTable(tableID, data);
+      modifyField(fieldID, data);
     };
   }
 
@@ -244,7 +213,7 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { tables } = this.props;
+    const { tables, fields, deleteField } = this.props;
 
     return (
       <Container>
@@ -254,20 +223,26 @@ class WorkArea extends Component {
             this.activeTable = null;
           }}
         >
-          {tables.map((table, index) => (
-            <TableBox
-              key={table.id}
-              ref={this.tables[index]}
-              {...table}
-              onMouseDown={this.saveTableOffset(index)}
-              onMouseMove={this.updateTablePosition(table.id)}
-              onClickAddField={() => this.addField(table.id)}
-              onClickRemoveField={this.removeField(table.id)}
-              onChangeFieldName={this.updateField(table.id, "name")}
-              onChangeFieldType={this.updateField(table.id, "type")}
-              onChangeName={this.updateTableName(table.id)}
-            />
-          ))}
+          {tables.map((table, index) => {
+            const byTableID = field => field.tableID === table.id;
+            const currentFields = fields.filter(byTableID);
+
+            return (
+              <TableBox
+                key={table.id}
+                ref={this.tables[index]}
+                {...table}
+                fields={currentFields}
+                onMouseDown={this.saveTableOffset(index)}
+                onMouseMove={this.updateTablePosition(table.id)}
+                onClickAddField={() => this.addField(table.id)}
+                onClickRemoveField={deleteField}
+                onChangeFieldName={this.updateField("name")}
+                onChangeFieldType={this.updateField("type")}
+                onChangeName={this.updateTableName(table.id)}
+              />
+            );
+          })}
         </Area>
       </Container>
     );
@@ -276,13 +251,20 @@ class WorkArea extends Component {
 
 WorkArea.propTypes = {
   tables: PropTypes.array,
-  modifyTable: PropTypes.func
+  fields: PropTypes.array,
+  modifyTable: PropTypes.func,
+  modifyField: PropTypes.func,
+  createField: PropTypes.func,
+  deleteField: PropTypes.func
 };
 
-const mapStateToProps = ({ tables }) => ({ tables });
+const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-  modifyTable: (id, data) => dispatch(updateTable(id, data))
+  createField: field => dispatch(addField(field)),
+  deleteField: fieldID => dispatch(removeField(fieldID)),
+  modifyTable: (id, data) => dispatch(updateTable(id, data)),
+  modifyField: (id, data) => dispatch(updateField(id, data))
 });
 
 export default connect(
