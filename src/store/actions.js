@@ -7,6 +7,7 @@ export const UPDATE_TABLE = "UPDATE_TABLE";
 export const SET_FIELDS = "SET_FIELDS";
 export const CLEAR_FIELDS = "CLEAR_FIELDS";
 export const ADD_FIELD = "ADD_FIELD";
+export const REMOVE_FIELD = "REMOVE_FIELD";
 
 /**
  * Get action to set tables
@@ -114,4 +115,15 @@ export const clearFields = () => ({
 export const addField = field => ({
   type: ADD_FIELD,
   payload: field
+});
+
+/**
+ * Get action to remove existing field
+ *
+ * @param {string} fieldID Field ID
+ * @returns {object} Action
+ */
+export const removeField = fieldID => ({
+  type: REMOVE_FIELD,
+  payload: fieldID
 });
