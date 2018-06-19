@@ -6,6 +6,7 @@ export const UPDATE_TABLE = "UPDATE_TABLE";
 
 export const SET_FIELDS = "SET_FIELDS";
 export const CLEAR_FIELDS = "CLEAR_FIELDS";
+export const ADD_FIELD = "ADD_FIELD";
 
 /**
  * Get action to set tables
@@ -34,10 +35,6 @@ export const setTables = tables => ({
  * @param {object} table.position Table position
  * @param {number} table.position.x Position X
  * @param {number} table.position.y Position Y
- * @param {object[]} table.fields Table field list
- * @param {string} table.fields[].id Field ID
- * @param {string} table.fields[].name Field name
- * @param {string} table.fields[].type Field type
  * @returns {object} Action
  */
 export const addTable = table => ({
@@ -102,4 +99,19 @@ export const setFields = fields => ({
  */
 export const clearFields = () => ({
   type: CLEAR_FIELDS
+});
+
+/**
+ * Get action to add new field
+ *
+ * @param {object} field Field data
+ * @param {string} field.id Field ID
+ * @param {string} field.tableID Table ID
+ * @param {string} field.name Field name
+ * @param {string} field.type Field type
+ * @returns {object} Action
+ */
+export const addField = field => ({
+  type: ADD_FIELD,
+  payload: field
 });
