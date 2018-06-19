@@ -20,7 +20,11 @@ describe("tables()", () => {
       {
         id: "1",
         name: "User",
-        field: []
+        timestamp: 1529420034779,
+        position: {
+          x: 0,
+          y: 0
+        }
       }
     ];
     const expected = [...myTables];
@@ -35,7 +39,11 @@ describe("tables()", () => {
       {
         id: "1",
         name: "User",
-        field: []
+        timestamp: 1529420034779,
+        position: {
+          x: 0,
+          y: 0
+        }
       }
     ];
     const expected = [];
@@ -49,7 +57,11 @@ describe("tables()", () => {
     const table = {
       id: "1",
       name: "User",
-      field: []
+      timestamp: 1529420034779,
+      position: {
+        x: 0,
+        y: 0
+      }
     };
 
     const expected = [table];
@@ -64,7 +76,11 @@ describe("tables()", () => {
       {
         id: "1",
         name: "User",
-        field: []
+        timestamp: 1529420034779,
+        position: {
+          x: 0,
+          y: 0
+        }
       }
     ];
 
@@ -80,7 +96,11 @@ describe("tables()", () => {
       {
         id: "1",
         name: "User",
-        field: []
+        timestamp: 1529420034779,
+        position: {
+          x: 0,
+          y: 0
+        }
       }
     ];
 
