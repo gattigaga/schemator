@@ -22,15 +22,67 @@ class WorkArea extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      offset: {
+        x: 0,
+        y: 0
+      }
+    };
+
     this.area = createRef();
+    this.activeTable = null;
+    this.tables = props.tables.map(createRef);
+
+    this.getMousePosition = this.getMousePosition.bind(this);
+    this.saveTableOffset = this.saveTableOffset.bind(this);
     this.addField = this.addField.bind(this);
     this.removeField = this.removeField.bind(this);
     this.updateField = this.updateField.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
+    this.updateTablePosition = this.updateTablePosition.bind(this);
   }
 
   componentDidMount() {
     this.createLines();
+  }
+
+  /**
+   * Get mouse position in SVG coordinate system
+   *
+   * @param {object} event DOM event
+   * @returns {object} Mouse position
+   * @memberof WorkArea
+   */
+  getMousePosition(event) {
+    const ctm = this.area.current.getScreenCTM();
+
+    return {
+      x: (event.clientX - ctm.e) / ctm.a,
+      y: (event.clientY - ctm.f) / ctm.d
+    };
+  }
+
+  /**
+   * Save table offset from the top left of object
+   *
+   * @param {number} tableIndex Table index
+   * @memberof WorkArea
+   */
+  saveTableOffset(tableIndex) {
+    return event => {
+      this.activeTable = this.tables[tableIndex];
+
+      const getAttributeNS = attr => {
+        const activeTableDOM = this.activeTable.current;
+        return parseFloat(activeTableDOM.getAttributeNS(null, attr));
+      };
+      const offset = this.getMousePosition(event);
+
+      offset.x -= getAttributeNS("x");
+      offset.y -= getAttributeNS("y");
+
+      this.setState({ offset });
+    };
   }
 
   /**
@@ -162,16 +214,53 @@ class WorkArea extends Component {
     };
   }
 
+  /**
+   * Update table position
+   *
+   * @param {object} event DOM event
+   * @memberof WorkArea
+   */
+  updateTablePosition(tableID) {
+    const { offset } = this.state;
+    const { modifyTable } = this.props;
+
+    return event => {
+      if (this.activeTable) {
+        event.preventDefault();
+
+        const activeTableDOM = this.activeTable.current;
+        const coord = this.getMousePosition(event);
+        const x = coord.x - offset.x;
+        const y = coord.y - offset.y;
+
+        activeTableDOM.setAttributeNS(null, "x", x);
+        activeTableDOM.setAttributeNS(null, "y", y);
+
+        modifyTable(tableID, {
+          position: { x, y }
+        });
+      }
+    };
+  }
+
   render() {
     const { tables } = this.props;
 
     return (
       <Container>
-        <Area innerRef={this.area}>
-          {tables.map(table => (
+        <Area
+          innerRef={this.area}
+          onMouseUp={event => {
+            this.activeTable = null;
+          }}
+        >
+          {tables.map((table, index) => (
             <TableBox
               key={table.id}
+              ref={this.tables[index]}
               {...table}
+              onMouseDown={this.saveTableOffset(index)}
+              onMouseMove={this.updateTablePosition(table.id)}
               onClickAddField={() => this.addField(table.id)}
               onClickRemoveField={this.removeField(table.id)}
               onChangeFieldName={this.updateField(table.id, "name")}

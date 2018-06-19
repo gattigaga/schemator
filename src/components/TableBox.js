@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { forwardRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -16,9 +16,9 @@ const Container = styled.div`
   border: 2px solid #111;
 `;
 
-class TableBox extends Component {
-  render() {
-    const {
+const TableBox = forwardRef(
+  (
+    {
       position,
       name,
       fields,
@@ -26,8 +26,12 @@ class TableBox extends Component {
       onChangeFieldName,
       onChangeFieldType,
       onClickAddField,
-      onClickRemoveField
-    } = this.props;
+      onClickRemoveField,
+      onMouseDown,
+      onMouseMove
+    },
+    ref
+  ) => {
     const { x, y } = position;
     const headerHeight = 36;
     const buttonHeight = 36;
@@ -35,7 +39,15 @@ class TableBox extends Component {
     const height = headerHeight + buttonHeight + fieldHeight + 4;
 
     return (
-      <foreignObject x={x} y={y} width={240} height={height}>
+      <foreignObject
+        ref={ref}
+        x={x}
+        y={y}
+        width={240}
+        height={height}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+      >
         <Container>
           <TableHeader caption={name} onChangeCaption={onChangeName} />
           {fields.map((field, index) => (
@@ -53,12 +65,14 @@ class TableBox extends Component {
       </foreignObject>
     );
   }
-}
+);
 
 TableBox.propTypes = {
   position: PropTypes.object,
   name: PropTypes.string,
   fields: PropTypes.array,
+  onMouseDown: PropTypes.func,
+  onMouseMove: PropTypes.func,
   onClickAddField: PropTypes.func,
   onClickRemoveField: PropTypes.func,
   onChangeFieldName: PropTypes.func,
