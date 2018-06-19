@@ -4,6 +4,8 @@ export const ADD_TABLE = "ADD_TABLE";
 export const REMOVE_TABLE = "REMOVE_TABLE";
 export const UPDATE_TABLE = "UPDATE_TABLE";
 
+export const SET_FIELDS = "SET_FIELDS";
+
 /**
  * Get action to set tables
  *
@@ -14,10 +16,6 @@ export const UPDATE_TABLE = "UPDATE_TABLE";
  * @param {object} tables[].position Table position
  * @param {number} tables[].position.x Position X
  * @param {number} tables[].position.y Position Y
- * @param {object[]} tables[].fields Table field list
- * @param {string} tables[].fields[].id Field ID
- * @param {string} tables[].fields[].name Field name
- * @param {string} tables[].fields[].type Field type
  * @returns {object} Action
  */
 export const setTables = tables => ({
@@ -79,4 +77,19 @@ export const updateTable = (tableID, data) => ({
  */
 export const clearTables = () => ({
   type: CLEAR_TABLES
+});
+
+/**
+ * Get action to set fields
+ *
+ * @param {object[]} fields Field list
+ * @param {string} fields[].id Field ID
+ * @param {string} fields[].tableID Table ID
+ * @param {string} fields[].name Field name
+ * @param {string} fields[].type Field type
+ * @returns {object} Action
+ */
+export const setFields = fields => ({
+  type: SET_FIELDS,
+  payload: fields
 });

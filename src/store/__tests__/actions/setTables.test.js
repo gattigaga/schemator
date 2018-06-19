@@ -6,13 +6,11 @@ describe("SET_TABLES", () => {
       {
         id: "1",
         name: "User",
-        fields: [
-          {
-            id: "1",
-            name: "id",
-            type: "INCREMENT"
-          }
-        ]
+        timestamp: 1529420034779,
+        position: {
+          x: 0,
+          y: 0
+        }
       }
     ];
 
