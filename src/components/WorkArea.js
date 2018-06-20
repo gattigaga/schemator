@@ -218,12 +218,18 @@ class WorkArea extends Component {
     };
   }
 
+  /**
+   * Remove existing field
+   *
+   * @param {number} fieldID Field ID
+   * @memberof WorkArea
+   */
   removeField(fieldID) {
     const { fields, relations, deleteField, deleteRelation } = this.props;
     const field = fields.find(item => item.id === fieldID);
     const relation = relations.find(item => item.fieldID === fieldID);
 
-    if (field.name.includes("_id")) {
+    if (field.name.includes("_id") && relation) {
       deleteRelation(relation.id);
     }
 
@@ -278,7 +284,7 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { tables, fields, relations, deleteField } = this.props;
+    const { tables, fields, relations } = this.props;
     const byTableID = tableID => item => item.tableID === tableID;
     const byID = itemID => item => item.id === itemID;
 
