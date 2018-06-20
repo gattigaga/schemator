@@ -16,6 +16,8 @@ export const ADD_RELATION = "ADD_RELATION";
 export const REMOVE_RELATION = "REMOVE_RELATION";
 export const UPDATE_RELATION = "UPDATE_RELATION";
 
+export const SET_PROJECT = "SET_PROJECT";
+
 /**
  * Get action to set tables
  *
@@ -213,4 +215,17 @@ export const updateRelation = (relationID, data) => ({
     data,
     id: relationID
   }
+});
+
+/**
+ * Get action to set project
+ *
+ * @param {object} project Project meta data
+ * @param {string} project.name Project name
+ * @param {number} project.timestamp Project date creation timestamp
+ * @returns {object} Action
+ */
+export const setProject = project => ({
+  type: SET_PROJECT,
+  payload: project
 });
