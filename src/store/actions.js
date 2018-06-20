@@ -12,6 +12,7 @@ export const UPDATE_FIELD = "UPDATE_FIELD";
 
 export const SET_RELATIONS = "SET_RELATIONS";
 export const CLEAR_RELATIONS = "CLEAR_RELATIONS";
+export const ADD_RELATION = "ADD_RELATION";
 
 /**
  * Get action to set tables
@@ -169,4 +170,19 @@ export const setRelations = relations => ({
  */
 export const clearRelations = () => ({
   type: CLEAR_RELATIONS
+});
+
+/**
+ * Get action to add new relation
+ *
+ * @param {object} relation Relation data
+ * @param {string} relation.id Relation ID
+ * @param {string} relation.fieldID Foreign Key field ID
+ * @param {string} relation.fromTableID Table ID which contains foreign key
+ * @param {string} relation.toTableID Table ID as destination
+ * @returns {object} Action
+ */
+export const addRelation = relation => ({
+  type: ADD_RELATION,
+  payload: relation
 });
