@@ -8,7 +8,12 @@ import {
   CLEAR_FIELDS,
   ADD_FIELD,
   REMOVE_FIELD,
-  UPDATE_FIELD
+  UPDATE_FIELD,
+  SET_RELATIONS,
+  CLEAR_RELATIONS,
+  ADD_RELATION,
+  REMOVE_RELATION,
+  UPDATE_RELATION
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -61,6 +66,39 @@ export const fields = (state = [], action) => {
       return state.filter(item => item.id !== payload);
 
     case UPDATE_FIELD:
+      return state.map(item => {
+        if (item.id === payload.id) {
+          return {
+            ...item,
+            ...payload.data
+          };
+        }
+
+        return item;
+      });
+
+    default:
+      return state;
+  }
+};
+
+export const relations = (state = [], action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case SET_RELATIONS:
+      return payload;
+
+    case CLEAR_RELATIONS:
+      return [];
+
+    case ADD_RELATION:
+      return [...state, payload];
+
+    case REMOVE_RELATION:
+      return state.filter(item => item.id !== payload);
+
+    case UPDATE_RELATION:
       return state.map(item => {
         if (item.id === payload.id) {
           return {
