@@ -266,7 +266,7 @@ class WorkArea extends Component {
     const field = fields.find(item => item.id === fieldID);
     const relation = relations.find(item => item.fieldID === fieldID);
 
-    if (field.name.includes("_id") && relation) {
+    if (field.name.endsWith("_id") && relation) {
       deleteRelation(relation.id);
     }
 
