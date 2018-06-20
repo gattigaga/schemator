@@ -280,11 +280,42 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   updateTableName(tableID) {
-    const { modifyTable } = this.props;
+    const {
+      fields,
+      relations,
+      modifyTable,
+      deleteRelation,
+      createRelation
+    } = this.props;
 
     return event => {
+      const { value: newTableName } = event.target;
+      const fieldPrefix = newTableName.toLowerCase();
+      const foreignFields = fields.filter(
+        item => item.name === `${fieldPrefix}_id`
+      );
+
+      if (foreignFields.length > 0) {
+        foreignFields.forEach(field => {
+          const newRelation = {
+            id: uuid(),
+            fieldID: field.id,
+            fromTableID: field.tableID,
+            toTableID: tableID
+          };
+
+          createRelation(newRelation);
+        });
+      } else {
+        const unneededRelations = relations
+          .filter(item => item.toTableID === tableID)
+          .map(item => item.id);
+
+        unneededRelations.forEach(deleteRelation);
+      }
+
       const data = {
-        name: event.target.value
+        name: newTableName
       };
 
       modifyTable(tableID, data);
