@@ -11,6 +11,7 @@ export const REMOVE_FIELD = "REMOVE_FIELD";
 export const UPDATE_FIELD = "UPDATE_FIELD";
 
 export const SET_RELATIONS = "SET_RELATIONS";
+export const CLEAR_RELATIONS = "CLEAR_RELATIONS";
 
 /**
  * Get action to set tables
@@ -159,4 +160,13 @@ export const updateField = (fieldID, data) => ({
 export const setRelations = relations => ({
   type: SET_RELATIONS,
   payload: relations
+});
+
+/**
+ * Get action to clear all relations
+ *
+ * @returns {object} Action
+ */
+export const clearRelations = () => ({
+  type: CLEAR_RELATIONS
 });
