@@ -14,6 +14,7 @@ export const SET_RELATIONS = "SET_RELATIONS";
 export const CLEAR_RELATIONS = "CLEAR_RELATIONS";
 export const ADD_RELATION = "ADD_RELATION";
 export const REMOVE_RELATION = "REMOVE_RELATION";
+export const UPDATE_RELATION = "UPDATE_RELATION";
 
 /**
  * Get action to set tables
@@ -197,4 +198,19 @@ export const addRelation = relation => ({
 export const removeRelation = relationID => ({
   type: REMOVE_RELATION,
   payload: relationID
+});
+
+/**
+ * Get action to update existing relation
+ *
+ * @param {string} relationID Relation ID
+ * @param {object} data New Data
+ * @returns {object} Action
+ */
+export const updateRelation = (relationID, data) => ({
+  type: UPDATE_RELATION,
+  payload: {
+    data,
+    id: relationID
+  }
 });
