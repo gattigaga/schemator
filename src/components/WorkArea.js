@@ -9,7 +9,8 @@ import {
   addField,
   updateField,
   removeField,
-  updateTable
+  updateTable,
+  removeRelation
 } from "../store/actions";
 import TableBox from "./TableBox";
 
@@ -49,6 +50,7 @@ class WorkArea extends Component {
     this.saveTableOffset = this.saveTableOffset.bind(this);
     this.addField = this.addField.bind(this);
     this.updateField = this.updateField.bind(this);
+    this.removeField = this.removeField.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
   }
@@ -216,6 +218,18 @@ class WorkArea extends Component {
     };
   }
 
+  removeField(fieldID) {
+    const { fields, relations, deleteField, deleteRelation } = this.props;
+    const field = fields.find(item => item.id === fieldID);
+    const relation = relations.find(item => item.fieldID === fieldID);
+
+    if (field.name.includes("_id")) {
+      deleteRelation(relation.id);
+    }
+
+    deleteField(fieldID);
+  }
+
   /**
    * Update table name
    *
@@ -307,7 +321,7 @@ class WorkArea extends Component {
                 onMouseDown={this.saveTableOffset(index)}
                 onMouseMove={this.updateTablePosition(table.id)}
                 onClickAddField={() => this.addField(table.id)}
-                onClickRemoveField={deleteField}
+                onClickRemoveField={this.removeField}
                 onChangeFieldName={this.updateField("name")}
                 onChangeFieldType={this.updateField("type")}
                 onChangeName={this.updateTableName(table.id)}
@@ -327,7 +341,8 @@ WorkArea.propTypes = {
   modifyTable: PropTypes.func,
   modifyField: PropTypes.func,
   createField: PropTypes.func,
-  deleteField: PropTypes.func
+  deleteField: PropTypes.func,
+  deleteRelation: PropTypes.func
 };
 
 const mapStateToProps = state => state;
@@ -336,7 +351,8 @@ const mapDispatchToProps = dispatch => ({
   createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
-  modifyField: (id, data) => dispatch(updateField(id, data))
+  modifyField: (id, data) => dispatch(updateField(id, data)),
+  deleteRelation: relationID => dispatch(removeRelation(relationID))
 });
 
 export default connect(
