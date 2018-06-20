@@ -23,6 +23,12 @@ const Area = styled.svg`
   background: #333;
 `;
 
+const RelationLine = styled.path`
+  fill: none;
+  stroke: white;
+  stroke-width: 2px;
+`;
+
 class WorkArea extends Component {
   constructor(props) {
     super(props);
@@ -38,6 +44,7 @@ class WorkArea extends Component {
     this.activeTable = null;
     this.tables = props.tables.map(createRef);
 
+    this.getPathPoints = this.getPathPoints.bind(this);
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
     this.addField = this.addField.bind(this);
@@ -48,6 +55,50 @@ class WorkArea extends Component {
 
   componentDidMount() {
     this.createLines();
+  }
+
+  /**
+   * Get relation line path points
+   *
+   * @param {object} fromTablePosition Position of table which has foreign key
+   * @param {number} fromTablePosition.x Position X
+   * @param {number} fromTablePosition.y Position Y
+   * @param {object} toTablePosition Position of destination table
+   * @param {number} toTablePosition.x Position X
+   * @param {number} toTablePosition.y Position Y
+   * @param {number} fieldIndex Index of foreign key field relative from it's table
+   * @returns {string} Path points
+   * @memberof WorkArea
+   */
+  getPathPoints(fromTablePosition, toTablePosition, fieldIndex) {
+    const { x: fPosX, y: fPosY } = fromTablePosition;
+    const { x: tPosX, y: tPosY } = toTablePosition;
+    const headerHeight = 36;
+    const inputHeight = 38;
+    const tableWidth = 240;
+    const curvePoint = 64;
+    const halfHeaderHeight = headerHeight / 2;
+    const inputY = headerHeight + fieldIndex * inputHeight + inputHeight / 2;
+    const isFromTableInRight = fPosX > tPosX;
+    let points = "";
+
+    if (isFromTableInRight) {
+      points = `
+        M${fPosX + halfHeaderHeight} ${fPosY + inputY} 
+        C${fPosX - curvePoint} ${fPosY + inputY} 
+          ${tPosX + tableWidth + curvePoint} ${tPosY + halfHeaderHeight} 
+          ${tPosX + tableWidth} ${tPosY + halfHeaderHeight}
+      `;
+    } else {
+      points = `
+        M${fPosX + tableWidth - halfHeaderHeight} ${fPosY + inputY} 
+        C${fPosX + tableWidth + curvePoint} ${fPosY + inputY} 
+          ${tPosX - curvePoint} ${tPosY + halfHeaderHeight} 
+          ${tPosX + halfHeaderHeight} ${tPosY + halfHeaderHeight}
+      `;
+    }
+
+    return points;
   }
 
   /**
@@ -213,7 +264,9 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { tables, fields, deleteField } = this.props;
+    const { tables, fields, relations, deleteField } = this.props;
+    const byTableID = tableID => item => item.tableID === tableID;
+    const byID = itemID => item => item.id === itemID;
 
     return (
       <Container>
@@ -223,9 +276,27 @@ class WorkArea extends Component {
             this.activeTable = null;
           }}
         >
+          {relations.map(relation => {
+            const { fieldID, fromTableID, toTableID } = relation;
+            const fieldIndex = fields
+              .filter(byTableID(fromTableID))
+              .findIndex(byID(fieldID));
+            const fromTable = tables.find(byID(fromTableID));
+            const toTable = tables.find(byID(toTableID));
+
+            if (fromTable && toTable) {
+              const points = this.getPathPoints(
+                fromTable.position,
+                toTable.position,
+                fieldIndex
+              );
+              return <RelationLine key={relation.id} d={points} />;
+            }
+
+            return null;
+          })}
           {tables.map((table, index) => {
-            const byTableID = field => field.tableID === table.id;
-            const currentFields = fields.filter(byTableID);
+            const currentFields = fields.filter(byTableID(table.id));
 
             return (
               <TableBox
@@ -252,6 +323,7 @@ class WorkArea extends Component {
 WorkArea.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
+  relations: PropTypes.array,
   modifyTable: PropTypes.func,
   modifyField: PropTypes.func,
   createField: PropTypes.func,
