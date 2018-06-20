@@ -10,8 +10,10 @@ import {
   updateField,
   removeField,
   updateTable,
+  addRelation,
   removeRelation
 } from "../store/actions";
+import { capitalize } from "../helpers/formatter";
 import TableBox from "./TableBox";
 
 const Container = styled.div`
@@ -207,11 +209,46 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   updateField(type) {
-    const { modifyField } = this.props;
+    const {
+      tables,
+      fields,
+      relations,
+      modifyField,
+      createRelation,
+      deleteRelation
+    } = this.props;
 
     return (event, fieldID) => {
+      const { value } = event.target;
+
+      if (type === "name") {
+        const relation = relations.find(item => item.fieldID === fieldID);
+
+        if (value.endsWith("_id")) {
+          const tableName = capitalize(value.replace("_id", ""));
+          const field = fields.find(item => item.id === fieldID);
+          const fromTable = tables.find(item => item.id === field.tableID);
+          const toTable = tables.find(item => item.name === tableName);
+
+          if (fromTable && toTable && !relation) {
+            const newRelation = {
+              id: uuid(),
+              fieldID: field.id,
+              fromTableID: fromTable.id,
+              toTableID: toTable.id
+            };
+
+            createRelation(newRelation);
+          }
+        } else {
+          if (relation) {
+            deleteRelation(relation.id);
+          }
+        }
+      }
+
       const data = {
-        [type]: event.target.value
+        [type]: value
       };
 
       modifyField(fieldID, data);
@@ -348,6 +385,7 @@ WorkArea.propTypes = {
   modifyField: PropTypes.func,
   createField: PropTypes.func,
   deleteField: PropTypes.func,
+  createRelation: PropTypes.func,
   deleteRelation: PropTypes.func
 };
 
@@ -358,6 +396,7 @@ const mapDispatchToProps = dispatch => ({
   deleteField: fieldID => dispatch(removeField(fieldID)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
+  createRelation: relation => dispatch(addRelation(relation)),
   deleteRelation: relationID => dispatch(removeRelation(relationID))
 });
 
