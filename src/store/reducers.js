@@ -13,7 +13,8 @@ import {
   CLEAR_RELATIONS,
   ADD_RELATION,
   REMOVE_RELATION,
-  UPDATE_RELATION
+  UPDATE_RELATION,
+  SET_PROJECT
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -109,6 +110,18 @@ export const relations = (state = [], action) => {
 
         return item;
       });
+
+    default:
+      return state;
+  }
+};
+
+export const project = (state = null, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case SET_PROJECT:
+      return payload;
 
     default:
       return state;
