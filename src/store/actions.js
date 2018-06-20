@@ -10,6 +10,8 @@ export const ADD_FIELD = "ADD_FIELD";
 export const REMOVE_FIELD = "REMOVE_FIELD";
 export const UPDATE_FIELD = "UPDATE_FIELD";
 
+export const SET_RELATIONS = "SET_RELATIONS";
+
 /**
  * Get action to set tables
  *
@@ -142,4 +144,19 @@ export const updateField = (fieldID, data) => ({
     data,
     id: fieldID
   }
+});
+
+/**
+ * Get action to set relations
+ *
+ * @param {object[]} relations Relation list
+ * @param {string} relations[].id Relation ID
+ * @param {string} relations[].fieldID Foreign Key field ID
+ * @param {string} relations[].fromTableID Table ID which contains foreign key
+ * @param {string} relations[].toTableID Table ID as destination
+ * @returns {object} Action
+ */
+export const setRelations = relations => ({
+  type: SET_RELATIONS,
+  payload: relations
 });
