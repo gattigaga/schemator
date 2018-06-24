@@ -1,3 +1,5 @@
+import MdInfo from "react-icons/lib/md/info";
+
 import {
   SET_TABLES,
   CLEAR_TABLES,
@@ -14,7 +16,8 @@ import {
   ADD_RELATION,
   REMOVE_RELATION,
   UPDATE_RELATION,
-  SET_PROJECT
+  SET_PROJECT,
+  SET_ALERT
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -122,6 +125,29 @@ export const project = (state = null, action) => {
   switch (type) {
     case SET_PROJECT:
       return payload;
+
+    default:
+      return state;
+  }
+};
+
+export const alert = (
+  state = {
+    isOpen: false,
+    message: "My message",
+    icon: MdInfo,
+    iconColor: "black"
+  },
+  action
+) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case SET_ALERT:
+      return {
+        ...state,
+        ...payload
+      };
 
     default:
       return state;
