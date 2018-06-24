@@ -17,6 +17,7 @@ export const REMOVE_RELATION = "REMOVE_RELATION";
 export const UPDATE_RELATION = "UPDATE_RELATION";
 
 export const SET_PROJECT = "SET_PROJECT";
+export const SET_ALERT = "SET_ALERT";
 
 /**
  * Get action to set tables
@@ -228,4 +229,19 @@ export const updateRelation = (relationID, data) => ({
 export const setProject = project => ({
   type: SET_PROJECT,
   payload: project
+});
+
+/**
+ * Get action to set project
+ *
+ * @param {object} alert Alert data
+ * @param {boolean} alert.isOpen Open condition
+ * @param {string} alert.message Alert message
+ * @param {function} alert.icon Alert Icon
+ * @param {string} alert.iconColor Alert icon color
+ * @returns {object} Action
+ */
+export const setAlert = alert => ({
+  type: SET_ALERT,
+  payload: alert
 });
