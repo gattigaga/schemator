@@ -20,7 +20,8 @@ import {
   setFields,
   setRelations,
   addTable,
-  addField
+  addField,
+  setAlert
 } from "../store/actions";
 import { randomBetween } from "../helpers/math";
 
@@ -47,8 +48,11 @@ class Toolbar extends Component {
   constructor(props) {
     super(props);
 
+    this.fileEntry = null;
+
     this.newProject = this.newProject.bind(this);
     this.openProject = this.openProject.bind(this);
+    this.saveProject = this.saveProject.bind(this);
     this.addTable = this.addTable.bind(this);
   }
 
@@ -58,7 +62,7 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   newProject() {
-    const { applyProject } = this.props;
+    const { applyProject, showAlert } = this.props;
 
     const options = {
       type: "saveFile",
@@ -73,6 +77,8 @@ class Toolbar extends Component {
     };
 
     const saveFile = entry => {
+      this.fileEntry = entry;
+
       const data = {
         project: {
           name: entry.name.replace(".json", ""),
@@ -94,7 +100,14 @@ class Toolbar extends Component {
           applyProject(data.project);
         };
 
-        writer.onerror = console.error;
+        writer.onerror = error => {
+          console.error(error);
+          showAlert({
+            isOpen: true,
+            message: "Failed to create new project",
+            iconColor: "#ff5252"
+          });
+        };
 
         writer.write(blob);
       });
@@ -113,7 +126,8 @@ class Toolbar extends Component {
       applyProject,
       applyTables,
       applyFields,
-      applyRelations
+      applyRelations,
+      showAlert
     } = this.props;
 
     const options = {
@@ -128,6 +142,8 @@ class Toolbar extends Component {
     };
 
     const openFile = entry => {
+      this.fileEntry = entry;
+
       entry.file(function(file) {
         const reader = new FileReader();
 
@@ -149,11 +165,60 @@ class Toolbar extends Component {
           }
         };
 
+        reader.onerror = error => {
+          console.error(error);
+          showAlert({
+            isOpen: true,
+            message: "Failed to open a project",
+            iconColor: "#ff5252"
+          });
+        };
+
         reader.readAsBinaryString(file);
       });
     };
 
     chrome.fileSystem.chooseEntry(options, openFile);
+  }
+
+  /**
+   * Save current project
+   *
+   * @memberof Toolbar
+   */
+  saveProject() {
+    const { project, tables, fields, relations, showAlert } = this.props;
+
+    const data = {
+      project,
+      tables,
+      fields,
+      relations
+    };
+
+    this.fileEntry.createWriter(writer => {
+      let truncated = false;
+      const contents = JSON.stringify(data, null, 2);
+      const blob = new Blob([contents], { type: "application/json" });
+
+      writer.onwriteend = function() {
+        if (!truncated) {
+          truncated = true;
+          this.truncate(blob.size);
+        }
+      };
+
+      writer.onerror = error => {
+        console.error(error);
+        showAlert({
+          isOpen: true,
+          message: "Failed to save current project",
+          iconColor: "#ff5252"
+        });
+      };
+
+      writer.write(blob);
+    });
   }
 
   /**
@@ -209,7 +274,12 @@ class Toolbar extends Component {
           icon={MdFolderOpen}
           onClick={this.openProject}
         />
-        <Tool tooltip="Save Project" icon={MdSave} isDisabled={!project} />
+        <Tool
+          tooltip="Save Project"
+          icon={MdSave}
+          isDisabled={!project}
+          onClick={this.saveProject}
+        />
         <Separator />
         <Tool tooltip="Export" icon={MdArchive} isDisabled={!project} />
         <Separator />
@@ -229,15 +299,18 @@ class Toolbar extends Component {
 Toolbar.propTypes = {
   project: PropTypes.object,
   tables: PropTypes.array,
+  fields: PropTypes.array,
+  relations: PropTypes.array,
   applyProject: PropTypes.func,
   applyTables: PropTypes.func,
   applyFields: PropTypes.func,
   applyRelations: PropTypes.func,
   createTable: PropTypes.func,
-  createField: PropTypes.func
+  createField: PropTypes.func,
+  showAlert: PropTypes.func
 };
 
-const mapStateToProps = ({ project, tables }) => ({ project, tables });
+const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
   applyProject: project => dispatch(setProject(project)),
@@ -245,7 +318,8 @@ const mapDispatchToProps = dispatch => ({
   applyFields: fields => dispatch(setFields(fields)),
   applyRelations: relations => dispatch(setRelations(relations)),
   createTable: table => dispatch(addTable(table)),
-  createField: field => dispatch(addField(field))
+  createField: field => dispatch(addField(field)),
+  showAlert: options => dispatch(setAlert(options))
 });
 
 export default connect(
