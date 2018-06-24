@@ -45,7 +45,7 @@ class WorkArea extends Component {
 
     this.area = createRef();
     this.activeTable = null;
-    this.tables = props.tables.map(createRef);
+    this.tables = [];
 
     this.getPathPoints = this.getPathPoints.bind(this);
     this.getMousePosition = this.getMousePosition.bind(this);
@@ -59,6 +59,27 @@ class WorkArea extends Component {
 
   componentDidMount() {
     this.createLines();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const getID = item => item.id;
+    const newData = items => id => !items.includes(id);
+
+    const { tables } = nextProps;
+    const tableIDs = tables.map(getID);
+    const refTableIDs = this.tables.map(getID);
+
+    const addedTable = tableIDs.find(newData(refTableIDs));
+
+    if (addedTable) {
+      this.tables = [
+        ...this.tables,
+        {
+          id: addedTable,
+          ref: createRef()
+        }
+      ];
+    }
   }
 
   /**
@@ -124,12 +145,13 @@ class WorkArea extends Component {
   /**
    * Save table offset from the top left of object
    *
-   * @param {number} tableIndex Table index
+   * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  saveTableOffset(tableIndex) {
+  saveTableOffset(tableID) {
     return event => {
-      this.activeTable = this.tables[tableIndex];
+      const byID = item => item.id === tableID;
+      this.activeTable = this.tables.find(byID).ref;
 
       const getAttributeNS = attr => {
         const activeTableDOM = this.activeTable.current;
@@ -385,14 +407,15 @@ class WorkArea extends Component {
           })}
           {tables.map((table, index) => {
             const currentFields = fields.filter(byTableID(table.id));
+            const { ref } = this.tables.find(byID(table.id));
 
             return (
               <TableBox
                 key={table.id}
-                ref={this.tables[index]}
+                ref={ref}
                 {...table}
                 fields={currentFields}
-                onMouseDown={this.saveTableOffset(index)}
+                onMouseDown={this.saveTableOffset(table.id)}
                 onMouseMove={this.updateTablePosition(table.id)}
                 onClickAddField={() => this.addField(table.id)}
                 onClickRemoveField={this.removeField}
