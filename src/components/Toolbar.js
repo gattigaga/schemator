@@ -12,12 +12,17 @@ import {
   MdHelp
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
+import uuid from "uuid/v4";
+
 import {
   setProject,
   setTables,
   setFields,
-  setRelations
+  setRelations,
+  addTable,
+  addField
 } from "../store/actions";
+import { randomBetween } from "../helpers/math";
 
 import Tool from "./Tool";
 
@@ -44,6 +49,7 @@ class Toolbar extends Component {
 
     this.newProject = this.newProject.bind(this);
     this.openProject = this.openProject.bind(this);
+    this.addTable = this.addTable.bind(this);
   }
 
   /**
@@ -150,7 +156,51 @@ class Toolbar extends Component {
     chrome.fileSystem.chooseEntry(options, openFile);
   }
 
+  /**
+   * Create new table
+   *
+   * @memberof Toolbar
+   */
+  addTable() {
+    const { createTable, createField, tables } = this.props;
+    const positions = tables.map(item => item.position);
+    const appWindow = chrome.app.window.get("main");
+    let newPosition;
+
+    const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
+
+    while (true) {
+      newPosition = {
+        x: randomBetween(16, appWindow.innerBounds.width - 240),
+        y: randomBetween(64, appWindow.innerBounds.height - 240)
+      };
+
+      if (positions.every(isNotSameWith(newPosition))) {
+        break;
+      }
+    }
+
+    const newTable = {
+      id: uuid(),
+      name: "NewTable",
+      timestamp: Date.now(),
+      position: newPosition
+    };
+
+    const newField = {
+      id: uuid(),
+      tableID: newTable.id,
+      name: "id",
+      type: "INCREMENT"
+    };
+
+    createTable(newTable);
+    createField(newField);
+  }
+
   render() {
+    const { project } = this.props;
+
     return (
       <Container>
         <Tool tooltip="New Project" icon={MdAddBox} onClick={this.newProject} />
@@ -159,11 +209,16 @@ class Toolbar extends Component {
           icon={MdFolderOpen}
           onClick={this.openProject}
         />
-        <Tool tooltip="Save Project" icon={MdSave} isDisabled />
+        <Tool tooltip="Save Project" icon={MdSave} isDisabled={!project} />
         <Separator />
-        <Tool tooltip="Export" icon={MdArchive} isDisabled />
+        <Tool tooltip="Export" icon={MdArchive} isDisabled={!project} />
         <Separator />
-        <Tool tooltip="Add Table" icon={MdAddCircle} isDisabled />
+        <Tool
+          tooltip="Add Table"
+          icon={MdAddCircle}
+          isDisabled={!project}
+          onClick={this.addTable}
+        />
         <Separator />
         <Tool tooltip="Help" icon={MdHelp} />
       </Container>
@@ -172,19 +227,25 @@ class Toolbar extends Component {
 }
 
 Toolbar.propTypes = {
+  project: PropTypes.object,
+  tables: PropTypes.array,
   applyProject: PropTypes.func,
   applyTables: PropTypes.func,
   applyFields: PropTypes.func,
-  applyRelations: PropTypes.func
+  applyRelations: PropTypes.func,
+  createTable: PropTypes.func,
+  createField: PropTypes.func
 };
 
-const mapStateToProps = ({ project }) => ({ project });
+const mapStateToProps = ({ project, tables }) => ({ project, tables });
 
 const mapDispatchToProps = dispatch => ({
   applyProject: project => dispatch(setProject(project)),
   applyTables: tables => dispatch(setTables(tables)),
   applyFields: fields => dispatch(setFields(fields)),
-  applyRelations: relations => dispatch(setRelations(relations))
+  applyRelations: relations => dispatch(setRelations(relations)),
+  createTable: table => dispatch(addTable(table)),
+  createField: field => dispatch(addField(field))
 });
 
 export default connect(
