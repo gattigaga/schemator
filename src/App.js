@@ -1,16 +1,10 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
-import {
-  MdAddBox,
-  MdSave,
-  MdFolderOpen,
-  MdArchive,
-  MdAddCircleOutline,
-  MdHighlightRemove,
-  MdHelp
-} from "react-icons/lib/md";
+import { Helmet } from "react-helmet";
+import { connect } from "react-redux";
 
-import Tool from "./components/Tool";
+import Toolbar from "./components/Toolbar";
 import WorkArea from "./components/WorkArea";
 
 const Container = styled.div`
@@ -20,43 +14,28 @@ const Container = styled.div`
   height: 100vh;
 `;
 
-const Toolbar = styled.div`
-  width: 100%;
-  height: 48px;
-  align-items: center;
-  padding: 0px 16px;
-  box-sizing: border-box;
-  display: flex;
-  background: #555;
-`;
-
-const Separator = styled.div`
-  width: 1px;
-  height: 32px;
-  border-left: 1px solid #666;
-  margin: 0px 8px;
-`;
-
 class App extends Component {
   render() {
+    const { project } = this.props;
+
     return (
       <Container>
-        <Toolbar>
-          <Tool tooltip="New Schema" icon={MdAddBox} />
-          <Tool tooltip="Open Schema" icon={MdFolderOpen} />
-          <Tool tooltip="Save Schema" icon={MdSave} />
-          <Separator />
-          <Tool tooltip="Export" icon={MdArchive} isDisabled />
-          <Separator />
-          <Tool tooltip="Add Table" icon={MdAddCircleOutline} isDisabled />
-          <Tool tooltip="Remove Table" icon={MdHighlightRemove} isDisabled />
-          <Separator />
-          <Tool tooltip="Help" icon={MdHelp} />
-        </Toolbar>
+        {project && (
+          <Helmet>
+            <title>Schemator - {project.name}</title>
+          </Helmet>
+        )}
+        <Toolbar />
         <WorkArea />
       </Container>
     );
   }
 }
 
-export default App;
+App.propTypes = {
+  project: PropTypes.object
+};
+
+const mapStateToProps = ({ project }) => ({ project });
+
+export default connect(mapStateToProps)(App);
