@@ -14,9 +14,11 @@ import {
   updateTable,
   addRelation,
   removeRelation,
-  removeTable
+  removeTable,
+  addTable
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
+import { randomBetween } from "../helpers/math";
 import TableBox from "./TableBox";
 
 const Container = styled.div`
@@ -56,10 +58,10 @@ class WorkArea extends Component {
     this.addField = this.addField.bind(this);
     this.updateField = this.updateField.bind(this);
     this.removeField = this.removeField.bind(this);
+    this.addTable = this.addTable.bind(this);
     this.removeTable = this.removeTable.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
-    this.updateContextMenus = this.updateContextMenus.bind(this);
   }
 
   componentDidMount() {
@@ -76,6 +78,20 @@ class WorkArea extends Component {
     chrome.contextMenus.create({
       id: "remove-table",
       title: "Remove Table",
+      contexts: ["all"],
+      visible: false
+    });
+
+    chrome.contextMenus.create({
+      id: "add-table",
+      title: "Add Table",
+      contexts: ["all"],
+      visible: false
+    });
+
+    chrome.contextMenus.create({
+      id: "add-field",
+      title: "Add Field",
       contexts: ["all"],
       visible: false
     });
@@ -237,6 +253,8 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addField(tableID) {
+    this.activeTable = null;
+
     const { createField } = this.props;
     const data = {
       tableID,
@@ -320,6 +338,48 @@ class WorkArea extends Component {
   }
 
   /**
+   * Add new table
+   *
+   * @memberof WorkArea
+   */
+  addTable() {
+    const { createTable, createField, tables } = this.props;
+    const positions = tables.map(item => item.position);
+    const appWindow = chrome.app.window.get("main");
+    let newPosition;
+
+    const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
+
+    while (true) {
+      newPosition = {
+        x: randomBetween(16, appWindow.innerBounds.width - 240),
+        y: randomBetween(64, appWindow.innerBounds.height - 240)
+      };
+
+      if (positions.every(isNotSameWith(newPosition))) {
+        break;
+      }
+    }
+
+    const newTable = {
+      id: uuid(),
+      name: "NewTable",
+      timestamp: Date.now(),
+      position: newPosition
+    };
+
+    const newField = {
+      id: uuid(),
+      tableID: newTable.id,
+      name: "id",
+      type: "INCREMENT"
+    };
+
+    createTable(newTable);
+    createField(newField);
+  }
+
+  /**
    * Remove a table
    *
    * @param {number} tableID Table ID
@@ -351,14 +411,12 @@ class WorkArea extends Component {
 
     this.tables = this.tables.filter(item => item.id !== tableID);
 
-    this.updateContextMenus([
-      {
-        id: "remove-table",
-        data: {
-          visible: false
-        }
-      }
-    ]);
+    chrome.contextMenus.update("remove-table", { visible: false });
+    chrome.contextMenus.update("add-field", { visible: false });
+    chrome.contextMenus.update("add-table", {
+      visible: true,
+      onclick: this.addTable
+    });
   }
 
   /**
@@ -439,22 +497,8 @@ class WorkArea extends Component {
     };
   }
 
-  /**
-   * Update several context menus at the same time
-   *
-   * @param {object[]} options Menu options
-   * @param {string} options[].id Menu ID
-   * @param {object} options[].data New Menu data
-   * @memberof WorkArea
-   */
-  updateContextMenus(options) {
-    options.forEach(option => {
-      chrome.contextMenus.update(option.id, option.data);
-    });
-  }
-
   render() {
-    const { tables, fields, relations } = this.props;
+    const { project, tables, fields, relations } = this.props;
     const byTableID = tableID => item => item.tableID === tableID;
     const byID = itemID => item => item.id === itemID;
 
@@ -464,6 +508,17 @@ class WorkArea extends Component {
           innerRef={this.area}
           onMouseUp={event => {
             this.activeTable = null;
+          }}
+          onMouseEnter={() => {
+            chrome.contextMenus.update("add-table", {
+              visible: !!project,
+              onclick: this.addTable
+            });
+          }}
+          onMouseLeave={() => {
+            chrome.contextMenus.update("add-table", {
+              visible: false
+            });
           }}
         >
           {relations.map(relation => {
@@ -498,25 +553,33 @@ class WorkArea extends Component {
                 onMouseDown={this.saveTableOffset(table.id)}
                 onMouseMove={this.updateTablePosition(table.id)}
                 onMouseEnter={() => {
-                  this.updateContextMenus([
-                    {
-                      id: "remove-table",
-                      data: {
-                        visible: true,
-                        onclick: () => this.removeTable(table.id)
-                      }
-                    }
-                  ]);
+                  chrome.contextMenus.update("add-table", {
+                    visible: false
+                  });
+
+                  chrome.contextMenus.update("remove-table", {
+                    visible: true,
+                    onclick: () => this.removeTable(table.id)
+                  });
+
+                  chrome.contextMenus.update("add-field", {
+                    visible: true,
+                    onclick: () => this.addField(table.id)
+                  });
                 }}
                 onMouseLeave={() => {
-                  this.updateContextMenus([
-                    {
-                      id: "remove-table",
-                      data: {
-                        visible: false
-                      }
-                    }
-                  ]);
+                  chrome.contextMenus.update("add-table", {
+                    visible: true,
+                    onclick: this.addTable
+                  });
+
+                  chrome.contextMenus.update("remove-table", {
+                    visible: false
+                  });
+
+                  chrome.contextMenus.update("add-field", {
+                    visible: false
+                  });
                 }}
                 onClickAddField={() => this.addField(table.id)}
                 onClickRemoveField={this.removeField}
@@ -533,9 +596,11 @@ class WorkArea extends Component {
 }
 
 WorkArea.propTypes = {
+  project: PropTypes.object,
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
+  createTable: PropTypes.func,
   modifyTable: PropTypes.func,
   deleteTable: PropTypes.func,
   modifyField: PropTypes.func,
@@ -550,6 +615,7 @@ const mapStateToProps = state => state;
 const mapDispatchToProps = dispatch => ({
   createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
+  createTable: table => dispatch(addTable(table)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   deleteTable: id => dispatch(removeTable(id)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
