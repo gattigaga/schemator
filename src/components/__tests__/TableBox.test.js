@@ -28,6 +28,8 @@ describe("TableBox", () => {
       onChangeName: jest.fn(),
       onMouseDown: jest.fn(),
       onMouseMove: jest.fn(),
+      onMouseEnter: jest.fn(),
+      onMouseLeave: jest.fn(),
       ...propOverrides
     };
 
@@ -59,5 +61,21 @@ describe("TableBox", () => {
     wrapper.simulate("mouseMove");
 
     expect(props.onMouseMove).toBeCalled();
+  });
+
+  it("should calls 'onMouseEnter' while mouse enter", () => {
+    const { wrapper, props } = setup();
+
+    wrapper.simulate("mouseEnter");
+
+    expect(props.onMouseEnter).toBeCalled();
+  });
+
+  it("should calls 'onMouseLeave' while mouse leave", () => {
+    const { wrapper, props } = setup();
+
+    wrapper.simulate("mouseLeave");
+
+    expect(props.onMouseLeave).toBeCalled();
   });
 });

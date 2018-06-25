@@ -21,6 +21,8 @@ storiesOf("TableBox", module)
       ]}
       onMouseDown={action("mouse down")}
       onMouseMove={action("mouse move")}
+      onMouseEnter={action("mouse enter")}
+      onMouseLeave={action("mouse leave")}
       onClickAddField={action("add field clicked")}
       onClickRemoveField={action("remove field clicked")}
       onChangeFieldName={action("field name changed")}
