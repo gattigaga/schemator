@@ -1,3 +1,5 @@
+/* global chrome */
+
 import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -11,7 +13,8 @@ import {
   removeField,
   updateTable,
   addRelation,
-  removeRelation
+  removeRelation,
+  removeTable
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
 import TableBox from "./TableBox";
@@ -53,12 +56,29 @@ class WorkArea extends Component {
     this.addField = this.addField.bind(this);
     this.updateField = this.updateField.bind(this);
     this.removeField = this.removeField.bind(this);
+    this.removeTable = this.removeTable.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
+    this.updateContextMenus = this.updateContextMenus.bind(this);
   }
 
   componentDidMount() {
     this.createLines();
+    this.createContextMenus();
+  }
+
+  /**
+   * Create all context menus
+   *
+   * @memberof WorkArea
+   */
+  createContextMenus() {
+    chrome.contextMenus.create({
+      id: "remove-table",
+      title: "Remove Table",
+      contexts: ["all"],
+      visible: false
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -300,6 +320,48 @@ class WorkArea extends Component {
   }
 
   /**
+   * Remove a table
+   *
+   * @param {number} tableID Table ID
+   * @memberof WorkArea
+   */
+  removeTable(tableID) {
+    const {
+      relations,
+      fields,
+      deleteTable,
+      deleteField,
+      deleteRelation
+    } = this.props;
+
+    const getID = item => item.id;
+    const byThisTable = field => item => item[field] === tableID;
+
+    relations
+      .filter(byThisTable("toTable"))
+      .map(getID)
+      .forEach(deleteRelation);
+
+    fields
+      .filter(byThisTable("tableID"))
+      .map(getID)
+      .forEach(deleteField);
+
+    deleteTable(tableID);
+
+    this.tables = this.tables.filter(item => item.id !== tableID);
+
+    this.updateContextMenus([
+      {
+        id: "remove-table",
+        data: {
+          visible: false
+        }
+      }
+    ]);
+  }
+
+  /**
    * Update table name
    *
    * @param {number} tableID Table ID
@@ -377,6 +439,20 @@ class WorkArea extends Component {
     };
   }
 
+  /**
+   * Update several context menus at the same time
+   *
+   * @param {object[]} options Menu options
+   * @param {string} options[].id Menu ID
+   * @param {object} options[].data New Menu data
+   * @memberof WorkArea
+   */
+  updateContextMenus(options) {
+    options.forEach(option => {
+      chrome.contextMenus.update(option.id, option.data);
+    });
+  }
+
   render() {
     const { tables, fields, relations } = this.props;
     const byTableID = tableID => item => item.tableID === tableID;
@@ -421,6 +497,27 @@ class WorkArea extends Component {
                 fields={currentFields}
                 onMouseDown={this.saveTableOffset(table.id)}
                 onMouseMove={this.updateTablePosition(table.id)}
+                onMouseEnter={() => {
+                  this.updateContextMenus([
+                    {
+                      id: "remove-table",
+                      data: {
+                        visible: true,
+                        onclick: () => this.removeTable(table.id)
+                      }
+                    }
+                  ]);
+                }}
+                onMouseLeave={() => {
+                  this.updateContextMenus([
+                    {
+                      id: "remove-table",
+                      data: {
+                        visible: false
+                      }
+                    }
+                  ]);
+                }}
                 onClickAddField={() => this.addField(table.id)}
                 onClickRemoveField={this.removeField}
                 onChangeFieldName={this.updateField("name")}
@@ -440,6 +537,7 @@ WorkArea.propTypes = {
   fields: PropTypes.array,
   relations: PropTypes.array,
   modifyTable: PropTypes.func,
+  deleteTable: PropTypes.func,
   modifyField: PropTypes.func,
   createField: PropTypes.func,
   deleteField: PropTypes.func,
@@ -453,6 +551,7 @@ const mapDispatchToProps = dispatch => ({
   createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
+  deleteTable: id => dispatch(removeTable(id)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
   createRelation: relation => dispatch(addRelation(relation)),
   deleteRelation: relationID => dispatch(removeRelation(relationID))
