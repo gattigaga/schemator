@@ -68,17 +68,21 @@ class WorkArea extends Component {
     const { tables } = nextProps;
     const tableIDs = tables.map(getID);
     const refTableIDs = this.tables.map(getID);
+    const addedTables = tableIDs.filter(newData(refTableIDs));
+    const removedTables = refTableIDs.filter(newData(tableIDs));
 
-    const addedTable = tableIDs.find(newData(refTableIDs));
-
-    if (addedTable) {
+    if (addedTables.length > 0) {
       this.tables = [
         ...this.tables,
-        {
-          id: addedTable,
+        ...addedTables.map(id => ({
+          id,
           ref: createRef()
-        }
+        }))
       ];
+    }
+
+    if (removedTables.length > 0) {
+      this.tables = this.tables.filter(newData(removedTables));
     }
   }
 
