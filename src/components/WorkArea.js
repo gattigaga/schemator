@@ -540,7 +540,7 @@ class WorkArea extends Component {
 
             return null;
           })}
-          {tables.map((table, index) => {
+          {tables.map(table => {
             const currentFields = fields.filter(byTableID(table.id));
             const { ref } = this.tables.find(byID(table.id));
 

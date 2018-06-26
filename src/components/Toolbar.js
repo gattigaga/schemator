@@ -163,6 +163,8 @@ class Toolbar extends Component {
           if (data.relations) {
             applyRelations(data.relations);
           }
+
+          chrome.contextMenus.update("add-table", { visible: true });
         };
 
         reader.onerror = error => {
