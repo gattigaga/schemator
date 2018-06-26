@@ -18,7 +18,6 @@ import {
   addTable
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
-import { randomBetween } from "../helpers/math";
 import TableBox from "./TableBox";
 
 const Container = styled.div`
@@ -43,6 +42,10 @@ class WorkArea extends Component {
 
     this.state = {
       offset: {
+        x: 0,
+        y: 0
+      },
+      mouse: {
         x: 0,
         y: 0
       }
@@ -343,17 +346,17 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addTable() {
+    const { mouse } = this.state;
     const { createTable, createField, tables } = this.props;
     const positions = tables.map(item => item.position);
-    const appWindow = chrome.app.window.get("main");
     let newPosition;
 
     const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
 
     while (true) {
       newPosition = {
-        x: randomBetween(16, appWindow.innerBounds.width - 240),
-        y: randomBetween(64, appWindow.innerBounds.height - 240)
+        x: mouse.x,
+        y: mouse.y
       };
 
       if (positions.every(isNotSameWith(newPosition))) {
@@ -506,7 +509,7 @@ class WorkArea extends Component {
       <Container>
         <Area
           innerRef={this.area}
-          onMouseUp={event => {
+          onMouseUp={() => {
             this.activeTable = null;
           }}
           onMouseEnter={() => {
@@ -520,6 +523,14 @@ class WorkArea extends Component {
               visible: false
             });
           }}
+          onMouseMove={event =>
+            this.setState({
+              mouse: {
+                x: event.clientX,
+                y: event.clientY
+              }
+            })
+          }
         >
           {relations.map(relation => {
             const { fieldID, fromTableID, toTableID } = relation;
