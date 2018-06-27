@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableOption should renders default 1`] = `
+<styled.div>
+  <styled.div>
+    <styled.input
+      checked={true}
+      onChange={[Function]}
+      type="checkbox"
+    />
+    <styled.label>
+      ID
+    </styled.label>
+    <styled.input
+      checked={true}
+      onChange={[Function]}
+      type="checkbox"
+    />
+    <styled.label>
+      Remember Token
+    </styled.label>
+  </styled.div>
+  <styled.div>
+    <styled.input
+      checked={true}
+      onChange={[Function]}
+      type="checkbox"
+    />
+    <styled.label>
+      Soft Deletes
+    </styled.label>
+    <styled.input
+      checked={true}
+      onChange={[Function]}
+      type="checkbox"
+    />
+    <styled.label>
+      Timestamps
+    </styled.label>
+  </styled.div>
+</styled.div>
+`;
