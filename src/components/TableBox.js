@@ -7,6 +7,7 @@ import "typeface-roboto";
 import TableHeader from "./TableHeader";
 import TableButton from "./TableButton";
 import TableInput from "./TableInput";
+import TableOption from "./TableOption";
 
 const Container = styled.div`
   width: 240px;
@@ -22,9 +23,11 @@ const TableBox = forwardRef(
       position,
       name,
       fields,
+      options,
       onChangeName,
       onChangeFieldName,
       onChangeFieldType,
+      onChangeStatus,
       onClickAddField,
       onClickRemoveField,
       onMouseDown,
@@ -38,7 +41,8 @@ const TableBox = forwardRef(
     const headerHeight = 36;
     const buttonHeight = 36;
     const fieldHeight = 36 * fields.length;
-    const height = headerHeight + buttonHeight + fieldHeight + 4;
+    const optionHeight = 72;
+    const height = headerHeight + buttonHeight + fieldHeight + optionHeight + 4;
 
     return (
       <foreignObject
@@ -64,6 +68,7 @@ const TableBox = forwardRef(
               onClickRemove={() => onClickRemoveField(field.id)}
             />
           ))}
+          <TableOption onChange={onChangeStatus} value={options} />
           <TableButton caption="Add New Field" onClick={onClickAddField} />
         </Container>
       </foreignObject>
@@ -75,6 +80,7 @@ TableBox.propTypes = {
   position: PropTypes.object,
   name: PropTypes.string,
   fields: PropTypes.array,
+  options: PropTypes.object,
   onMouseDown: PropTypes.func,
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
@@ -83,7 +89,8 @@ TableBox.propTypes = {
   onClickRemoveField: PropTypes.func,
   onChangeFieldName: PropTypes.func,
   onChangeFieldType: PropTypes.func,
-  onChangeName: PropTypes.func
+  onChangeName: PropTypes.func,
+  onChangeStatus: PropTypes.func
 };
 
 export default TableBox;

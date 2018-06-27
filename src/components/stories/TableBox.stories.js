@@ -16,9 +16,15 @@ storiesOf("TableBox", module)
       position={{ x: 32, y: 32 }}
       name="User"
       fields={[
-        { id: "1", name: "id", type: "INCREMENT" },
-        { id: "2", name: "username", type: "VARCHAR" }
+        { id: "1", name: "fullname", type: "STRING" },
+        { id: "2", name: "username", type: "STRING" }
       ]}
+      options={{
+        id: true,
+        rememberToken: true,
+        softDeletes: true,
+        timestamps: true
+      }}
       onMouseDown={action("mouse down")}
       onMouseMove={action("mouse move")}
       onMouseEnter={action("mouse enter")}
@@ -28,5 +34,6 @@ storiesOf("TableBox", module)
       onChangeFieldName={action("field name changed")}
       onChangeFieldType={action("field type changed")}
       onChangeName={action("name changed")}
+      onChangeStatus={action("status changed")}
     />
   ));
