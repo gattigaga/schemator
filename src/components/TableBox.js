@@ -54,7 +54,7 @@ const TableBox = forwardRef(
       >
         <Container>
           <TableHeader caption={name} onChangeCaption={onChangeName} />
-          {fields.map((field, index) => (
+          {fields.map(field => (
             <TableInput
               key={field.id}
               name={field.name}
@@ -84,17 +84,6 @@ TableBox.propTypes = {
   onChangeFieldName: PropTypes.func,
   onChangeFieldType: PropTypes.func,
   onChangeName: PropTypes.func
-};
-
-TableBox.defaultProps = {
-  position: { x: 32, y: 32 },
-  name: "ModelName",
-  fields: [
-    {
-      name: "id",
-      type: "INCREMENT"
-    }
-  ]
 };
 
 export default TableBox;

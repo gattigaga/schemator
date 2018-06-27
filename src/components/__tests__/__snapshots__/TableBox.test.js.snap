@@ -18,11 +18,11 @@ exports[`TableBox should renders default 1`] = `
     />
     <TableInput
       key="1"
-      name="id"
+      name="fullname"
       onChangeName={[Function]}
       onChangeType={[Function]}
       onClickRemove={[Function]}
-      type="INCREMENT"
+      type="STRING"
     />
     <TableInput
       key="2"

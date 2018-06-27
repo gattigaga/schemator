@@ -12,8 +12,8 @@ describe("TableBox", () => {
       fields: [
         {
           id: "1",
-          name: "id",
-          type: "INCREMENT"
+          name: "fullname",
+          type: "STRING"
         },
         {
           id: "2",
