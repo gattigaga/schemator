@@ -18,12 +18,12 @@ export const modelTemplate = (modelName, fields) => {
 
   const fillable = fields.map(createField).join("");
 
-  return `
+  return String.raw`
     <?php
 
-    namespace App\\Models;
+    namespace App\Models;
     
-    use Illuminate\\Database\\Eloquent\\Model;
+    use Illuminate\Database\Eloquent\Model;
     
     class ${modelName} extends Model
     {
@@ -88,12 +88,12 @@ export const migrationTemplate = (modelName, options, fields) => {
 
   const formatted = allFields.filter(item => !!item).join("");
 
-  return `
+  return String.raw`
     <?php
 
-    use Illuminate\\Support\\Facades\\Schema;
-    use Illuminate\\Database\\Schema\\Blueprint;
-    use Illuminate\\Database\\Migrations\\Migration;
+    use Illuminate\Support\Facades\Schema;
+    use Illuminate\Database\Schema\Blueprint;
+    use Illuminate\Database\Migrations\Migration;
 
     class Create${className}Table extends Migration
     {
