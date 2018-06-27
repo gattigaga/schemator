@@ -7,8 +7,8 @@ import TableInput, { CloseButton, Input, Select } from "../TableInput";
 describe("TableInput", () => {
   const setup = propOverrides => {
     const props = {
-      name: "id",
-      type: "BIGINT",
+      name: "username",
+      type: "STRING",
       onChangeName: jest.fn(),
       onChangeType: jest.fn(),
       onClickRemove: jest.fn(),
