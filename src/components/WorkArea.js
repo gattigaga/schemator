@@ -65,6 +65,7 @@ class WorkArea extends Component {
     this.removeTable = this.removeTable.bind(this);
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
+    this.updateTableOptions = this.updateTableOptions.bind(this);
   }
 
   componentDidMount() {
@@ -368,14 +369,20 @@ class WorkArea extends Component {
       id: uuid(),
       name: "NewTable",
       timestamp: Date.now(),
-      position: newPosition
+      position: newPosition,
+      options: {
+        id: true,
+        rememberToken: false,
+        softDeletes: false,
+        timestamps: true
+      }
     };
 
     const newField = {
       id: uuid(),
       tableID: newTable.id,
-      name: "id",
-      type: "INCREMENT"
+      name: "field",
+      type: "INTEGER"
     };
 
     createTable(newTable);
@@ -500,6 +507,26 @@ class WorkArea extends Component {
     };
   }
 
+  /**
+   * Update table options like id, rememberToken, etc
+   *
+   * @param {number} tableID Table ID
+   * @memberof WorkArea
+   */
+  updateTableOptions(tableID) {
+    const { tables, modifyTable } = this.props;
+    const table = tables.find(item => item.id === tableID);
+
+    return (event, name) => {
+      modifyTable(tableID, {
+        options: {
+          ...table.options,
+          [name]: event.target.checked
+        }
+      });
+    };
+  }
+
   render() {
     const { project, tables, fields, relations } = this.props;
     const byTableID = tableID => item => item.tableID === tableID;
@@ -561,6 +588,7 @@ class WorkArea extends Component {
                 ref={ref}
                 {...table}
                 fields={currentFields}
+                options={table.options}
                 onMouseDown={this.saveTableOffset(table.id)}
                 onMouseMove={this.updateTablePosition(table.id)}
                 onMouseEnter={() => {
@@ -597,6 +625,7 @@ class WorkArea extends Component {
                 onChangeFieldName={this.updateField("name")}
                 onChangeFieldType={this.updateField("type")}
                 onChangeName={this.updateTableName(table.id)}
+                onChangeOptions={this.updateTableOptions(table.id)}
               />
             );
           })}

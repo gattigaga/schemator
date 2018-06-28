@@ -251,14 +251,20 @@ class Toolbar extends Component {
       id: uuid(),
       name: "NewTable",
       timestamp: Date.now(),
-      position: newPosition
+      position: newPosition,
+      options: {
+        id: true,
+        rememberToken: false,
+        softDeletes: false,
+        timestamps: true
+      }
     };
 
     const newField = {
       id: uuid(),
       tableID: newTable.id,
-      name: "id",
-      type: "INCREMENT"
+      name: "field",
+      type: "INTEGER"
     };
 
     createTable(newTable);
