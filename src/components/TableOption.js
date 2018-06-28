@@ -22,11 +22,12 @@ const Label = styled.label`
   font-family: Roboto;
   font-size: 12px;
   color: white;
-  margin-right: 12px;
+  margin-right: 16px;
 `;
 
 export const Input = styled.input`
   outline: none;
+  margin-right: 4px;
 `;
 
 const TableOption = ({ value, onChange }) => (
