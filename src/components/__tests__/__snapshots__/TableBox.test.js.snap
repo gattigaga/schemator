@@ -2,7 +2,7 @@
 
 exports[`TableBox should renders default 1`] = `
 <foreignObject
-  height={148}
+  height={220}
   onMouseDown={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
@@ -33,6 +33,7 @@ exports[`TableBox should renders default 1`] = `
       type="VARCHAR"
     />
     <TableOption
+      onChange={[Function]}
       value={
         Object {
           "id": false,

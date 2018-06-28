@@ -26,6 +26,7 @@ describe("TableBox", () => {
       onChangeFieldName: jest.fn(),
       onChangeFieldType: jest.fn(),
       onChangeName: jest.fn(),
+      onChangeOptions: jest.fn(),
       onMouseDown: jest.fn(),
       onMouseMove: jest.fn(),
       onMouseEnter: jest.fn(),

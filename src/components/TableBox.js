@@ -27,7 +27,7 @@ const TableBox = forwardRef(
       onChangeName,
       onChangeFieldName,
       onChangeFieldType,
-      onChangeStatus,
+      onChangeOptions,
       onClickAddField,
       onClickRemoveField,
       onMouseDown,
@@ -68,7 +68,7 @@ const TableBox = forwardRef(
               onClickRemove={() => onClickRemoveField(field.id)}
             />
           ))}
-          <TableOption onChange={onChangeStatus} value={options} />
+          <TableOption onChange={onChangeOptions} value={options} />
           <TableButton caption="Add New Field" onClick={onClickAddField} />
         </Container>
       </foreignObject>
@@ -90,7 +90,7 @@ TableBox.propTypes = {
   onChangeFieldName: PropTypes.func,
   onChangeFieldType: PropTypes.func,
   onChangeName: PropTypes.func,
-  onChangeStatus: PropTypes.func
+  onChangeOptions: PropTypes.func
 };
 
 export default TableBox;

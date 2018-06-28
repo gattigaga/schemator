@@ -34,6 +34,6 @@ storiesOf("TableBox", module)
       onChangeFieldName={action("field name changed")}
       onChangeFieldType={action("field type changed")}
       onChangeName={action("name changed")}
-      onChangeStatus={action("status changed")}
+      onChangeOptions={action("options changed")}
     />
   ));
