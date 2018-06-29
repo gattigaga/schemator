@@ -1,4 +1,5 @@
 import pluralize from "pluralize";
+import { stripIndent } from "common-tags";
 
 import { convertType, capitalize } from "./formatter";
 
@@ -18,10 +19,10 @@ export const modelTemplate = (modelName, fields) => {
 
   const fillable = fields.map(createField).join("");
 
-  return String.raw`
+  return stripIndent(String.raw)`
     <?php
 
-    namespace App\Models;
+    namespace App;
     
     use Illuminate\Database\Eloquent\Model;
     
@@ -88,7 +89,7 @@ export const migrationTemplate = (modelName, options, fields) => {
 
   const formatted = allFields.filter(item => !!item).join("");
 
-  return String.raw`
+  return stripIndent(String.raw)`
     <?php
 
     use Illuminate\Support\Facades\Schema;

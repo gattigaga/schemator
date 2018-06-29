@@ -1,40 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`migrationTemplate() should returns created migration 1`] = `
-"
-    <?php
+"<?php
 
-    use Illuminate\\\\Support\\\\Facades\\\\Schema;
-    use Illuminate\\\\Database\\\\Schema\\\\Blueprint;
-    use Illuminate\\\\Database\\\\Migrations\\\\Migration;
+use Illuminate\\\\Support\\\\Facades\\\\Schema;
+use Illuminate\\\\Database\\\\Schema\\\\Blueprint;
+use Illuminate\\\\Database\\\\Migrations\\\\Migration;
 
-    class CreateUsersTable extends Migration
+class CreateUsersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
     {
-        /**
-         * Run the migrations.
-         *
-         * @return void
-         */
-        public function up()
-        {
-            Schema::create('users', function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('fullname');
-                $table->string('username');
-                $table->rememberToken();
-                $table->softDeletes();
-                $table->timestamps();
-            });
-        }
+        Schema::create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('fullname');
+            $table->string('username');
+            $table->rememberToken();
+            $table->softDeletes();
+            $table->timestamps();
+        });
+    }
 
-        /**
-         * Reverse the migrations.
-         *
-         * @return void
-         */
-        public function down()
-        {
-            Schema::dropIfExists('users');
-        }
-    }"
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('users');
+    }
+}"
 `;

@@ -1,24 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`modelTemplate() should returns created model 1`] = `
-"
-    <?php
+"<?php
 
-    namespace App\\\\Models;
-    
-    use Illuminate\\\\Database\\\\Eloquent\\\\Model;
-    
-    class User extends Model
-    {
-        /**
-         * The attributes that are mass assignable.
-         *
-         * @var array
-         */
-        protected $fillable = [
-            'username',
-            'email',
-            'fullname',
-        ];
-    }"
+namespace App;
+
+use Illuminate\\\\Database\\\\Eloquent\\\\Model;
+
+class User extends Model
+{
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'username',
+        'email',
+        'fullname',
+    ];
+}"
 `;
