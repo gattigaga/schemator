@@ -17,7 +17,7 @@
   "permissions": [
     "contextMenus",
     {
-      "fileSystem": ["write"]
+      "fileSystem": ["write", "directory"]
     }
   ],
   "minimum_chrome_version": "45"
