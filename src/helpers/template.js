@@ -1,7 +1,7 @@
 import pluralize from "pluralize";
 import { stripIndent } from "common-tags";
 
-import { convertType, capitalize } from "./formatter";
+import { convertType, toSnakeCase } from "./formatter";
 
 /**
  * Create Laravel model template
@@ -54,8 +54,8 @@ export const modelTemplate = (modelName, fields) => {
 export const migrationTemplate = (modelName, options, fields) => {
   const { id, rememberToken, softDeletes, timestamps } = options;
   const spaces = " ".repeat(16);
-  const tableName = pluralize(modelName.toLowerCase());
-  const className = capitalize(tableName);
+  const tableName = pluralize(toSnakeCase(modelName));
+  const className = pluralize(modelName);
   let end = "";
 
   end = rememberToken || softDeletes || timestamps ? "\n" : "";

@@ -23,4 +23,27 @@ describe("migrationTemplate()", () => {
 
     expect(result).toMatchSnapshot();
   });
+
+  it("should returns created migration with multiple words table", () => {
+    const fields = [
+      {
+        name: "fullname",
+        type: "string"
+      },
+      {
+        name: "username",
+        type: "string"
+      }
+    ];
+    const options = {
+      id: true,
+      rememberToken: true,
+      softDeletes: true,
+      timestamps: true
+    };
+
+    const result = migrationTemplate("UserOrderNote", options, fields);
+
+    expect(result).toMatchSnapshot();
+  });
 });
