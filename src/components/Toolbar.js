@@ -25,6 +25,7 @@ import {
   addField,
   setAlert
 } from "../store/actions";
+import { toSnakeCase } from "../helpers/formatter";
 import { randomBetween } from "../helpers/math";
 import { modelTemplate, migrationTemplate } from "../helpers/template";
 
@@ -313,7 +314,7 @@ class Toolbar extends Component {
         entry.getDirectory(project.name, { create: true }, entry => {
           tables.forEach(table => {
             const modelName = table.name;
-            const tableName = pluralize(modelName.toLowerCase());
+            const tableName = pluralize(toSnakeCase(modelName));
 
             const date = format(new Date(), "YYYY_MM_DD_HHmmss");
             const modelFilename = `${modelName}.php`;
