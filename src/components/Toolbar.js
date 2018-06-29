@@ -13,6 +13,8 @@ import {
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
+import pluralize from "pluralize";
+import { format } from "date-fns";
 
 import {
   setProject,
@@ -24,6 +26,7 @@ import {
   setAlert
 } from "../store/actions";
 import { randomBetween } from "../helpers/math";
+import { modelTemplate, migrationTemplate } from "../helpers/template";
 
 import Tool from "./Tool";
 
@@ -54,6 +57,7 @@ class Toolbar extends Component {
     this.openProject = this.openProject.bind(this);
     this.saveProject = this.saveProject.bind(this);
     this.addTable = this.addTable.bind(this);
+    this.export = this.export.bind(this);
   }
 
   /**
@@ -271,6 +275,82 @@ class Toolbar extends Component {
     createField(newField);
   }
 
+  /**
+   * Export to Laravel model and migration
+   *
+   * @memberof Toolbar
+   */
+  export() {
+    const { project, tables, fields, showAlert } = this.props;
+    const dataType = { type: "application/json" };
+    const options = { type: "openDirectory" };
+
+    const byTable = table => field => field.tableID === table.id;
+    const createFolder = (entry, name, callback) => {
+      entry.getDirectory(name, { create: true }, callback);
+    };
+    const createFile = (entry, options) => {
+      entry.getFile(options.name, { create: true }, entry => {
+        const blob = new Blob([options.data], dataType);
+
+        entry.createWriter(writer => {
+          writer.onerror = error => {
+            console.error(error);
+            showAlert({
+              isOpen: true,
+              message: "Failed to create file",
+              iconColor: "#ff5252"
+            });
+          };
+
+          writer.write(blob);
+        });
+      });
+    };
+
+    const exportFile = entry => {
+      chrome.fileSystem.getWritableEntry(entry, entry => {
+        entry.getDirectory(project.name, { create: true }, entry => {
+          tables.forEach(table => {
+            const modelName = table.name;
+            const tableName = pluralize(modelName.toLowerCase());
+
+            const date = format(new Date(), "YYYY_MM_DD_HHmmss");
+            const modelFilename = `${modelName}.php`;
+            const migrationFilename = `${date}_create_${tableName}_table.php`;
+
+            const tableFields = fields.filter(byTable(table));
+            const fillable = tableFields.map(item => item.name);
+            const model = modelTemplate(modelName, fillable);
+            const migration = migrationTemplate(
+              modelName,
+              table.options,
+              tableFields
+            );
+
+            createFolder(entry, "app", entry => {
+              createFile(entry, {
+                name: modelFilename,
+                data: model
+              });
+            });
+
+            createFolder(entry, "database", entry => {
+              createFolder(entry, "migrations", entry => {
+                createFile(entry, {
+                  name: migrationFilename,
+                  data: migration
+                });
+              });
+            });
+          });
+        });
+      });
+    };
+
+    chrome.fileSystem.chooseEntry(options, exportFile);
+  }
+
   render() {
     const { project } = this.props;
 
@@ -289,7 +369,12 @@ class Toolbar extends Component {
           onClick={this.saveProject}
         />
         <Separator />
-        <Tool tooltip="Export" icon={MdArchive} isDisabled={!project} />
+        <Tool
+          tooltip="Export"
+          icon={MdArchive}
+          isDisabled={!project}
+          onClick={this.export}
+        />
         <Separator />
         <Tool
           tooltip="Add Table"
