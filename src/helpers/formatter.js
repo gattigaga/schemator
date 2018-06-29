@@ -30,3 +30,21 @@ export const convertType = type => {
 
   return result;
 };
+
+/**
+ * Convert from Camel Case string to Snake Case
+ *
+ * @param {string} words Camel case string
+ * @returns {string} Snake case string
+ */
+export const toSnakeCase = words => {
+  const replacer = $1 => "_" + $1.toLowerCase();
+  const result = words.replace(/([A-Z])/g, replacer);
+  const pattern = /_*/;
+
+  if (pattern.test(result)) {
+    return result.slice(1);
+  }
+
+  return result;
+};
