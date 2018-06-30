@@ -391,7 +391,7 @@ class Toolbar extends Component {
             const modelName = table.name;
             const tableName = pluralize(toSnakeCase(modelName));
 
-            const date = format(new Date(), "YYYY_MM_DD_HHmmss");
+            const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
             const modelFilename = `${modelName}.php`;
             const migrationFilename = `${date}_create_${tableName}_table.php`;
 
