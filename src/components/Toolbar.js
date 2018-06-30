@@ -68,7 +68,13 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   newProject() {
-    const { applyProject, showAlert } = this.props;
+    const {
+      applyProject,
+      applyTables,
+      applyFields,
+      applyRelations,
+      showAlert
+    } = this.props;
 
     const options = {
       type: "saveFile",
@@ -85,12 +91,54 @@ class Toolbar extends Component {
     const saveFile = entry => {
       this.fileEntry = entry;
 
-      const data = {
-        project: {
-          name: entry.name.replace(".json", ""),
+      const project = {
+        name: entry.name.replace(".json", ""),
+        timestamp: Date.now()
+      };
+
+      const tables = [
+        {
+          id: uuid(),
+          name: "User",
           timestamp: Date.now(),
-          isModified: false
+          position: {
+            x: 128,
+            y: 128
+          },
+          options: {
+            id: true,
+            rememberToken: true,
+            softDeletes: false,
+            timestamps: true
+          }
         }
+      ];
+
+      const fields = [
+        {
+          id: uuid(),
+          tableID: tables[0].id,
+          name: "name",
+          type: "STRING"
+        },
+        {
+          id: uuid(),
+          tableID: tables[0].id,
+          name: "email",
+          type: "STRING"
+        },
+        {
+          id: uuid(),
+          tableID: tables[0].id,
+          name: "password",
+          type: "STRING"
+        }
+      ];
+
+      const data = {
+        project,
+        tables,
+        fields
       };
 
       entry.createWriter(writer => {
@@ -104,7 +152,10 @@ class Toolbar extends Component {
             this.truncate(blob.size);
           }
 
-          applyProject(data.project);
+          applyProject({ ...project, isModified: false });
+          applyTables(tables);
+          applyFields(fields);
+          applyRelations([]);
         };
 
         writer.onerror = error => {
