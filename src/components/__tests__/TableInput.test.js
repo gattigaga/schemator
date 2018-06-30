@@ -29,6 +29,15 @@ describe("TableInput", () => {
     expect(toJSON(wrapper)).toMatchSnapshot();
   });
 
+  it("should renders with disabled selection", () => {
+    const { wrapper } = setup({
+      name: "user_id",
+      type: "INTEGER"
+    });
+
+    expect(wrapper.find(Select).props().disabled).toEqual(true);
+  });
+
   it("should calls 'onClickRemove' while Remove button was clicked", () => {
     const { wrapper, props } = setup();
 

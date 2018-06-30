@@ -13,8 +13,17 @@ storiesOf("TableInput", module)
   .addDecorator(story => <Container>{story()}</Container>)
   .add("default", () => (
     <TableInput
-      name="id"
-      type="BIGINT"
+      name="username"
+      type="STRING"
+      onClickRemove={action("remove clicked")}
+      onChangeName={action("name changed")}
+      onChangeType={action("type changed")}
+    />
+  ))
+  .add("with selection disabled", () => (
+    <TableInput
+      name="user_id"
+      type="INTEGER"
       onClickRemove={action("remove clicked")}
       onChangeName={action("name changed")}
       onChangeType={action("type changed")}

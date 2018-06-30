@@ -23,6 +23,13 @@ export const Select = styled.select`
   outline: none;
   width: 100%;
   height: 24px;
+  cursor: pointer;
+
+  &:disabled {
+    color: #777;
+    border-color: #333;
+    cursor: auto;
+  }
 `;
 
 export const Input = styled.input`
@@ -90,7 +97,11 @@ const TableInput = ({
         <Input type="text" value={name} onChange={onChangeName} />
       </Column>
       <Column>
-        <Select value={type} onChange={onChangeType}>
+        <Select
+          value={type}
+          onChange={onChangeType}
+          disabled={name.includes("_id")}
+        >
           {types.map((type, index) => (
             <option key={index} value={type}>
               {type}
@@ -109,6 +120,10 @@ TableInput.propTypes = {
   onClickRemove: PropTypes.func,
   onChangeName: PropTypes.func,
   onChangeType: PropTypes.func
+};
+
+TableInput.defaultProps = {
+  name: "field"
 };
 
 export default TableInput;

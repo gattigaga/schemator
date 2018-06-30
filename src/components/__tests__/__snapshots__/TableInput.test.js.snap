@@ -11,6 +11,7 @@ exports[`TableInput should renders default 1`] = `
   </styled.div>
   <styled.div>
     <styled.select
+      disabled={false}
       onChange={[Function]}
       value="STRING"
     >
