@@ -75,6 +75,16 @@ export const migrationTemplate = (modelName, options, fields) => {
 
     const newLine = softDeletes || timestamps ? "\n" : "";
     const type = convertType(field.type);
+
+    if (field.name.includes("_id")) {
+      const singularTable = field.name.replace("_id", "");
+      const tableName = pluralize(singularTable);
+
+      return `${tabs}$table->foreign('${
+        field.name
+      }')->references('id')->on('${tableName}');${newLine}`;
+    }
+
     return `${tabs}$table->${type}('${field.name}');${newLine}`;
   };
   const mainFields = fields.map(createField);
