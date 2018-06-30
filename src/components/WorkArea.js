@@ -15,7 +15,8 @@ import {
   addRelation,
   removeRelation,
   removeTable,
-  addTable
+  addTable,
+  setProject
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
 import TableBox from "./TableBox";
@@ -259,7 +260,7 @@ class WorkArea extends Component {
   addField(tableID) {
     this.activeTable = null;
 
-    const { createField } = this.props;
+    const { applyProject, createField } = this.props;
     const data = {
       tableID,
       id: uuid(),
@@ -267,6 +268,7 @@ class WorkArea extends Component {
       type: "INTEGER"
     };
 
+    applyProject({ isModified: true });
     createField(data);
   }
 
@@ -281,6 +283,7 @@ class WorkArea extends Component {
       tables,
       fields,
       relations,
+      applyProject,
       modifyField,
       createRelation,
       deleteRelation
@@ -319,6 +322,7 @@ class WorkArea extends Component {
         [type]: value
       };
 
+      applyProject({ isModified: true });
       modifyField(fieldID, data);
     };
   }
@@ -330,7 +334,13 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   removeField(fieldID) {
-    const { fields, relations, deleteField, deleteRelation } = this.props;
+    const {
+      fields,
+      relations,
+      applyProject,
+      deleteField,
+      deleteRelation
+    } = this.props;
     const field = fields.find(item => item.id === fieldID);
     const relation = relations.find(item => item.fieldID === fieldID);
 
@@ -338,6 +348,7 @@ class WorkArea extends Component {
       deleteRelation(relation.id);
     }
 
+    applyProject({ isModified: true });
     deleteField(fieldID);
   }
 
@@ -348,7 +359,7 @@ class WorkArea extends Component {
    */
   addTable() {
     const { mouse } = this.state;
-    const { createTable, createField, tables } = this.props;
+    const { applyProject, createTable, createField, tables } = this.props;
     const positions = tables.map(item => item.position);
     let newPosition;
 
@@ -385,6 +396,7 @@ class WorkArea extends Component {
       type: "INTEGER"
     };
 
+    applyProject({ isModified: true });
     createTable(newTable);
     createField(newField);
   }
@@ -399,6 +411,7 @@ class WorkArea extends Component {
     const {
       relations,
       fields,
+      applyProject,
       deleteTable,
       deleteField,
       deleteRelation
@@ -417,6 +430,7 @@ class WorkArea extends Component {
       .map(getID)
       .forEach(deleteField);
 
+    applyProject({ isModified: true });
     deleteTable(tableID);
 
     this.tables = this.tables.filter(item => item.id !== tableID);
@@ -439,6 +453,7 @@ class WorkArea extends Component {
     const {
       fields,
       relations,
+      applyProject,
       modifyTable,
       deleteRelation,
       createRelation
@@ -474,6 +489,7 @@ class WorkArea extends Component {
         name: newTableName
       };
 
+      applyProject({ isModified: true });
       modifyTable(tableID, data);
     };
   }
@@ -486,7 +502,7 @@ class WorkArea extends Component {
    */
   updateTablePosition(tableID) {
     const { offset } = this.state;
-    const { modifyTable } = this.props;
+    const { applyProject, modifyTable } = this.props;
 
     return event => {
       if (this.activeTable) {
@@ -500,6 +516,7 @@ class WorkArea extends Component {
         activeTableDOM.setAttributeNS(null, "x", x);
         activeTableDOM.setAttributeNS(null, "y", y);
 
+        applyProject({ isModified: true });
         modifyTable(tableID, {
           position: { x, y }
         });
@@ -514,10 +531,11 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   updateTableOptions(tableID) {
-    const { tables, modifyTable } = this.props;
+    const { tables, applyProject, modifyTable } = this.props;
     const table = tables.find(item => item.id === tableID);
 
     return (event, name) => {
+      applyProject({ isModified: true });
       modifyTable(tableID, {
         options: {
           ...table.options,
@@ -640,6 +658,7 @@ WorkArea.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
+  applyProject: PropTypes.func,
   createTable: PropTypes.func,
   modifyTable: PropTypes.func,
   deleteTable: PropTypes.func,
@@ -653,6 +672,7 @@ WorkArea.propTypes = {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
+  applyProject: project => dispatch(setProject(project)),
   createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
   createTable: table => dispatch(addTable(table)),

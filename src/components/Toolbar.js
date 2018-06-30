@@ -88,7 +88,8 @@ class Toolbar extends Component {
       const data = {
         project: {
           name: entry.name.replace(".json", ""),
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          isModified: false
         }
       };
 
@@ -195,13 +196,21 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   saveProject() {
-    const { project, tables, fields, relations, showAlert } = this.props;
-
-    const data = {
+    const {
       project,
       tables,
       fields,
-      relations
+      relations,
+      applyProject,
+      showAlert
+    } = this.props;
+    const { isModified, ...newProject } = project;
+
+    const data = {
+      tables,
+      fields,
+      relations,
+      project: newProject
     };
 
     this.fileEntry.createWriter(writer => {
@@ -214,6 +223,8 @@ class Toolbar extends Component {
           truncated = true;
           this.truncate(blob.size);
         }
+
+        applyProject({ isModified: false });
       };
 
       writer.onerror = error => {
@@ -235,7 +246,7 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   addTable() {
-    const { createTable, createField, tables } = this.props;
+    const { applyProject, createTable, createField, tables } = this.props;
     const positions = tables.map(item => item.position);
     const appWindow = chrome.app.window.get("main");
     let newPosition;
@@ -252,6 +263,10 @@ class Toolbar extends Component {
         break;
       }
     }
+
+    const project = {
+      isModified: true
+    };
 
     const newTable = {
       id: uuid(),
@@ -273,6 +288,7 @@ class Toolbar extends Component {
       type: "INTEGER"
     };
 
+    applyProject(project);
     createTable(newTable);
     createField(newField);
   }

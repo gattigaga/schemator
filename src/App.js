@@ -23,7 +23,10 @@ class App extends Component {
       <Container>
         {project && (
           <Helmet>
-            <title>Schemator - {project.name}</title>
+            <title>
+              Schemator {project.name ? `- ${project.name}` : ""}{" "}
+              {project.isModified ? "- Modified" : ""}
+            </title>
           </Helmet>
         )}
         <Toolbar />
