@@ -9,7 +9,8 @@ import {
   MdFolderOpen,
   MdArchive,
   MdAddCircle,
-  MdHelp
+  MdHelp,
+  MdCheckCircle
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
@@ -292,9 +293,17 @@ class Toolbar extends Component {
     };
     const createFile = (entry, options) => {
       entry.getFile(options.name, { create: true }, entry => {
+        let truncated = false;
         const blob = new Blob([options.data], dataType);
 
         entry.createWriter(writer => {
+          writer.onwriteend = () => {
+            if (!truncated) {
+              truncated = true;
+              this.truncate(blob.size);
+            }
+          };
+
           writer.onerror = error => {
             console.error(error);
             showAlert({
@@ -308,11 +317,10 @@ class Toolbar extends Component {
         });
       });
     };
-
     const exportFile = entry => {
       chrome.fileSystem.getWritableEntry(entry, entry => {
         entry.getDirectory(project.name, { create: true }, entry => {
-          tables.forEach(table => {
+          tables.forEach((table, index) => {
             const modelName = table.name;
             const tableName = pluralize(toSnakeCase(modelName));
 
@@ -344,6 +352,15 @@ class Toolbar extends Component {
                 });
               });
             });
+
+            if (index === tables.length - 1) {
+              showAlert({
+                isOpen: true,
+                icon: MdCheckCircle,
+                message: "Project successfully exported",
+                iconColor: "#34ace0"
+              });
+            }
           });
         });
       });
