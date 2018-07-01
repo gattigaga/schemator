@@ -74,6 +74,10 @@ class WorkArea extends Component {
     this.createContextMenus();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.handleTableRefs(nextProps);
+  }
+
   /**
    * Create all context menus
    *
@@ -102,7 +106,13 @@ class WorkArea extends Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
+  /**
+   * Handle table refs to make it synchronize with table list
+   *
+   * @param {object} nextProps
+   * @memberof WorkArea
+   */
+  handleTableRefs(nextProps) {
     const getID = item => item.id;
     const newData = items => id => !items.includes(id);
 
@@ -547,6 +557,7 @@ class WorkArea extends Component {
 
   render() {
     const { project, tables, fields, relations } = this.props;
+    const scale = project ? project.zoom / 100 : 1;
     const byTableID = tableID => item => item.tableID === tableID;
     const byID = itemID => item => item.id === itemID;
 
@@ -577,76 +588,78 @@ class WorkArea extends Component {
             })
           }
         >
-          {relations.map(relation => {
-            const { fieldID, fromTableID, toTableID } = relation;
-            const fieldIndex = fields
-              .filter(byTableID(fromTableID))
-              .findIndex(byID(fieldID));
-            const fromTable = tables.find(byID(fromTableID));
-            const toTable = tables.find(byID(toTableID));
+          <g transform={`scale(${scale})`}>
+            {relations.map(relation => {
+              const { fieldID, fromTableID, toTableID } = relation;
+              const fieldIndex = fields
+                .filter(byTableID(fromTableID))
+                .findIndex(byID(fieldID));
+              const fromTable = tables.find(byID(fromTableID));
+              const toTable = tables.find(byID(toTableID));
 
-            if (fromTable && toTable) {
-              const points = this.getPathPoints(
-                fromTable.position,
-                toTable.position,
-                fieldIndex
+              if (fromTable && toTable) {
+                const points = this.getPathPoints(
+                  fromTable.position,
+                  toTable.position,
+                  fieldIndex
+                );
+                return <RelationLine key={relation.id} d={points} />;
+              }
+
+              return null;
+            })}
+            {tables.map(table => {
+              const currentFields = fields.filter(byTableID(table.id));
+              const { ref } = this.tables.find(byID(table.id));
+
+              return (
+                <TableBox
+                  key={table.id}
+                  ref={ref}
+                  {...table}
+                  fields={currentFields}
+                  options={table.options}
+                  onMouseDown={this.saveTableOffset(table.id)}
+                  onMouseMove={this.updateTablePosition(table.id)}
+                  onMouseEnter={() => {
+                    chrome.contextMenus.update("add-table", {
+                      visible: false
+                    });
+
+                    chrome.contextMenus.update("remove-table", {
+                      visible: true,
+                      onclick: () => this.removeTable(table.id)
+                    });
+
+                    chrome.contextMenus.update("add-field", {
+                      visible: true,
+                      onclick: () => this.addField(table.id)
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    chrome.contextMenus.update("add-table", {
+                      visible: true,
+                      onclick: this.addTable
+                    });
+
+                    chrome.contextMenus.update("remove-table", {
+                      visible: false
+                    });
+
+                    chrome.contextMenus.update("add-field", {
+                      visible: false
+                    });
+                  }}
+                  onClickAddField={() => this.addField(table.id)}
+                  onClickRemoveField={this.removeField}
+                  onChangeFieldName={this.updateField("name")}
+                  onChangeFieldType={this.updateField("type")}
+                  onChangeName={this.updateTableName(table.id)}
+                  onChangeOptions={this.updateTableOptions(table.id)}
+                />
               );
-              return <RelationLine key={relation.id} d={points} />;
-            }
-
-            return null;
-          })}
-          {tables.map(table => {
-            const currentFields = fields.filter(byTableID(table.id));
-            const { ref } = this.tables.find(byID(table.id));
-
-            return (
-              <TableBox
-                key={table.id}
-                ref={ref}
-                {...table}
-                fields={currentFields}
-                options={table.options}
-                onMouseDown={this.saveTableOffset(table.id)}
-                onMouseMove={this.updateTablePosition(table.id)}
-                onMouseEnter={() => {
-                  chrome.contextMenus.update("add-table", {
-                    visible: false
-                  });
-
-                  chrome.contextMenus.update("remove-table", {
-                    visible: true,
-                    onclick: () => this.removeTable(table.id)
-                  });
-
-                  chrome.contextMenus.update("add-field", {
-                    visible: true,
-                    onclick: () => this.addField(table.id)
-                  });
-                }}
-                onMouseLeave={() => {
-                  chrome.contextMenus.update("add-table", {
-                    visible: true,
-                    onclick: this.addTable
-                  });
-
-                  chrome.contextMenus.update("remove-table", {
-                    visible: false
-                  });
-
-                  chrome.contextMenus.update("add-field", {
-                    visible: false
-                  });
-                }}
-                onClickAddField={() => this.addField(table.id)}
-                onClickRemoveField={this.removeField}
-                onChangeFieldName={this.updateField("name")}
-                onChangeFieldType={this.updateField("type")}
-                onChangeName={this.updateTableName(table.id)}
-                onChangeOptions={this.updateTableOptions(table.id)}
-              />
-            );
-          })}
+            })}
+          </g>
         </Area>
       </Container>
     );

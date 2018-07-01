@@ -31,6 +31,7 @@ import { randomBetween } from "../helpers/math";
 import { modelTemplate, migrationTemplate } from "../helpers/template";
 
 import Tool from "./Tool";
+import ToolZoom from "./ToolZoom";
 
 const Container = styled.div`
   width: 100%;
@@ -60,6 +61,7 @@ class Toolbar extends Component {
     this.saveProject = this.saveProject.bind(this);
     this.addTable = this.addTable.bind(this);
     this.export = this.export.bind(this);
+    this.zoom = this.zoom.bind(this);
   }
 
   /**
@@ -93,7 +95,8 @@ class Toolbar extends Component {
 
       const project = {
         name: entry.name.replace(".json", ""),
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        zoom: 100
       };
 
       const tables = [
@@ -208,7 +211,10 @@ class Toolbar extends Component {
         reader.onloadend = function(e) {
           const data = JSON.parse(this.result);
 
-          applyProject(data.project);
+          applyProject({
+            ...data.project,
+            zoom: data.project.zoom || 100
+          });
 
           if (data.tables) {
             applyTables(data.tables);
@@ -436,6 +442,19 @@ class Toolbar extends Component {
     chrome.fileSystem.chooseEntry(options, exportFile);
   }
 
+  /**
+   * Zoom in or zoom out WorkArea
+   *
+   * @param {object} event DOM event
+   * @memberof Toolbar
+   */
+  zoom(event) {
+    const { applyProject } = this.props;
+    const { value } = event.target;
+
+    applyProject({ zoom: value });
+  }
+
   render() {
     const { project } = this.props;
 
@@ -466,6 +485,11 @@ class Toolbar extends Component {
           icon={MdAddCircle}
           isDisabled={!project}
           onClick={this.addTable}
+        />
+        <ToolZoom
+          value={project ? project.zoom : 100}
+          isDisabled={!project}
+          onChange={this.zoom}
         />
         <Separator />
         <Tool tooltip="Help" icon={MdHelp} />
