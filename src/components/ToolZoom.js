@@ -22,13 +22,16 @@ const Container = styled.div`
 export const Select = styled.select`
   width: 64px;
   height: 32px;
-  border: 1px solid white;
-  box-sizing: border-box;
   border-radius: 4px;
-  background: #111;
-  color: ${({ disabled }) => (disabled ? "#777" : "white")};
+  border: 0px;
+  background: #444;
+  color: white;
   outline: none;
   cursor: pointer;
+
+  &:disabled {
+    color: #777;
+  }
 `;
 
 const ToolZoom = ({ value, tooltip, isDisabled, onChange }) => {
