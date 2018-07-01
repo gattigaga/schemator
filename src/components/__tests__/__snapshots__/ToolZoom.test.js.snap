@@ -65,41 +65,6 @@ exports[`ToolZoom should renders default 1`] = `
       100
       %
     </option>
-    <option
-      key="8"
-      value={110}
-    >
-      110
-      %
-    </option>
-    <option
-      key="9"
-      value={125}
-    >
-      125
-      %
-    </option>
-    <option
-      key="10"
-      value={150}
-    >
-      150
-      %
-    </option>
-    <option
-      key="11"
-      value={175}
-    >
-      175
-      %
-    </option>
-    <option
-      key="12"
-      value={200}
-    >
-      200
-      %
-    </option>
   </styled.select>
 </styled.div>
 `;

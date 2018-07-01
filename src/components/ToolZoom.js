@@ -35,7 +35,7 @@ export const Select = styled.select`
 `;
 
 const ToolZoom = ({ value, tooltip, isDisabled, onChange }) => {
-  const items = [25, 33, 50, 67, 75, 80, 90, 100, 110, 125, 150, 175, 200];
+  const items = [25, 33, 50, 67, 75, 80, 90, 100];
 
   return (
     <Container>
