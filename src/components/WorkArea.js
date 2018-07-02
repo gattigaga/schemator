@@ -67,6 +67,7 @@ class WorkArea extends Component {
     this.updateTableName = this.updateTableName.bind(this);
     this.updateTablePosition = this.updateTablePosition.bind(this);
     this.updateTableOptions = this.updateTableOptions.bind(this);
+    this.zoom = this.zoom.bind(this);
   }
 
   componentDidMount() {
@@ -555,6 +556,33 @@ class WorkArea extends Component {
     };
   }
 
+  /**
+   * Handle zoom from mouse wheel offset
+   *
+   * @param {object} event DOM event
+   * @memberof WorkArea
+   */
+  zoom(event) {
+    const { project, applyProject } = this.props;
+    const { deltaY, ctrlKey } = event;
+
+    if (project && ctrlKey) {
+      const zoomValues = [25, 33, 50, 67, 75, 80, 90, 100];
+      const totalValues = zoomValues.length;
+      const { zoom } = project;
+      const offset = deltaY > 0 ? -1 : 1;
+      const index = zoomValues.findIndex(item => item === zoom);
+      const newIndex = index + offset;
+      const isOutOfBound = newIndex < 0 || newIndex > totalValues - 1;
+
+      if (!isOutOfBound) {
+        const newZoom = zoomValues[newIndex];
+
+        applyProject({ zoom: newZoom });
+      }
+    }
+  }
+
   render() {
     const { project, tables, fields, relations } = this.props;
     const scale = project ? project.zoom / 100 : 1;
@@ -565,6 +593,7 @@ class WorkArea extends Component {
       <Container>
         <Area
           innerRef={this.area}
+          onWheel={this.zoom}
           onMouseUp={() => {
             this.activeTable = null;
           }}
