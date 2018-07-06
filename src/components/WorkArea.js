@@ -23,12 +23,14 @@ import TableBox from "./TableBox";
 
 const Container = styled.div`
   flex: 1;
-  display: flex;
+  overflow: scroll;
 `;
 
 const Area = styled.svg`
-  flex: 1;
+  width: 100%;
+  height: 100%;
   background: #333;
+  transform-origin: top left;
 `;
 
 const RelationLine = styled.path`
@@ -56,6 +58,7 @@ class WorkArea extends Component {
     this.activeTable = null;
     this.tables = [];
 
+    this.createLines = this.createLines.bind(this);
     this.getPathPoints = this.getPathPoints.bind(this);
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
@@ -77,6 +80,7 @@ class WorkArea extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.handleTableRefs(nextProps);
+    this.setAreaSize(nextProps);
   }
 
   /**
@@ -135,6 +139,26 @@ class WorkArea extends Component {
 
     if (removedTables.length > 0) {
       this.tables = this.tables.filter(newData(removedTables));
+    }
+  }
+
+  /**
+   * Set default size of working area in 100%
+   *
+   * @param {object} nextProps
+   * @memberof WorkArea
+   */
+  setAreaSize(nextProps) {
+    const { project } = this.props;
+
+    if (nextProps.project !== project) {
+      const { innerBounds } = chrome.app.window.current();
+      const area = this.area.current;
+      const width = (innerBounds.width / 25) * 100;
+      const height = ((innerBounds.height - 48) / 25) * 100;
+
+      area.style.width = `${width}px`;
+      area.style.height = `${height}px`;
     }
   }
 
@@ -228,10 +252,14 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   createLines() {
-    const parent = d3.select(this.area.current);
-    const gap = 16;
-    const totalHorizontalLines = parseInt(this.area.current.clientHeight / gap);
-    const totalVerticalLines = parseInt(this.area.current.clientWidth / gap);
+    const area = this.area.current;
+    const parent = d3.select(area);
+    const gap = 32;
+    const { innerBounds } = chrome.app.window.current();
+    const width = (innerBounds.width / 25) * 100;
+    const height = ((innerBounds.height - 48) / 25) * 100;
+    const totalHorizontalLines = parseInt(width / gap);
+    const totalVerticalLines = parseInt(height / gap);
 
     [...Array(totalHorizontalLines)].forEach((_, index) => {
       const y = (index + 1) * gap;
@@ -585,7 +613,7 @@ class WorkArea extends Component {
 
   render() {
     const { project, tables, fields, relations } = this.props;
-    const scale = project ? project.zoom / 100 : 1;
+    const zoom = project ? project.zoom / 100 : 1;
     const byTableID = tableID => item => item.tableID === tableID;
     const byID = itemID => item => item.id === itemID;
 
@@ -593,6 +621,7 @@ class WorkArea extends Component {
       <Container>
         <Area
           innerRef={this.area}
+          style={{ zoom }}
           onWheel={this.zoom}
           onMouseUp={() => {
             this.activeTable = null;
@@ -617,7 +646,7 @@ class WorkArea extends Component {
             })
           }
         >
-          <g transform={`scale(${scale})`}>
+          <g>
             {relations.map(relation => {
               const { fieldID, fromTableID, toTableID } = relation;
               const fieldIndex = fields
