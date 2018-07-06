@@ -3,7 +3,6 @@
 import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import * as d3 from "d3";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 
@@ -39,6 +38,12 @@ const RelationLine = styled.path`
   stroke-width: 2px;
 `;
 
+const BGLine = styled.line`
+  stroke: #3a3a3a;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+`;
+
 class WorkArea extends Component {
   constructor(props) {
     super(props);
@@ -58,7 +63,6 @@ class WorkArea extends Component {
     this.activeTable = null;
     this.tables = [];
 
-    this.createLines = this.createLines.bind(this);
     this.getPathPoints = this.getPathPoints.bind(this);
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
@@ -74,7 +78,6 @@ class WorkArea extends Component {
   }
 
   componentDidMount() {
-    this.createLines();
     this.createContextMenus();
   }
 
@@ -244,50 +247,6 @@ class WorkArea extends Component {
 
       this.setState({ offset });
     };
-  }
-
-  /**
-   * Create guide lines
-   *
-   * @memberof WorkArea
-   */
-  createLines() {
-    const area = this.area.current;
-    const parent = d3.select(area);
-    const gap = 32;
-    const { innerBounds } = chrome.app.window.current();
-    const width = (innerBounds.width / 25) * 100;
-    const height = ((innerBounds.height - 48) / 25) * 100;
-    const totalHorizontalLines = parseInt(width / gap);
-    const totalVerticalLines = parseInt(height / gap);
-
-    [...Array(totalHorizontalLines)].forEach((_, index) => {
-      const y = (index + 1) * gap;
-
-      parent
-        .insert("line", "*")
-        .attr("x1", 0)
-        .attr("y1", y)
-        .attr("x2", "100%")
-        .attr("y2", y)
-        .attr("stroke", "#3a3a3a")
-        .attr("stroke-width", 1)
-        .attr("shape-rendering", "crispEdges");
-    });
-
-    [...Array(totalVerticalLines)].forEach((_, index) => {
-      const x = (index + 1) * gap;
-
-      parent
-        .insert("line", "*")
-        .attr("x1", x)
-        .attr("y1", 0)
-        .attr("x2", x)
-        .attr("y2", "100%")
-        .attr("stroke", "#3a3a3a")
-        .attr("stroke-width", 1)
-        .attr("shape-rendering", "crispEdges");
-    });
   }
 
   /**
@@ -614,6 +573,15 @@ class WorkArea extends Component {
   render() {
     const { project, tables, fields, relations } = this.props;
     const zoom = project ? project.zoom / 100 : 1;
+    const area = this.area.current;
+    const areaWidth = area ? area.clientWidth : 1366;
+    const areaHeight = area ? area.clientHeight : 696;
+    const gap = 32;
+    const width = (areaWidth / 25) * 100;
+    const height = (areaHeight / 25) * 100;
+    const totalHorizontalLines = parseInt(width / gap);
+    const totalVerticalLines = parseInt(height / gap);
+
     const byTableID = tableID => item => item.tableID === tableID;
     const byID = itemID => item => item.id === itemID;
 
@@ -646,6 +614,16 @@ class WorkArea extends Component {
             })
           }
         >
+          <g>
+            {[...Array(totalHorizontalLines)].map((_, index) => {
+              const y = (index + 1) * gap;
+              return <BGLine key={index} x1="0" y1={y} x2="100%" y2={y} />;
+            })}
+            {[...Array(totalVerticalLines)].map((_, index) => {
+              const x = (index + 1) * gap;
+              return <BGLine key={index} x1={x} y1="0" x2={x} y2="100%" />;
+            })}
+          </g>
           <g>
             {relations.map(relation => {
               const { fieldID, fromTableID, toTableID } = relation;
