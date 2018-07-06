@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "common-tags": "^1.8.0",
-    "d3": "^5.5.0",
     "date-fns": "^1.29.0",
     "normalize.css": "^8.0.0",
     "pluralize": "^7.0.0",
