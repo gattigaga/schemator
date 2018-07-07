@@ -15,6 +15,7 @@
     "128": "images/icon-128.png"
   },
   "permissions": [
+    "browser",
     "contextMenus",
     {
       "fileSystem": ["write", "directory"]

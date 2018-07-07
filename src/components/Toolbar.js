@@ -503,7 +503,15 @@ class Toolbar extends Component {
           onChange={this.zoom}
         />
         <Separator />
-        <Tool tooltip="Help" icon={MdHelp} />
+        <Tool
+          tooltip="Help"
+          icon={MdHelp}
+          onClick={() =>
+            chrome.browser.openTab({
+              url: "https://github.com/gattigaga/schemator"
+            })
+          }
+        />
       </Container>
     );
   }
