@@ -19,6 +19,7 @@ import {
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
 import TableBox from "./TableBox";
+import BGLines from "./BGLines";
 
 const Container = styled.div`
   flex: 1;
@@ -36,12 +37,6 @@ const RelationLine = styled.path`
   fill: none;
   stroke: white;
   stroke-width: 2px;
-`;
-
-const BGLine = styled.line`
-  stroke: #3a3a3a;
-  stroke-width: 1px;
-  shape-rendering: crispEdges;
 `;
 
 class WorkArea extends Component {
@@ -614,16 +609,11 @@ class WorkArea extends Component {
             })
           }
         >
-          <g>
-            {[...Array(totalHorizontalLines)].map((_, index) => {
-              const y = (index + 1) * gap;
-              return <BGLine key={index} x1="0" y1={y} x2="100%" y2={y} />;
-            })}
-            {[...Array(totalVerticalLines)].map((_, index) => {
-              const x = (index + 1) * gap;
-              return <BGLine key={index} x1={x} y1="0" x2={x} y2="100%" />;
-            })}
-          </g>
+          <BGLines
+            totalHorizontal={totalHorizontalLines}
+            totalVertical={totalVerticalLines}
+            gap={32}
+          />
           <g>
             {relations.map(relation => {
               const { fieldID, fromTableID, toTableID } = relation;
