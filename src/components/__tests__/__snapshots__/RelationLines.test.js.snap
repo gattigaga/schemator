@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelationLines should renders default 1`] = `
+<g>
+  <styled.path
+    d="
+          M566 877 
+          C484 877 
+            396 128 
+            332 128
+        "
+    key="5dde1193-9c8f-4c45-bb1e-58455cb2a7d8"
+  />
+</g>
+`;

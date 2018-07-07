@@ -20,6 +20,7 @@ import {
 import { capitalize } from "../helpers/formatter";
 import TableBox from "./TableBox";
 import BGLines from "./BGLines";
+import RelationLines from "./RelationLines";
 
 const Container = styled.div`
   flex: 1;
@@ -31,12 +32,6 @@ const Area = styled.svg`
   height: 100%;
   background: #333;
   transform-origin: top left;
-`;
-
-const RelationLine = styled.path`
-  fill: none;
-  stroke: white;
-  stroke-width: 2px;
 `;
 
 class WorkArea extends Component {
@@ -58,7 +53,6 @@ class WorkArea extends Component {
     this.activeTable = null;
     this.tables = [];
 
-    this.getPathPoints = this.getPathPoints.bind(this);
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
     this.addField = this.addField.bind(this);
@@ -158,50 +152,6 @@ class WorkArea extends Component {
       area.style.width = `${width}px`;
       area.style.height = `${height}px`;
     }
-  }
-
-  /**
-   * Get relation line path points
-   *
-   * @param {object} fromTablePosition Position of table which has foreign key
-   * @param {number} fromTablePosition.x Position X
-   * @param {number} fromTablePosition.y Position Y
-   * @param {object} toTablePosition Position of destination table
-   * @param {number} toTablePosition.x Position X
-   * @param {number} toTablePosition.y Position Y
-   * @param {number} fieldIndex Index of foreign key field relative from it's table
-   * @returns {string} Path points
-   * @memberof WorkArea
-   */
-  getPathPoints(fromTablePosition, toTablePosition, fieldIndex) {
-    const { x: fPosX, y: fPosY } = fromTablePosition;
-    const { x: tPosX, y: tPosY } = toTablePosition;
-    const headerHeight = 36;
-    const inputHeight = 38;
-    const tableWidth = 240;
-    const curvePoint = 64;
-    const halfHeaderHeight = headerHeight / 2;
-    const inputY = headerHeight + fieldIndex * inputHeight + inputHeight / 2;
-    const isFromTableInRight = fPosX > tPosX;
-    let points = "";
-
-    if (isFromTableInRight) {
-      points = `
-        M${fPosX + halfHeaderHeight} ${fPosY + inputY} 
-        C${fPosX - curvePoint} ${fPosY + inputY} 
-          ${tPosX + tableWidth + curvePoint} ${tPosY + halfHeaderHeight} 
-          ${tPosX + tableWidth} ${tPosY + halfHeaderHeight}
-      `;
-    } else {
-      points = `
-        M${fPosX + tableWidth - halfHeaderHeight} ${fPosY + inputY} 
-        C${fPosX + tableWidth + curvePoint} ${fPosY + inputY} 
-          ${tPosX - curvePoint} ${tPosY + halfHeaderHeight} 
-          ${tPosX + halfHeaderHeight} ${tPosY + halfHeaderHeight}
-      `;
-    }
-
-    return points;
   }
 
   /**
@@ -566,7 +516,7 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { project, tables, fields, relations } = this.props;
+    const { project, tables, fields } = this.props;
     const zoom = project ? project.zoom / 100 : 1;
     const area = this.area.current;
     const areaWidth = area ? area.clientWidth : 1366;
@@ -615,25 +565,7 @@ class WorkArea extends Component {
             gap={32}
           />
           <g>
-            {relations.map(relation => {
-              const { fieldID, fromTableID, toTableID } = relation;
-              const fieldIndex = fields
-                .filter(byTableID(fromTableID))
-                .findIndex(byID(fieldID));
-              const fromTable = tables.find(byID(fromTableID));
-              const toTable = tables.find(byID(toTableID));
-
-              if (fromTable && toTable) {
-                const points = this.getPathPoints(
-                  fromTable.position,
-                  toTable.position,
-                  fieldIndex
-                );
-                return <RelationLine key={relation.id} d={points} />;
-              }
-
-              return null;
-            })}
+            <RelationLines />
             {tables.map(table => {
               const currentFields = fields.filter(byTableID(table.id));
               const { ref } = this.tables.find(byID(table.id));
