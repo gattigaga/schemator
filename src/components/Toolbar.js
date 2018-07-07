@@ -208,27 +208,38 @@ class Toolbar extends Component {
       entry.file(function(file) {
         const reader = new FileReader();
 
-        reader.onloadend = function(e) {
-          const data = JSON.parse(this.result);
+        reader.onloadend = event => {
+          const { result } = event.target;
 
-          applyProject({
-            ...data.project,
-            zoom: data.project.zoom || 100
-          });
+          try {
+            const data = JSON.parse(result);
 
-          if (data.tables) {
-            applyTables(data.tables);
+            applyProject({
+              ...data.project,
+              zoom: data.project.zoom || 100
+            });
+
+            if (data.tables) {
+              applyTables(data.tables);
+            }
+
+            if (data.fields) {
+              applyFields(data.fields);
+            }
+
+            if (data.relations) {
+              applyRelations(data.relations);
+            }
+
+            chrome.contextMenus.update("add-table", { visible: true });
+          } catch (error) {
+            console.error(error);
+            showAlert({
+              isOpen: true,
+              message: "Failed to open a project",
+              iconColor: "#ff5252"
+            });
           }
-
-          if (data.fields) {
-            applyFields(data.fields);
-          }
-
-          if (data.relations) {
-            applyRelations(data.relations);
-          }
-
-          chrome.contextMenus.update("add-table", { visible: true });
         };
 
         reader.onerror = error => {
