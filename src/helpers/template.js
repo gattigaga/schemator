@@ -80,7 +80,9 @@ export const migrationTemplate = (modelName, options, fields) => {
       const singularTable = field.name.replace("_id", "");
       const tableName = pluralize(singularTable);
 
-      return `${tabs}$table->foreign('${
+      return `${tabs}$table->integer('${
+        field.name
+      }')->unsigned();\n${tabs}$table->foreign('${
         field.name
       }')->references('id')->on('${tableName}');${newLine}`;
     }
