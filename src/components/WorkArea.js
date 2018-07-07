@@ -18,9 +18,9 @@ import {
   setProject
 } from "../store/actions";
 import { capitalize } from "../helpers/formatter";
-import TableBox from "./TableBox";
 import BGLines from "./BGLines";
 import RelationLines from "./RelationLines";
+import TableList from "./TableList";
 
 const Container = styled.div`
   flex: 1;
@@ -173,25 +173,24 @@ class WorkArea extends Component {
   /**
    * Save table offset from the top left of object
    *
+   * @param {object} event DOM event
    * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  saveTableOffset(tableID) {
-    return event => {
-      const byID = item => item.id === tableID;
-      this.activeTable = this.tables.find(byID).ref;
+  saveTableOffset(event, tableID) {
+    const byID = item => item.id === tableID;
+    this.activeTable = this.tables.find(byID).ref;
 
-      const getAttributeNS = attr => {
-        const activeTableDOM = this.activeTable.current;
-        return parseFloat(activeTableDOM.getAttributeNS(null, attr));
-      };
-      const offset = this.getMousePosition(event);
-
-      offset.x -= getAttributeNS("x");
-      offset.y -= getAttributeNS("y");
-
-      this.setState({ offset });
+    const getAttributeNS = attr => {
+      const activeTableDOM = this.activeTable.current;
+      return parseFloat(activeTableDOM.getAttributeNS(null, attr));
     };
+    const offset = this.getMousePosition(event);
+
+    offset.x -= getAttributeNS("x");
+    offset.y -= getAttributeNS("y");
+
+    this.setState({ offset });
   }
 
   /**
@@ -218,10 +217,12 @@ class WorkArea extends Component {
   /**
    * Update field data inside table
    *
+   * @param {object} event DOM event
+   * @param {string} fieldID Field ID
    * @param {string} type Input type
    * @memberof WorkArea
    */
-  updateField(type) {
+  updateField(event, fieldID, type) {
     const {
       tables,
       fields,
@@ -231,43 +232,40 @@ class WorkArea extends Component {
       createRelation,
       deleteRelation
     } = this.props;
+    const { value } = event.target;
 
-    return (event, fieldID) => {
-      const { value } = event.target;
+    if (type === "name") {
+      const relation = relations.find(item => item.fieldID === fieldID);
 
-      if (type === "name") {
-        const relation = relations.find(item => item.fieldID === fieldID);
+      if (value.endsWith("_id")) {
+        const tableName = capitalize(value.replace("_id", ""));
+        const field = fields.find(item => item.id === fieldID);
+        const fromTable = tables.find(item => item.id === field.tableID);
+        const toTable = tables.find(item => item.name === tableName);
 
-        if (value.endsWith("_id")) {
-          const tableName = capitalize(value.replace("_id", ""));
-          const field = fields.find(item => item.id === fieldID);
-          const fromTable = tables.find(item => item.id === field.tableID);
-          const toTable = tables.find(item => item.name === tableName);
+        if (fromTable && toTable && !relation) {
+          const newRelation = {
+            id: uuid(),
+            fieldID: field.id,
+            fromTableID: fromTable.id,
+            toTableID: toTable.id
+          };
 
-          if (fromTable && toTable && !relation) {
-            const newRelation = {
-              id: uuid(),
-              fieldID: field.id,
-              fromTableID: fromTable.id,
-              toTableID: toTable.id
-            };
-
-            createRelation(newRelation);
-          }
-        } else {
-          if (relation) {
-            deleteRelation(relation.id);
-          }
+          createRelation(newRelation);
+        }
+      } else {
+        if (relation) {
+          deleteRelation(relation.id);
         }
       }
+    }
 
-      const data = {
-        [type]: value
-      };
-
-      applyProject({ isModified: true });
-      modifyField(fieldID, data);
+    const data = {
+      [type]: value
     };
+
+    applyProject({ isModified: true });
+    modifyField(fieldID, data);
   }
 
   /**
@@ -389,10 +387,11 @@ class WorkArea extends Component {
   /**
    * Update table name
    *
+   * @param {object} event DOM event
    * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  updateTableName(tableID) {
+  updateTableName(event, tableID) {
     const {
       fields,
       relations,
@@ -401,91 +400,87 @@ class WorkArea extends Component {
       deleteRelation,
       createRelation
     } = this.props;
+    const { value: newTableName } = event.target;
+    const fieldPrefix = newTableName.toLowerCase();
+    const foreignFields = fields.filter(
+      item => item.name === `${fieldPrefix}_id`
+    );
 
-    return event => {
-      const { value: newTableName } = event.target;
-      const fieldPrefix = newTableName.toLowerCase();
-      const foreignFields = fields.filter(
-        item => item.name === `${fieldPrefix}_id`
-      );
+    if (foreignFields.length > 0) {
+      foreignFields.forEach(field => {
+        const newRelation = {
+          id: uuid(),
+          fieldID: field.id,
+          fromTableID: field.tableID,
+          toTableID: tableID
+        };
 
-      if (foreignFields.length > 0) {
-        foreignFields.forEach(field => {
-          const newRelation = {
-            id: uuid(),
-            fieldID: field.id,
-            fromTableID: field.tableID,
-            toTableID: tableID
-          };
+        createRelation(newRelation);
+      });
+    } else {
+      const unneededRelations = relations
+        .filter(item => item.toTableID === tableID)
+        .map(item => item.id);
 
-          createRelation(newRelation);
-        });
-      } else {
-        const unneededRelations = relations
-          .filter(item => item.toTableID === tableID)
-          .map(item => item.id);
+      unneededRelations.forEach(deleteRelation);
+    }
 
-        unneededRelations.forEach(deleteRelation);
-      }
-
-      const data = {
-        name: newTableName
-      };
-
-      applyProject({ isModified: true });
-      modifyTable(tableID, data);
+    const data = {
+      name: newTableName
     };
+
+    applyProject({ isModified: true });
+    modifyTable(tableID, data);
   }
 
   /**
    * Update table position
    *
    * @param {object} event DOM event
+   * @param {string} tableID Table ID
    * @memberof WorkArea
    */
-  updateTablePosition(tableID) {
+  updateTablePosition(event, tableID) {
     const { offset } = this.state;
     const { applyProject, modifyTable } = this.props;
 
-    return event => {
-      if (this.activeTable) {
-        event.preventDefault();
+    if (this.activeTable) {
+      event.preventDefault();
 
-        const activeTableDOM = this.activeTable.current;
-        const coord = this.getMousePosition(event);
-        const x = coord.x - offset.x;
-        const y = coord.y - offset.y;
+      const activeTableDOM = this.activeTable.current;
+      const coord = this.getMousePosition(event);
+      const x = coord.x - offset.x;
+      const y = coord.y - offset.y;
 
-        activeTableDOM.setAttributeNS(null, "x", x);
-        activeTableDOM.setAttributeNS(null, "y", y);
+      activeTableDOM.setAttributeNS(null, "x", x);
+      activeTableDOM.setAttributeNS(null, "y", y);
 
-        applyProject({ isModified: true });
-        modifyTable(tableID, {
-          position: { x, y }
-        });
-      }
-    };
+      applyProject({ isModified: true });
+      modifyTable(tableID, {
+        position: { x, y }
+      });
+    }
   }
 
   /**
    * Update table options like id, rememberToken, etc
    *
+   * @param {object} event DOM event
    * @param {number} tableID Table ID
+   * @param {string} name Option name
    * @memberof WorkArea
    */
-  updateTableOptions(tableID) {
+  updateTableOptions(event, tableID, name) {
     const { tables, applyProject, modifyTable } = this.props;
     const table = tables.find(item => item.id === tableID);
 
-    return (event, name) => {
-      applyProject({ isModified: true });
-      modifyTable(tableID, {
-        options: {
-          ...table.options,
-          [name]: event.target.checked
-        }
-      });
-    };
+    applyProject({ isModified: true });
+    modifyTable(tableID, {
+      options: {
+        ...table.options,
+        [name]: event.target.checked
+      }
+    });
   }
 
   /**
@@ -527,9 +522,6 @@ class WorkArea extends Component {
     const totalHorizontalLines = parseInt(width / gap);
     const totalVerticalLines = parseInt(height / gap);
 
-    const byTableID = tableID => item => item.tableID === tableID;
-    const byID = itemID => item => item.id === itemID;
-
     return (
       <Container isScrollable={!!project}>
         <Area
@@ -566,57 +558,47 @@ class WorkArea extends Component {
           />
           <g>
             <RelationLines />
-            {tables.map(table => {
-              const currentFields = fields.filter(byTableID(table.id));
-              const { ref } = this.tables.find(byID(table.id));
+            <TableList
+              tables={tables}
+              fields={fields}
+              tableRefs={this.tables}
+              onMouseDown={this.saveTableOffset}
+              onMouseMove={this.updateTablePosition}
+              onMouseEnter={tableID => {
+                chrome.contextMenus.update("add-table", {
+                  visible: false
+                });
 
-              return (
-                <TableBox
-                  key={table.id}
-                  ref={ref}
-                  {...table}
-                  fields={currentFields}
-                  options={table.options}
-                  onMouseDown={this.saveTableOffset(table.id)}
-                  onMouseMove={this.updateTablePosition(table.id)}
-                  onMouseEnter={() => {
-                    chrome.contextMenus.update("add-table", {
-                      visible: false
-                    });
+                chrome.contextMenus.update("remove-table", {
+                  visible: true,
+                  onclick: () => this.removeTable(tableID)
+                });
 
-                    chrome.contextMenus.update("remove-table", {
-                      visible: true,
-                      onclick: () => this.removeTable(table.id)
-                    });
+                chrome.contextMenus.update("add-field", {
+                  visible: true,
+                  onclick: () => this.addField(tableID)
+                });
+              }}
+              onMouseLeave={() => {
+                chrome.contextMenus.update("add-table", {
+                  visible: true,
+                  onclick: this.addTable
+                });
 
-                    chrome.contextMenus.update("add-field", {
-                      visible: true,
-                      onclick: () => this.addField(table.id)
-                    });
-                  }}
-                  onMouseLeave={() => {
-                    chrome.contextMenus.update("add-table", {
-                      visible: true,
-                      onclick: this.addTable
-                    });
+                chrome.contextMenus.update("remove-table", {
+                  visible: false
+                });
 
-                    chrome.contextMenus.update("remove-table", {
-                      visible: false
-                    });
-
-                    chrome.contextMenus.update("add-field", {
-                      visible: false
-                    });
-                  }}
-                  onClickAddField={() => this.addField(table.id)}
-                  onClickRemoveField={this.removeField}
-                  onChangeFieldName={this.updateField("name")}
-                  onChangeFieldType={this.updateField("type")}
-                  onChangeName={this.updateTableName(table.id)}
-                  onChangeOptions={this.updateTableOptions(table.id)}
-                />
-              );
-            })}
+                chrome.contextMenus.update("add-field", {
+                  visible: false
+                });
+              }}
+              onClickAddField={this.addField}
+              onClickRemoveField={this.removeField}
+              onChangeField={this.updateField}
+              onChangeName={this.updateTableName}
+              onChangeOptions={this.updateTableOptions}
+            />
           </g>
         </Area>
       </Container>
