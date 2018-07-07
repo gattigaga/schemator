@@ -22,7 +22,7 @@ import TableBox from "./TableBox";
 
 const Container = styled.div`
   flex: 1;
-  overflow: scroll;
+  overflow: ${({ isScrollable }) => (isScrollable ? "scroll" : "hidden")};
 `;
 
 const Area = styled.svg`
@@ -586,7 +586,7 @@ class WorkArea extends Component {
     const byID = itemID => item => item.id === itemID;
 
     return (
-      <Container>
+      <Container isScrollable={!!project}>
         <Area
           innerRef={this.area}
           style={{ zoom }}
