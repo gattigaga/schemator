@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
+import "typeface-roboto";
+
 import Tooltip from "./Tooltip";
 
 const StyledTooltip = styled(Tooltip)``;
@@ -22,6 +24,8 @@ const Container = styled.div`
 export const Select = styled.select`
   width: 64px;
   height: 32px;
+  font-family: Roboto;
+  font-size: 12px;
   border-radius: 4px;
   border: 0px;
   background: #444;
