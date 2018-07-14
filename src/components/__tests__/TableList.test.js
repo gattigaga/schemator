@@ -91,6 +91,7 @@ describe("TableList", () => {
       onMouseMove: jest.fn(),
       onMouseEnter: jest.fn(),
       onMouseLeave: jest.fn(),
+      onContextMenu: jest.fn(),
       onClickAddField: jest.fn(),
       onClickRemoveField: jest.fn(),
       onChangeField: jest.fn(),

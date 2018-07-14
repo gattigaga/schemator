@@ -11,6 +11,7 @@ const TableList = ({
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
+  onContextMenu,
   onClickAddField,
   onClickRemoveField,
   onChangeField,
@@ -35,6 +36,7 @@ const TableList = ({
         onMouseMove={event => onMouseMove(event, table.id)}
         onMouseEnter={() => onMouseEnter(table.id)}
         onMouseLeave={() => onMouseLeave(table.id)}
+        onContextMenu={() => onContextMenu(table.id)}
         onClickAddField={() => onClickAddField(table.id)}
         onClickRemoveField={onClickRemoveField}
         onChangeFieldName={(event, fieldID) =>
@@ -60,6 +62,7 @@ TableList.propTypes = {
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
+  onContextMenu: PropTypes.func,
   onClickAddField: PropTypes.func,
   onClickRemoveField: PropTypes.func,
   onChangeField: PropTypes.func,

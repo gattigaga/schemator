@@ -1,5 +1,3 @@
-/* global chrome */
-
 import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -22,6 +20,8 @@ import BGLines from "./BGLines";
 import RelationLines from "./RelationLines";
 import TableList from "./TableList";
 
+const { remote, screen } = window.require("electron");
+
 const Container = styled.div`
   flex: 1;
   overflow: ${({ isScrollable }) => (isScrollable ? "scroll" : "hidden")};
@@ -38,6 +38,8 @@ class WorkArea extends Component {
   constructor(props) {
     super(props);
 
+    const { Menu } = remote;
+
     this.state = {
       offset: {
         x: 0,
@@ -51,7 +53,9 @@ class WorkArea extends Component {
 
     this.area = createRef();
     this.activeTable = null;
+    this.hoveredTable = null;
     this.tables = [];
+    this.menu = new Menu();
 
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
@@ -81,26 +85,31 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   createContextMenus() {
-    chrome.contextMenus.create({
-      id: "remove-table",
-      title: "Remove Table",
-      contexts: ["all"],
-      visible: false
-    });
+    const { MenuItem } = remote;
 
-    chrome.contextMenus.create({
-      id: "add-table",
-      title: "Add Table",
-      contexts: ["all"],
-      visible: false
-    });
+    this.menu.append(
+      new MenuItem({
+        label: "Add Table",
+        visible: false,
+        click: this.addTable
+      })
+    );
 
-    chrome.contextMenus.create({
-      id: "add-field",
-      title: "Add Field",
-      contexts: ["all"],
-      visible: false
-    });
+    this.menu.append(
+      new MenuItem({
+        label: "Remove Table",
+        visible: false,
+        click: this.removeTable
+      })
+    );
+
+    this.menu.append(
+      new MenuItem({
+        label: "Add Field",
+        visible: false,
+        click: this.addField
+      })
+    );
   }
 
   /**
@@ -144,10 +153,10 @@ class WorkArea extends Component {
     const { project } = this.props;
 
     if (nextProps.project !== project) {
-      const { innerBounds } = chrome.app.window.current();
+      const { workAreaSize } = screen.getPrimaryDisplay();
       const area = this.area.current;
-      const width = (innerBounds.width / 25) * 100;
-      const height = ((innerBounds.height - 48) / 25) * 100;
+      const width = (workAreaSize.width / 25) * 100;
+      const height = ((workAreaSize.height - 48) / 25) * 100;
 
       area.style.width = `${width}px`;
       area.style.height = `${height}px`;
@@ -196,13 +205,14 @@ class WorkArea extends Component {
   /**
    * Add new field inside table
    *
-   * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  addField(tableID) {
+  addField() {
     this.activeTable = null;
 
     const { applyProject, createField } = this.props;
+    const tableID = this.hoveredTable;
+
     const data = {
       tableID,
       id: uuid(),
@@ -345,10 +355,9 @@ class WorkArea extends Component {
   /**
    * Remove a table
    *
-   * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  removeTable(tableID) {
+  removeTable() {
     const {
       relations,
       fields,
@@ -357,6 +366,7 @@ class WorkArea extends Component {
       deleteField,
       deleteRelation
     } = this.props;
+    const tableID = this.hoveredTable;
 
     const getID = item => item.id;
     const byThisTable = field => item => item[field] === tableID;
@@ -375,13 +385,6 @@ class WorkArea extends Component {
     deleteTable(tableID);
 
     this.tables = this.tables.filter(item => item.id !== tableID);
-
-    chrome.contextMenus.update("remove-table", { visible: false });
-    chrome.contextMenus.update("add-field", { visible: false });
-    chrome.contextMenus.update("add-table", {
-      visible: true,
-      onclick: this.addTable
-    });
   }
 
   /**
@@ -512,6 +515,7 @@ class WorkArea extends Component {
 
   render() {
     const { project, tables, fields } = this.props;
+    const appWindow = remote.getCurrentWindow();
     const zoom = project ? project.zoom / 100 : 1;
     const area = this.area.current;
     const areaWidth = area ? area.clientWidth : 1366;
@@ -521,6 +525,7 @@ class WorkArea extends Component {
     const height = (areaHeight / 25) * 100;
     const totalHorizontalLines = parseInt(width / gap);
     const totalVerticalLines = parseInt(height / gap);
+    const [menuAddTable, menuRemoveTable, menuAddField] = this.menu.items;
 
     return (
       <Container isScrollable={!!project}>
@@ -531,16 +536,16 @@ class WorkArea extends Component {
           onMouseUp={() => {
             this.activeTable = null;
           }}
+          onContextMenu={() => this.menu.popup({ window: appWindow })}
           onMouseEnter={() => {
-            chrome.contextMenus.update("add-table", {
-              visible: !!project,
-              onclick: this.addTable
-            });
+            if (menuAddTable) {
+              menuAddTable.visible = !!project;
+            }
           }}
           onMouseLeave={() => {
-            chrome.contextMenus.update("add-table", {
-              visible: false
-            });
+            if (menuAddTable) {
+              menuAddTable.visible = false;
+            }
           }}
           onMouseMove={event =>
             this.setState({
@@ -562,36 +567,36 @@ class WorkArea extends Component {
               tables={tables}
               fields={fields}
               tableRefs={this.tables}
+              onContextMenu={tableID => {
+                this.hoveredTable = tableID;
+              }}
               onMouseDown={this.saveTableOffset}
               onMouseMove={this.updateTablePosition}
-              onMouseEnter={tableID => {
-                chrome.contextMenus.update("add-table", {
-                  visible: false
-                });
+              onMouseEnter={() => {
+                if (menuAddTable) {
+                  menuAddTable.visible = false;
+                }
 
-                chrome.contextMenus.update("remove-table", {
-                  visible: true,
-                  onclick: () => this.removeTable(tableID)
-                });
+                if (menuRemoveTable) {
+                  menuRemoveTable.visible = true;
+                }
 
-                chrome.contextMenus.update("add-field", {
-                  visible: true,
-                  onclick: () => this.addField(tableID)
-                });
+                if (menuAddField) {
+                  menuAddField.visible = true;
+                }
               }}
               onMouseLeave={() => {
-                chrome.contextMenus.update("add-table", {
-                  visible: true,
-                  onclick: this.addTable
-                });
+                if (menuAddTable) {
+                  menuAddTable.visible = true;
+                }
 
-                chrome.contextMenus.update("remove-table", {
-                  visible: false
-                });
+                if (menuRemoveTable) {
+                  menuRemoveTable.visible = false;
+                }
 
-                chrome.contextMenus.update("add-field", {
-                  visible: false
-                });
+                if (menuAddField) {
+                  menuAddField.visible = false;
+                }
               }}
               onClickAddField={this.addField}
               onClickRemoveField={this.removeField}

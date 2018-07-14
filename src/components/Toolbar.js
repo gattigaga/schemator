@@ -1,5 +1,3 @@
-/* global chrome */
-
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -9,13 +7,13 @@ import {
   MdFolderOpen,
   MdArchive,
   MdAddCircle,
-  MdHelp,
-  MdCheckCircle
+  MdHelp
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 import pluralize from "pluralize";
 import { format } from "date-fns";
+import path from "path";
 
 import {
   setProject,
@@ -23,8 +21,7 @@ import {
   setFields,
   setRelations,
   addTable,
-  addField,
-  setAlert
+  addField
 } from "../store/actions";
 import { toSnakeCase } from "../helpers/formatter";
 import { randomBetween } from "../helpers/math";
@@ -32,6 +29,9 @@ import { modelTemplate, migrationTemplate } from "../helpers/template";
 
 import Tool from "./Tool";
 import ToolZoom from "./ToolZoom";
+
+const { remote, screen, shell } = window.require("electron");
+const fs = window.require("fs");
 
 const Container = styled.div`
   width: 100%;
@@ -54,7 +54,7 @@ class Toolbar extends Component {
   constructor(props) {
     super(props);
 
-    this.fileEntry = null;
+    this.filePath = null;
 
     this.newProject = this.newProject.bind(this);
     this.openProject = this.openProject.bind(this);
@@ -74,107 +74,97 @@ class Toolbar extends Component {
       applyProject,
       applyTables,
       applyFields,
-      applyRelations,
-      showAlert
+      applyRelations
     } = this.props;
+    const { dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
 
-    const options = {
-      type: "saveFile",
-      suggestedName: "project.json",
-      accepts: [
-        {
-          description: "JSON files (*.json)",
-          extensions: ["json"]
-        }
-      ],
-      acceptsAllTypes: false
-    };
-
-    const saveFile = entry => {
-      this.fileEntry = entry;
-
-      const project = {
-        name: entry.name.replace(".json", ""),
-        timestamp: Date.now(),
-        zoom: 100
-      };
-
-      const tables = [
-        {
-          id: uuid(),
-          name: "User",
-          timestamp: Date.now(),
-          position: {
-            x: 128,
-            y: 128
-          },
-          options: {
-            id: true,
-            rememberToken: true,
-            softDeletes: false,
-            timestamps: true
+    dialog.showSaveDialog(
+      mainWindow,
+      {
+        filters: [
+          {
+            name: "JSON files",
+            extensions: ["json"]
           }
+        ]
+      },
+      filePath => {
+        if (filePath === undefined) {
+          dialog.showErrorBox("Error", "You should define your project name !");
+          return;
         }
-      ];
 
-      const fields = [
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "name",
-          type: "STRING"
-        },
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "email",
-          type: "STRING"
-        },
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "password",
-          type: "STRING"
-        }
-      ];
+        const name = path.basename(filePath, ".json");
 
-      const data = {
-        project,
-        tables,
-        fields
-      };
+        const project = {
+          name,
+          timestamp: Date.now(),
+          zoom: 100
+        };
 
-      entry.createWriter(writer => {
-        let truncated = false;
-        const contents = JSON.stringify(data, null, 2);
-        const blob = new Blob([contents], { type: "application/json" });
+        const tables = [
+          {
+            id: uuid(),
+            name: "User",
+            timestamp: Date.now(),
+            position: {
+              x: 128,
+              y: 128
+            },
+            options: {
+              id: true,
+              rememberToken: true,
+              softDeletes: false,
+              timestamps: true
+            }
+          }
+        ];
 
-        writer.onwriteend = function() {
-          if (!truncated) {
-            truncated = true;
-            this.truncate(blob.size);
+        const fields = [
+          {
+            id: uuid(),
+            tableID: tables[0].id,
+            name: "name",
+            type: "STRING"
+          },
+          {
+            id: uuid(),
+            tableID: tables[0].id,
+            name: "email",
+            type: "STRING"
+          },
+          {
+            id: uuid(),
+            tableID: tables[0].id,
+            name: "password",
+            type: "STRING"
+          }
+        ];
+
+        const data = {
+          project,
+          tables,
+          fields
+        };
+
+        const content = JSON.stringify(data, null, 2);
+
+        fs.writeFile(filePath, content, error => {
+          if (error) {
+            dialog.showErrorBox("Error", error.message);
+            return;
           }
 
           applyProject({ ...project, isModified: false });
           applyTables(tables);
           applyFields(fields);
           applyRelations([]);
-        };
 
-        writer.onerror = error => {
-          console.error(error);
-          showAlert({
-            isOpen: true,
-            message: "Failed to create new project",
-            iconColor: "#ff5252"
-          });
-        };
-
-        writer.write(blob);
-      });
-    };
-
-    chrome.fileSystem.chooseEntry(options, saveFile);
+          this.filePath = filePath;
+        });
+      }
+    );
   }
 
   /**
@@ -187,75 +177,58 @@ class Toolbar extends Component {
       applyProject,
       applyTables,
       applyFields,
-      applyRelations,
-      showAlert
+      applyRelations
     } = this.props;
+    const { dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
 
-    const options = {
-      type: "openFile",
-      accepts: [
-        {
-          description: "JSON files (*.json)",
-          extensions: ["json"]
-        }
-      ],
-      acceptsAllTypes: false
-    };
-
-    const openFile = entry => {
-      this.fileEntry = entry;
-
-      entry.file(function(file) {
-        const reader = new FileReader();
-
-        reader.onloadend = event => {
-          const { result } = event.target;
-
-          try {
-            const data = JSON.parse(result);
-
-            applyProject({
-              ...data.project,
-              zoom: data.project.zoom || 100
-            });
-
-            if (data.tables) {
-              applyTables(data.tables);
-            }
-
-            if (data.fields) {
-              applyFields(data.fields);
-            }
-
-            if (data.relations) {
-              applyRelations(data.relations);
-            }
-
-            chrome.contextMenus.update("add-table", { visible: true });
-          } catch (error) {
-            console.error(error);
-            showAlert({
-              isOpen: true,
-              message: "Failed to open a project",
-              iconColor: "#ff5252"
-            });
+    dialog.showOpenDialog(
+      mainWindow,
+      {
+        properties: ["openFile"],
+        filters: [
+          {
+            name: "JSON files",
+            extensions: ["json"]
           }
-        };
+        ]
+      },
+      filePaths => {
+        if (filePaths === undefined) {
+          dialog.showErrorBox("Error", "No file selected !");
+          return;
+        }
 
-        reader.onerror = error => {
-          console.error(error);
-          showAlert({
-            isOpen: true,
-            message: "Failed to open a project",
-            iconColor: "#ff5252"
+        const filePath = filePaths[0];
+        this.filePath = filePath;
+
+        fs.readFile(filePath, "utf-8", (error, content) => {
+          if (error) {
+            dialog.showErrorBox("Error", error.message);
+            return;
+          }
+
+          const data = JSON.parse(content);
+
+          applyProject({
+            ...data.project,
+            zoom: data.project.zoom || 100
           });
-        };
 
-        reader.readAsBinaryString(file);
-      });
-    };
+          if (data.tables) {
+            applyTables(data.tables);
+          }
 
-    chrome.fileSystem.chooseEntry(options, openFile);
+          if (data.fields) {
+            applyFields(data.fields);
+          }
+
+          if (data.relations) {
+            applyRelations(data.relations);
+          }
+        });
+      }
+    );
   }
 
   /**
@@ -264,15 +237,9 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   saveProject() {
-    const {
-      project,
-      tables,
-      fields,
-      relations,
-      applyProject,
-      showAlert
-    } = this.props;
+    const { project, tables, fields, relations, applyProject } = this.props;
     const { isModified, ...newProject } = project;
+    const { dialog } = remote;
 
     const data = {
       tables,
@@ -281,30 +248,15 @@ class Toolbar extends Component {
       project: newProject
     };
 
-    this.fileEntry.createWriter(writer => {
-      let truncated = false;
-      const contents = JSON.stringify(data, null, 2);
-      const blob = new Blob([contents], { type: "application/json" });
+    const content = JSON.stringify(data, null, 2);
 
-      writer.onwriteend = function() {
-        if (!truncated) {
-          truncated = true;
-          this.truncate(blob.size);
-        }
+    fs.writeFile(this.filePath, content, error => {
+      if (error) {
+        dialog.showErrorBox("Error", error.message);
+        return;
+      }
 
-        applyProject({ isModified: false });
-      };
-
-      writer.onerror = error => {
-        console.error(error);
-        showAlert({
-          isOpen: true,
-          message: "Failed to save current project",
-          iconColor: "#ff5252"
-        });
-      };
-
-      writer.write(blob);
+      applyProject({ isModified: false });
     });
   }
 
@@ -315,16 +267,16 @@ class Toolbar extends Component {
    */
   addTable() {
     const { applyProject, createTable, createField, tables } = this.props;
+    const { workAreaSize } = screen.getPrimaryDisplay();
     const positions = tables.map(item => item.position);
-    const appWindow = chrome.app.window.get("main");
     let newPosition;
 
     const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
 
     while (true) {
       newPosition = {
-        x: randomBetween(16, appWindow.innerBounds.width - 240),
-        y: randomBetween(64, appWindow.innerBounds.height - 240)
+        x: randomBetween(16, workAreaSize.width - 240),
+        y: randomBetween(64, workAreaSize.height - 240)
       };
 
       if (positions.every(isNotSameWith(newPosition))) {
@@ -367,90 +319,62 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   export() {
-    const { project, tables, fields, showAlert } = this.props;
-    const dataType = { type: "application/json" };
-    const options = { type: "openDirectory" };
+    const { project, tables, fields } = this.props;
+    const { dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
 
-    const byTable = table => field => field.tableID === table.id;
-    const createFolder = (entry, name, callback) => {
-      entry.getDirectory(name, { create: true }, callback);
-    };
-    const createFile = (entry, options) => {
-      entry.getFile(options.name, { create: true }, entry => {
-        let truncated = false;
-        const blob = new Blob([options.data], dataType);
+    dialog.showOpenDialog(
+      mainWindow,
+      {
+        properties: ["openDirectory"]
+      },
+      dirPaths => {
+        if (dirPaths === undefined) {
+          dialog.showErrorBox("Error", "No folder selected !");
+          return;
+        }
 
-        entry.createWriter(writer => {
-          writer.onwriteend = () => {
-            if (!truncated) {
-              truncated = true;
-              this.truncate(blob.size);
-            }
-          };
+        const dirPath = dirPaths[0];
+        const exportPath = `${dirPath}/${project.name}`;
+        const modelPath = `${exportPath}/app`;
+        const databasePath = `${exportPath}/database`;
+        const migrationPath = `${databasePath}/migrations`;
 
-          writer.onerror = error => {
-            console.error(error);
-            showAlert({
-              isOpen: true,
-              message: "Failed to create file",
-              iconColor: "#ff5252"
+        fs.mkdirSync(exportPath);
+        fs.mkdirSync(modelPath);
+        fs.mkdirSync(databasePath);
+        fs.mkdirSync(migrationPath);
+
+        tables.forEach((table, index) => {
+          const byTable = field => field.tableID === table.id;
+
+          const modelName = table.name;
+          const tableName = pluralize(toSnakeCase(modelName));
+          const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
+          const modelFilename = `${modelName}.php`;
+          const migrationFilename = `${date}_create_${tableName}_table.php`;
+          const tableFields = fields.filter(byTable);
+          const fillable = tableFields.map(item => item.name);
+          const model = modelTemplate(modelName, fillable);
+          const migration = migrationTemplate(
+            modelName,
+            table.options,
+            tableFields
+          );
+
+          fs.writeFileSync(`${modelPath}/${modelFilename}`, model);
+          fs.writeFileSync(`${migrationPath}/${migrationFilename}`, migration);
+
+          if (index === tables.length - 1) {
+            dialog.showMessageBox(mainWindow, {
+              type: "info",
+              message: "Project successfully exported!",
+              buttons: ["OK"]
             });
-          };
-
-          writer.write(blob);
+          }
         });
-      });
-    };
-    const exportFile = entry => {
-      chrome.fileSystem.getWritableEntry(entry, entry => {
-        entry.getDirectory(project.name, { create: true }, entry => {
-          tables.forEach((table, index) => {
-            const modelName = table.name;
-            const tableName = pluralize(toSnakeCase(modelName));
-
-            const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
-            const modelFilename = `${modelName}.php`;
-            const migrationFilename = `${date}_create_${tableName}_table.php`;
-
-            const tableFields = fields.filter(byTable(table));
-            const fillable = tableFields.map(item => item.name);
-            const model = modelTemplate(modelName, fillable);
-            const migration = migrationTemplate(
-              modelName,
-              table.options,
-              tableFields
-            );
-
-            createFolder(entry, "app", entry => {
-              createFile(entry, {
-                name: modelFilename,
-                data: model
-              });
-            });
-
-            createFolder(entry, "database", entry => {
-              createFolder(entry, "migrations", entry => {
-                createFile(entry, {
-                  name: migrationFilename,
-                  data: migration
-                });
-              });
-            });
-
-            if (index === tables.length - 1) {
-              showAlert({
-                isOpen: true,
-                icon: MdCheckCircle,
-                message: "Project successfully exported",
-                iconColor: "#34ace0"
-              });
-            }
-          });
-        });
-      });
-    };
-
-    chrome.fileSystem.chooseEntry(options, exportFile);
+      }
+    );
   }
 
   /**
@@ -506,11 +430,10 @@ class Toolbar extends Component {
         <Tool
           tooltip="Help"
           icon={MdHelp}
-          onClick={() =>
-            chrome.browser.openTab({
-              url: "https://github.com/gattigaga/schemator"
-            })
-          }
+          onClick={() => {
+            const url = "https://github.com/gattigaga/schemator";
+            shell.openExternal(url);
+          }}
         />
       </Container>
     );
@@ -527,8 +450,7 @@ Toolbar.propTypes = {
   applyFields: PropTypes.func,
   applyRelations: PropTypes.func,
   createTable: PropTypes.func,
-  createField: PropTypes.func,
-  showAlert: PropTypes.func
+  createField: PropTypes.func
 };
 
 const mapStateToProps = state => state;
@@ -539,8 +461,7 @@ const mapDispatchToProps = dispatch => ({
   applyFields: fields => dispatch(setFields(fields)),
   applyRelations: relations => dispatch(setRelations(relations)),
   createTable: table => dispatch(addTable(table)),
-  createField: field => dispatch(addField(field)),
-  showAlert: options => dispatch(setAlert(options))
+  createField: field => dispatch(addField(field))
 });
 
 export default connect(

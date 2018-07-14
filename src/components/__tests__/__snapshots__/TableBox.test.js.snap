@@ -3,6 +3,7 @@
 exports[`TableBox should renders default 1`] = `
 <foreignObject
   height={220}
+  onContextMenu={[Function]}
   onMouseDown={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}

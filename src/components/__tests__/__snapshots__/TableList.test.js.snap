@@ -34,6 +34,7 @@ Array [
     onChangeOptions={[Function]}
     onClickAddField={[Function]}
     onClickRemoveField={[Function]}
+    onContextMenu={[Function]}
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
@@ -86,6 +87,7 @@ Array [
     onChangeOptions={[Function]}
     onClickAddField={[Function]}
     onClickRemoveField={[Function]}
+    onContextMenu={[Function]}
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}

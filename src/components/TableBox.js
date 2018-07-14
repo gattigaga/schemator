@@ -33,7 +33,8 @@ const TableBox = forwardRef(
       onMouseDown,
       onMouseMove,
       onMouseEnter,
-      onMouseLeave
+      onMouseLeave,
+      onContextMenu
     },
     ref
   ) => {
@@ -55,6 +56,7 @@ const TableBox = forwardRef(
         onMouseMove={onMouseMove}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
+        onContextMenu={onContextMenu}
       >
         <Container>
           <TableHeader caption={name} onChangeCaption={onChangeName} />
@@ -85,6 +87,7 @@ TableBox.propTypes = {
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
+  onContextMenu: PropTypes.func,
   onClickAddField: PropTypes.func,
   onClickRemoveField: PropTypes.func,
   onChangeFieldName: PropTypes.func,

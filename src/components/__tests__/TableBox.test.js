@@ -31,6 +31,7 @@ describe("TableBox", () => {
       onMouseMove: jest.fn(),
       onMouseEnter: jest.fn(),
       onMouseLeave: jest.fn(),
+      onContextMenu: jest.fn(),
       ...propOverrides
     };
 
@@ -78,5 +79,13 @@ describe("TableBox", () => {
     wrapper.simulate("mouseLeave");
 
     expect(props.onMouseLeave).toBeCalled();
+  });
+
+  it("should calls 'onContextMenu' while mouse right button clicked", () => {
+    const { wrapper, props } = setup();
+
+    wrapper.simulate("contextmenu");
+
+    expect(props.onContextMenu).toBeCalled();
   });
 });
