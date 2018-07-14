@@ -5,29 +5,37 @@ const { app, BrowserWindow } = require("electron");
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 });
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", () => {
+  // Create the browser window but don't show
+  // to prevent resize event on startup.
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    minWidth: 800,
+    minHeight: 600,
+    show: false
+  });
 
   // and load the main URL of the app.
   mainWindow.loadURL("http://localhost:3000");
+
+  mainWindow.maximize();
+  mainWindow.show();
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
-  mainWindow.on("closed", function() {
+  mainWindow.on("closed", () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
