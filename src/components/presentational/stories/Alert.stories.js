@@ -3,7 +3,7 @@ import { storiesOf, action } from "@storybook/react";
 import styled from "styled-components";
 import MdInfo from "react-icons/lib/md/info";
 
-import { Alert } from "../Alert";
+import Alert from "../Alert";
 
 const Container = styled.div`
   width: 240px;
