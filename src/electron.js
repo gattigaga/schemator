@@ -1,5 +1,10 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require("electron");
+const {
+  default: installExtension,
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS
+} = require("electron-devtools-installer");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -34,6 +39,14 @@ app.on("ready", () => {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+  });
+});
+
+app.on("ready", () => {
+  [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
+    installExtension(extension)
+      .then(name => console.log(`Added Extension: ${name}`))
+      .catch(err => console.log("An error occurred: ", err));
   });
 });
 
