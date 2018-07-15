@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -7,19 +7,24 @@ const BGLine = styled.line`
   stroke-width: 1px;
   shape-rendering: crispEdges;
 `;
+class BGLines extends PureComponent {
+  render() {
+    const { totalHorizontal, totalVertical, gap } = this.props;
 
-const BGLines = ({ totalHorizontal, totalVertical, gap }) => (
-  <g>
-    {[...Array(totalHorizontal)].map((_, index) => {
-      const y = (index + 1) * gap;
-      return <BGLine key={index} x1="0" y1={y} x2="100%" y2={y} />;
-    })}
-    {[...Array(totalVertical)].map((_, index) => {
-      const x = (index + 1) * gap;
-      return <BGLine key={index} x1={x} y1="0" x2={x} y2="100%" />;
-    })}
-  </g>
-);
+    return (
+      <g>
+        {[...Array(totalHorizontal)].map((_, index) => {
+          const y = (index + 1) * gap;
+          return <BGLine key={index} x1="0" y1={y} x2="100%" y2={y} />;
+        })}
+        {[...Array(totalVertical)].map((_, index) => {
+          const x = (index + 1) * gap;
+          return <BGLine key={index} x1={x} y1="0" x2={x} y2="100%" />;
+        })}
+      </g>
+    );
+  }
+}
 
 BGLines.propTypes = {
   totalHorizontal: PropTypes.number,
