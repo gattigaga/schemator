@@ -2,11 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import Modal from "react-modal";
 import styled from "styled-components";
-import { connect } from "react-redux";
 
 import "typeface-roboto";
-
-import { setAlert } from "../store/actions";
 
 const Row = styled.div`
   display: flex;
@@ -22,7 +19,7 @@ const ButtonWrapper = styled.div`
   text-align: center;
 `;
 
-const Button = styled.button`
+export const Button = styled.button`
   width: 96px;
   background: #555;
   color: white;
@@ -40,14 +37,19 @@ const Button = styled.button`
   }
 `;
 
-export const Alert = ({ isOpen, message, icon, iconColor, showAlert }) => {
+const Alert = ({
+  isOpen,
+  message,
+  icon,
+  iconColor,
+  onRequestClose,
+  onClickOK
+}) => {
   const Icon = styled(icon)`
     font-size: 48px;
     color: ${({ iconColor }) => iconColor};
     margin-right: 24px;
   `;
-
-  const closeAlert = () => showAlert({ isOpen: false });
 
   return (
     <Modal
@@ -67,14 +69,14 @@ export const Alert = ({ isOpen, message, icon, iconColor, showAlert }) => {
         }
       }}
       isOpen={isOpen}
-      onRequestClose={closeAlert}
+      onRequestClose={onRequestClose}
     >
       <Row>
         <Icon iconColor={iconColor} />
         <Message>{message}</Message>
       </Row>
       <ButtonWrapper>
-        <Button onClick={closeAlert}>OK</Button>
+        <Button onClick={onClickOK}>OK</Button>
       </ButtonWrapper>
     </Modal>
   );
@@ -85,16 +87,8 @@ Alert.propTypes = {
   message: PropTypes.string,
   icon: PropTypes.func,
   iconColor: PropTypes.string,
-  showAlert: PropTypes.func
+  onRequestClose: PropTypes.func,
+  onClickOK: PropTypes.func
 };
 
-const mapStateToProps = ({ alert }) => ({ ...alert });
-
-const mapDispatchToProps = dispatch => ({
-  showAlert: options => dispatch(setAlert(options))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Alert);
+export default Alert;

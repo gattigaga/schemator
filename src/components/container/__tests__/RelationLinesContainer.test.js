@@ -1,12 +1,13 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
+import configureStore from "redux-mock-store";
 
-import { RelationLines, mapStateToProps } from "../RelationLines";
+import RelationLinesContainer from "../RelationLinesContainer";
 
-describe("RelationLines", () => {
-  const fakeStore = {
-    getState: () => ({
+describe("RelationLinesContainer", () => {
+  const setup = () => {
+    const mockStore = configureStore();
+    const store = mockStore({
       tables: [
         {
           id: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
@@ -85,32 +86,24 @@ describe("RelationLines", () => {
           toTableID: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec"
         }
       ]
-    })
-  };
+    });
 
-  const setup = propOverrides => {
-    const props = {
-      ...fakeStore.getState(),
-      ...propOverrides
-    };
-
-    const wrapper = shallow(<RelationLines {...props} />);
+    const wrapper = shallow(<RelationLinesContainer store={store} />);
 
     return {
       wrapper,
-      props
+      store
     };
   };
 
-  it("should renders default", () => {
-    const { wrapper } = setup();
+  it("should maps state to props", () => {
+    const { wrapper, store } = setup();
+    const { tables, fields, relations } = store.getState();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
-  });
-
-  it("should map state to props", () => {
-    const state = mapStateToProps(fakeStore.getState());
-
-    expect(state).toEqual(fakeStore.getState());
+    expect(wrapper.props()).toMatchObject({
+      tables,
+      fields,
+      relations
+    });
   });
 });

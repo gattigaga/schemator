@@ -22,13 +22,13 @@ import {
   setRelations,
   addTable,
   addField
-} from "../store/actions";
-import { toSnakeCase } from "../helpers/formatter";
-import { randomBetween } from "../helpers/math";
-import { modelTemplate, migrationTemplate } from "../helpers/template";
+} from "../../store/actions";
+import { toSnakeCase } from "../../helpers/formatter";
+import { randomBetween } from "../../helpers/math";
+import { modelTemplate, migrationTemplate } from "../../helpers/template";
 
-import Tool from "./Tool";
-import ToolZoom from "./ToolZoom";
+import Tool from "../presentational/Tool";
+import ToolZoom from "../presentational/ToolZoom";
 
 const { remote, screen, shell } = window.require("electron");
 const fs = window.require("fs");

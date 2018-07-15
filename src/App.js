@@ -4,9 +4,8 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
 
-import Toolbar from "./components/Toolbar";
-import WorkArea from "./components/WorkArea";
-import Alert from "./components/Alert";
+import Toolbar from "./components/container/Toolbar";
+import WorkArea from "./components/container/WorkArea";
 
 const Container = styled.div`
   display: flex;
@@ -31,7 +30,6 @@ class App extends Component {
         )}
         <Toolbar />
         <WorkArea />
-        <Alert />
       </Container>
     );
   }

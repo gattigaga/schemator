@@ -14,11 +14,11 @@ import {
   removeTable,
   addTable,
   setProject
-} from "../store/actions";
-import { capitalize } from "../helpers/formatter";
-import BGLines from "./BGLines";
-import RelationLines from "./RelationLines";
-import TableList from "./TableList";
+} from "../../store/actions";
+import { capitalize } from "../../helpers/formatter";
+import BGLines from "../presentational/BGLines";
+import RelationLinesContainer from "../container/RelationLinesContainer";
+import TableList from "../presentational/TableList";
 
 const { remote, screen } = window.require("electron");
 
@@ -562,7 +562,7 @@ class WorkArea extends Component {
             gap={32}
           />
           <g>
-            <RelationLines />
+            <RelationLinesContainer />
             <TableList
               tables={tables}
               fields={fields}

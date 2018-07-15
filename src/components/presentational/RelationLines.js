@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { connect } from "react-redux";
 
-import { getPathPoints } from "../helpers/layout";
+import { getPathPoints } from "../../helpers/layout";
 
 const RelationLine = styled.path`
   fill: none;
@@ -11,7 +10,7 @@ const RelationLine = styled.path`
   stroke-width: 2px;
 `;
 
-export const RelationLines = ({ tables, fields, relations }) => {
+const RelationLines = ({ tables, fields, relations }) => {
   const byTableID = tableID => item => item.tableID === tableID;
   const byID = itemID => item => item.id === itemID;
 
@@ -45,10 +44,4 @@ RelationLines.propTypes = {
   relations: PropTypes.array
 };
 
-export const mapStateToProps = ({ tables, fields, relations }) => ({
-  tables,
-  fields,
-  relations
-});
-
-export default connect(mapStateToProps)(RelationLines);
+export default RelationLines;
