@@ -17,6 +17,8 @@ export const REMOVE_RELATION = "REMOVE_RELATION";
 export const UPDATE_RELATION = "UPDATE_RELATION";
 
 export const SET_PROJECT = "SET_PROJECT";
+export const CLEAR_PROJECT = "CLEAR_PROJECT";
+
 export const SET_ALERT = "SET_ALERT";
 
 /**
@@ -229,6 +231,15 @@ export const updateRelation = (relationID, data) => ({
 export const setProject = project => ({
   type: SET_PROJECT,
   payload: project
+});
+
+/**
+ * Get action to clear a project
+ *
+ * @returns {object} Action
+ */
+export const clearProject = () => ({
+  type: CLEAR_PROJECT
 });
 
 /**
