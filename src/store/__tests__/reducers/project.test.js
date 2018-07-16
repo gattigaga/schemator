@@ -1,4 +1,4 @@
-import { setProject } from "../../actions";
+import { setProject, clearProject } from "../../actions";
 import { project } from "../../reducers";
 
 describe("project()", () => {
@@ -16,6 +16,14 @@ describe("project()", () => {
     };
     const expected = myProject;
     const action = setProject(myProject);
+    const result = project(undefined, action);
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should clear project", () => {
+    const expected = null;
+    const action = clearProject();
     const result = project(undefined, action);
 
     expect(result).toEqual(expected);

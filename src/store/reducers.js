@@ -17,6 +17,7 @@ import {
   REMOVE_RELATION,
   UPDATE_RELATION,
   SET_PROJECT,
+  CLEAR_PROJECT,
   SET_ALERT
 } from "./actions";
 
@@ -128,6 +129,9 @@ export const project = (state = null, action) => {
         ...(state || {}),
         ...payload
       };
+
+    case CLEAR_PROJECT:
+      return null;
 
     default:
       return state;
