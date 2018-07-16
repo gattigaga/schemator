@@ -18,6 +18,7 @@ export const UPDATE_RELATION = "UPDATE_RELATION";
 
 export const SET_PROJECT = "SET_PROJECT";
 export const CLEAR_PROJECT = "CLEAR_PROJECT";
+export const UPDATE_PROJECT = "UPDATE_PROJECT";
 
 export const SET_ALERT = "SET_ALERT";
 
@@ -240,6 +241,20 @@ export const setProject = project => ({
  */
 export const clearProject = () => ({
   type: CLEAR_PROJECT
+});
+
+/**
+ * Get action to update project
+ *
+ * @param {object} project Project meta data
+ * @param {string} project.name Project name
+ * @param {number} project.timestamp Project date creation timestamp
+ * @param {number} project.zoom Zoom percentage
+ * @returns {object} Action
+ */
+export const updateProject = project => ({
+  type: UPDATE_PROJECT,
+  payload: project
 });
 
 /**
