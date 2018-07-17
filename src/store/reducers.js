@@ -18,7 +18,8 @@ import {
   UPDATE_RELATION,
   SET_PROJECT,
   CLEAR_PROJECT,
-  SET_ALERT
+  SET_ALERT,
+  UPDATE_PROJECT
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -125,6 +126,12 @@ export const project = (state = null, action) => {
 
   switch (type) {
     case SET_PROJECT:
+      return {
+        ...(state || {}),
+        ...payload
+      };
+
+    case UPDATE_PROJECT:
       return {
         ...(state || {}),
         ...payload
