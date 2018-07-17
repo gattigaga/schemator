@@ -103,13 +103,13 @@ export const createProject = callback => {
           return;
         }
 
-        store.dispatch(setProject({ ...project, isModified: false }));
+        store.dispatch(setProject({ ...project, filePath, isModified: false }));
         store.dispatch(setTables(tables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
 
         if (callback) {
-          callback(filePath);
+          callback();
         }
       });
     }
@@ -155,6 +155,7 @@ export const openProject = callback => {
         store.dispatch(
           setProject({
             ...project,
+            filePath,
             zoom: project.zoom || 100
           })
         );
@@ -172,7 +173,7 @@ export const openProject = callback => {
         }
 
         if (callback) {
-          callback(filePath);
+          callback();
         }
       });
     }
@@ -182,12 +183,11 @@ export const openProject = callback => {
 /**
  * Save current project
  *
- * @param {string} filePath Path to save the project file
  * @param {function} [callback]
  */
-export const saveProject = (filePath, callback) => {
+export const saveProject = callback => {
   const { project, tables, fields, relations } = store.getState();
-  const { isModified, ...newProject } = project;
+  const { isModified, filePath, ...newProject } = project;
   const { dialog } = remote;
 
   const data = {
