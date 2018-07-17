@@ -47,8 +47,6 @@ class Toolbar extends Component {
   constructor(props) {
     super(props);
 
-    this.filePath = null;
-
     this.addTable = this.addTable.bind(this);
     this.zoom = this.zoom.bind(this);
   }
@@ -87,10 +85,10 @@ class Toolbar extends Component {
    * @memberof Toolbar
    */
   zoom(event) {
-    const { applyProject } = this.props;
+    const { modifyProject } = this.props;
     const { value } = event.target;
 
-    applyProject({ zoom: value });
+    modifyProject({ zoom: value });
   }
 
   render() {
@@ -100,31 +98,17 @@ class Toolbar extends Component {
 
     return (
       <Container>
-        <Tool
-          tooltip="New Project"
-          icon={MdAddBox}
-          onClick={() => {
-            createProject(filePath => {
-              this.filePath = filePath;
-            });
-          }}
-        />
+        <Tool tooltip="New Project" icon={MdAddBox} onClick={createProject} />
         <Tool
           tooltip="Open Project"
           icon={MdFolderOpen}
-          onClick={() => {
-            openProject(filePath => {
-              this.filePath = filePath;
-            });
-          }}
+          onClick={openProject}
         />
         <Tool
           tooltip="Save Project"
           icon={MdSave}
           isDisabled={!project}
-          onClick={() => {
-            saveProject(this.filePath);
-          }}
+          onClick={saveProject}
         />
         <Separator />
         <Tool
@@ -170,13 +154,13 @@ class Toolbar extends Component {
 Toolbar.propTypes = {
   project: PropTypes.object,
   tables: PropTypes.array,
-  applyProject: PropTypes.func
+  modifyProject: PropTypes.func
 };
 
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-  applyProject: project => dispatch(updateProject(project))
+  modifyProject: project => dispatch(updateProject(project))
 });
 
 export default connect(
