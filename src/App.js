@@ -8,8 +8,15 @@ import {
   clearTables,
   clearFields,
   clearRelations,
-  clearProject
+  clearProject,
+  updateProject
 } from "./store/actions";
+import {
+  createProject,
+  openProject,
+  saveProject,
+  toLaravel
+} from "./helpers/file";
 import Toolbar from "./components/container/Toolbar";
 import WorkArea from "./components/container/WorkArea";
 
@@ -44,8 +51,13 @@ class App extends Component {
 
     if (isProjectInitializedOrClosed || isProjectChanged) {
       const closeProjectMenu = this.menu.getMenuItemById("close-project");
+      const saveProjectMenu = this.menu.getMenuItemById("save-project");
+      const exportProjectMenu = this.menu.getMenuItemById("export-project");
 
       closeProjectMenu.enabled = !!nextProps.project;
+      saveProjectMenu.enabled = !!nextProps.project;
+      exportProjectMenu.enabled = !!nextProps.project;
+
       Menu.setApplicationMenu(this.menu);
     }
   }
@@ -63,7 +75,8 @@ class App extends Component {
       removeAllFields,
       removeAllRelations
     } = this.props;
-    const { Menu } = remote;
+    const { Menu, dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
 
     const template = [
       {
@@ -71,8 +84,54 @@ class App extends Component {
         label: "File",
         submenu: [
           {
+            id: "new-project",
+            label: "New Project",
+            accelerator: "CmdOrCtrl+N",
+            click() {
+              createProject();
+            }
+          },
+          {
+            id: "open-project",
+            label: "Open Project",
+            accelerator: "CmdOrCtrl+O",
+            click() {
+              openProject();
+            }
+          },
+          { type: "separator" },
+          {
+            id: "save-project",
+            label: "Save",
+            accelerator: "CmdOrCtrl+S",
+            enabled: !!project,
+            click() {
+              saveProject();
+            }
+          },
+          { type: "separator" },
+          {
+            id: "export-project",
+            label: "Export to Laravel",
+            accelerator: "CmdOrCtrl+E",
+            enabled: !!project,
+            click() {
+              toLaravel(() => {
+                dialog.showMessageBox(mainWindow, {
+                  type: "info",
+                  message: "Project successfully exported!",
+                  buttons: ["OK"]
+                });
+              });
+            }
+          },
+          {
+            type: "separator"
+          },
+          {
             id: "close-project",
             label: "Close Project",
+            accelerator: "CmdOrCtrl+W",
             enabled: !!project,
             click() {
               removeProject();
@@ -87,6 +146,7 @@ class App extends Component {
           {
             id: "exit",
             label: "Exit",
+            accelerator: "CmdOrCtrl+Q",
             click() {
               remote.getCurrentWindow().close();
             }
@@ -94,7 +154,7 @@ class App extends Component {
         ]
       },
       {
-        label: "View",
+        label: "Developer",
         submenu: [
           { role: "reload" },
           { role: "forcereload" },
