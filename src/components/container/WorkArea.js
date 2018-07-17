@@ -12,10 +12,10 @@ import {
   addRelation,
   removeRelation,
   removeTable,
-  addTable,
-  setProject
+  updateProject
 } from "../../store/actions";
 import { capitalize } from "../../helpers/formatter";
+import { createTable } from "../../helpers/layout";
 import BGLines from "../presentational/BGLines";
 import RelationLinesContainer from "../container/RelationLinesContainer";
 import TableList from "../presentational/TableList";
@@ -210,7 +210,7 @@ class WorkArea extends Component {
   addField() {
     this.activeTable = null;
 
-    const { applyProject, createField } = this.props;
+    const { modifyProject, createField } = this.props;
     const tableID = this.hoveredTable;
 
     const data = {
@@ -220,7 +220,7 @@ class WorkArea extends Component {
       type: "INTEGER"
     };
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     createField(data);
   }
 
@@ -237,7 +237,7 @@ class WorkArea extends Component {
       tables,
       fields,
       relations,
-      applyProject,
+      modifyProject,
       modifyField,
       createRelation,
       deleteRelation
@@ -274,7 +274,7 @@ class WorkArea extends Component {
       [type]: value
     };
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     modifyField(fieldID, data);
   }
 
@@ -288,7 +288,7 @@ class WorkArea extends Component {
     const {
       fields,
       relations,
-      applyProject,
+      modifyProject,
       deleteField,
       deleteRelation
     } = this.props;
@@ -299,7 +299,7 @@ class WorkArea extends Component {
       deleteRelation(relation.id);
     }
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     deleteField(fieldID);
   }
 
@@ -310,46 +310,10 @@ class WorkArea extends Component {
    */
   addTable() {
     const { mouse } = this.state;
-    const { applyProject, createTable, createField, tables } = this.props;
-    const positions = tables.map(item => item.position);
-    let newPosition;
+    const { modifyProject } = this.props;
 
-    const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
-
-    while (true) {
-      newPosition = {
-        x: mouse.x,
-        y: mouse.y
-      };
-
-      if (positions.every(isNotSameWith(newPosition))) {
-        break;
-      }
-    }
-
-    const newTable = {
-      id: uuid(),
-      name: "NewTable",
-      timestamp: Date.now(),
-      position: newPosition,
-      options: {
-        id: true,
-        rememberToken: false,
-        softDeletes: false,
-        timestamps: true
-      }
-    };
-
-    const newField = {
-      id: uuid(),
-      tableID: newTable.id,
-      name: "field",
-      type: "INTEGER"
-    };
-
-    applyProject({ isModified: true });
-    createTable(newTable);
-    createField(newField);
+    modifyProject({ isModified: true });
+    createTable(mouse);
   }
 
   /**
@@ -361,7 +325,7 @@ class WorkArea extends Component {
     const {
       relations,
       fields,
-      applyProject,
+      modifyProject,
       deleteTable,
       deleteField,
       deleteRelation
@@ -381,7 +345,7 @@ class WorkArea extends Component {
       .map(getID)
       .forEach(deleteField);
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     deleteTable(tableID);
 
     this.tables = this.tables.filter(item => item.id !== tableID);
@@ -398,7 +362,7 @@ class WorkArea extends Component {
     const {
       fields,
       relations,
-      applyProject,
+      modifyProject,
       modifyTable,
       deleteRelation,
       createRelation
@@ -432,7 +396,7 @@ class WorkArea extends Component {
       name: newTableName
     };
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     modifyTable(tableID, data);
   }
 
@@ -445,7 +409,7 @@ class WorkArea extends Component {
    */
   updateTablePosition(event, tableID) {
     const { offset } = this.state;
-    const { applyProject, modifyTable } = this.props;
+    const { modifyProject, modifyTable } = this.props;
 
     if (this.activeTable) {
       event.preventDefault();
@@ -458,7 +422,7 @@ class WorkArea extends Component {
       activeTableDOM.setAttributeNS(null, "x", x);
       activeTableDOM.setAttributeNS(null, "y", y);
 
-      applyProject({ isModified: true });
+      modifyProject({ isModified: true });
       modifyTable(tableID, {
         position: { x, y }
       });
@@ -474,10 +438,10 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   updateTableOptions(event, tableID, name) {
-    const { tables, applyProject, modifyTable } = this.props;
+    const { tables, modifyProject, modifyTable } = this.props;
     const table = tables.find(item => item.id === tableID);
 
-    applyProject({ isModified: true });
+    modifyProject({ isModified: true });
     modifyTable(tableID, {
       options: {
         ...table.options,
@@ -493,7 +457,7 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   zoom(event) {
-    const { project, applyProject } = this.props;
+    const { project, modifyProject } = this.props;
     const { deltaY, ctrlKey } = event;
 
     if (project && ctrlKey) {
@@ -508,7 +472,7 @@ class WorkArea extends Component {
       if (!isOutOfBound) {
         const newZoom = zoomValues[newIndex];
 
-        applyProject({ zoom: newZoom });
+        modifyProject({ zoom: newZoom });
       }
     }
   }
@@ -616,8 +580,7 @@ WorkArea.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
-  applyProject: PropTypes.func,
-  createTable: PropTypes.func,
+  modifyProject: PropTypes.func,
   modifyTable: PropTypes.func,
   deleteTable: PropTypes.func,
   modifyField: PropTypes.func,
@@ -630,10 +593,9 @@ WorkArea.propTypes = {
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-  applyProject: project => dispatch(setProject(project)),
+  modifyProject: project => dispatch(updateProject(project)),
   createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
-  createTable: table => dispatch(addTable(table)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   deleteTable: id => dispatch(removeTable(id)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
