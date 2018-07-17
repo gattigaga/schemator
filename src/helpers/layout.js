@@ -1,3 +1,8 @@
+import uuid from "uuid/v4";
+
+import { updateProject, addTable, addField } from "../store/actions";
+import store from "../store/store";
+
 /**
  * Get relation line path points (for SVG d attribute)
  *
@@ -43,4 +48,41 @@ export const getPathPoints = (
   }
 
   return points;
+};
+
+/**
+ * Create new table
+ *
+ * @param {object} position Table position
+ * @param {number} position.x
+ * @param {number} position.y
+ */
+export const createTable = position => {
+  const project = {
+    isModified: true
+  };
+
+  const newTable = {
+    id: uuid(),
+    name: "NewTable",
+    timestamp: Date.now(),
+    position,
+    options: {
+      id: true,
+      rememberToken: false,
+      softDeletes: false,
+      timestamps: true
+    }
+  };
+
+  const newField = {
+    id: uuid(),
+    tableID: newTable.id,
+    name: "field",
+    type: "INTEGER"
+  };
+
+  store.dispatch(updateProject(project));
+  store.dispatch(addTable(newTable));
+  store.dispatch(addField(newField));
 };
