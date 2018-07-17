@@ -10,11 +10,10 @@ import {
   MdHelp
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 
-import { setProject, addTable, addField } from "../../store/actions";
+import { updateProject } from "../../store/actions";
 import { randomBetween } from "../../helpers/math";
-
+import { createTable } from "../../helpers/layout";
 import {
   createProject,
   openProject,
@@ -55,60 +54,34 @@ class Toolbar extends Component {
   }
 
   /**
-   * Create new table
+   * Create new table in random position
    *
    * @memberof Toolbar
    */
   addTable() {
-    const { applyProject, createTable, createField, tables } = this.props;
+    const { tables } = this.props;
     const { workAreaSize } = screen.getPrimaryDisplay();
     const positions = tables.map(item => item.position);
-    let newPosition;
+    let position;
 
     const isNotSameWith = pos => item => item.x !== pos.x && item.y !== pos.y;
 
     while (true) {
-      newPosition = {
+      position = {
         x: randomBetween(16, workAreaSize.width - 240),
         y: randomBetween(64, workAreaSize.height - 240)
       };
 
-      if (positions.every(isNotSameWith(newPosition))) {
+      if (positions.every(isNotSameWith(position))) {
         break;
       }
     }
 
-    const project = {
-      isModified: true
-    };
-
-    const newTable = {
-      id: uuid(),
-      name: "NewTable",
-      timestamp: Date.now(),
-      position: newPosition,
-      options: {
-        id: true,
-        rememberToken: false,
-        softDeletes: false,
-        timestamps: true
-      }
-    };
-
-    const newField = {
-      id: uuid(),
-      tableID: newTable.id,
-      name: "field",
-      type: "INTEGER"
-    };
-
-    applyProject(project);
-    createTable(newTable);
-    createField(newField);
+    createTable(position);
   }
 
   /**
-   * Zoom in or zoom out WorkArea
+   * Zoom in / Zoom out in work area
    *
    * @param {object} event DOM event
    * @memberof Toolbar
@@ -197,17 +170,13 @@ class Toolbar extends Component {
 Toolbar.propTypes = {
   project: PropTypes.object,
   tables: PropTypes.array,
-  applyProject: PropTypes.func,
-  createTable: PropTypes.func,
-  createField: PropTypes.func
+  applyProject: PropTypes.func
 };
 
 const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
-  applyProject: project => dispatch(setProject(project)),
-  createTable: table => dispatch(addTable(table)),
-  createField: field => dispatch(addField(field))
+  applyProject: project => dispatch(updateProject(project))
 });
 
 export default connect(
