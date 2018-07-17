@@ -126,10 +126,7 @@ export const project = (state = null, action) => {
 
   switch (type) {
     case SET_PROJECT:
-      return {
-        ...(state || {}),
-        ...payload
-      };
+      return payload;
 
     case UPDATE_PROJECT:
       return {
