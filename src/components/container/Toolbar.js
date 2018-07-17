@@ -11,27 +11,21 @@ import {
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
-import pluralize from "pluralize";
-import { format } from "date-fns";
-import path from "path";
+
+import { setProject, addTable, addField } from "../../store/actions";
+import { randomBetween } from "../../helpers/math";
 
 import {
-  setProject,
-  setTables,
-  setFields,
-  setRelations,
-  addTable,
-  addField
-} from "../../store/actions";
-import { toSnakeCase } from "../../helpers/formatter";
-import { randomBetween } from "../../helpers/math";
-import { modelTemplate, migrationTemplate } from "../../helpers/template";
+  createProject,
+  openProject,
+  saveProject,
+  toLaravel
+} from "../../helpers/file";
 
 import Tool from "../presentational/Tool";
 import ToolZoom from "../presentational/ToolZoom";
 
 const { remote, screen, shell } = window.require("electron");
-const fs = window.require("fs");
 
 const Container = styled.div`
   width: 100%;
@@ -56,208 +50,8 @@ class Toolbar extends Component {
 
     this.filePath = null;
 
-    this.newProject = this.newProject.bind(this);
-    this.openProject = this.openProject.bind(this);
-    this.saveProject = this.saveProject.bind(this);
     this.addTable = this.addTable.bind(this);
-    this.export = this.export.bind(this);
     this.zoom = this.zoom.bind(this);
-  }
-
-  /**
-   * Create new project
-   *
-   * @memberof Toolbar
-   */
-  newProject() {
-    const {
-      applyProject,
-      applyTables,
-      applyFields,
-      applyRelations
-    } = this.props;
-    const { dialog } = remote;
-    const mainWindow = remote.getCurrentWindow();
-
-    dialog.showSaveDialog(
-      mainWindow,
-      {
-        filters: [
-          {
-            name: "JSON files",
-            extensions: ["json"]
-          }
-        ]
-      },
-      filePath => {
-        if (filePath === undefined) {
-          dialog.showErrorBox("Error", "You should define your project name !");
-          return;
-        }
-
-        const name = path.basename(filePath, ".json");
-
-        const project = {
-          name,
-          timestamp: Date.now(),
-          zoom: 100
-        };
-
-        const tables = [
-          {
-            id: uuid(),
-            name: "User",
-            timestamp: Date.now(),
-            position: {
-              x: 128,
-              y: 128
-            },
-            options: {
-              id: true,
-              rememberToken: true,
-              softDeletes: false,
-              timestamps: true
-            }
-          }
-        ];
-
-        const fields = [
-          {
-            id: uuid(),
-            tableID: tables[0].id,
-            name: "name",
-            type: "STRING"
-          },
-          {
-            id: uuid(),
-            tableID: tables[0].id,
-            name: "email",
-            type: "STRING"
-          },
-          {
-            id: uuid(),
-            tableID: tables[0].id,
-            name: "password",
-            type: "STRING"
-          }
-        ];
-
-        const data = {
-          project,
-          tables,
-          fields
-        };
-
-        const content = JSON.stringify(data, null, 2);
-
-        fs.writeFile(filePath, content, error => {
-          if (error) {
-            dialog.showErrorBox("Error", error.message);
-            return;
-          }
-
-          applyProject({ ...project, isModified: false });
-          applyTables(tables);
-          applyFields(fields);
-          applyRelations([]);
-
-          this.filePath = filePath;
-        });
-      }
-    );
-  }
-
-  /**
-   * Open existing project
-   *
-   * @memberof Toolbar
-   */
-  openProject() {
-    const {
-      applyProject,
-      applyTables,
-      applyFields,
-      applyRelations
-    } = this.props;
-    const { dialog } = remote;
-    const mainWindow = remote.getCurrentWindow();
-
-    dialog.showOpenDialog(
-      mainWindow,
-      {
-        properties: ["openFile"],
-        filters: [
-          {
-            name: "JSON files",
-            extensions: ["json"]
-          }
-        ]
-      },
-      filePaths => {
-        if (filePaths === undefined) {
-          dialog.showErrorBox("Error", "No file selected !");
-          return;
-        }
-
-        const filePath = filePaths[0];
-        this.filePath = filePath;
-
-        fs.readFile(filePath, "utf-8", (error, content) => {
-          if (error) {
-            dialog.showErrorBox("Error", error.message);
-            return;
-          }
-
-          const data = JSON.parse(content);
-
-          applyProject({
-            ...data.project,
-            zoom: data.project.zoom || 100
-          });
-
-          if (data.tables) {
-            applyTables(data.tables);
-          }
-
-          if (data.fields) {
-            applyFields(data.fields);
-          }
-
-          if (data.relations) {
-            applyRelations(data.relations);
-          }
-        });
-      }
-    );
-  }
-
-  /**
-   * Save current project
-   *
-   * @memberof Toolbar
-   */
-  saveProject() {
-    const { project, tables, fields, relations, applyProject } = this.props;
-    const { isModified, ...newProject } = project;
-    const { dialog } = remote;
-
-    const data = {
-      tables,
-      fields,
-      relations,
-      project: newProject
-    };
-
-    const content = JSON.stringify(data, null, 2);
-
-    fs.writeFile(this.filePath, content, error => {
-      if (error) {
-        dialog.showErrorBox("Error", error.message);
-        return;
-      }
-
-      applyProject({ isModified: false });
-    });
   }
 
   /**
@@ -314,70 +108,6 @@ class Toolbar extends Component {
   }
 
   /**
-   * Export to Laravel model and migration
-   *
-   * @memberof Toolbar
-   */
-  export() {
-    const { project, tables, fields } = this.props;
-    const { dialog } = remote;
-    const mainWindow = remote.getCurrentWindow();
-
-    dialog.showOpenDialog(
-      mainWindow,
-      {
-        properties: ["openDirectory"]
-      },
-      dirPaths => {
-        if (dirPaths === undefined) {
-          dialog.showErrorBox("Error", "No folder selected !");
-          return;
-        }
-
-        const dirPath = dirPaths[0];
-        const exportPath = `${dirPath}/${project.name}`;
-        const modelPath = `${exportPath}/app`;
-        const databasePath = `${exportPath}/database`;
-        const migrationPath = `${databasePath}/migrations`;
-
-        fs.mkdirSync(exportPath);
-        fs.mkdirSync(modelPath);
-        fs.mkdirSync(databasePath);
-        fs.mkdirSync(migrationPath);
-
-        tables.forEach((table, index) => {
-          const byTable = field => field.tableID === table.id;
-
-          const modelName = table.name;
-          const tableName = pluralize(toSnakeCase(modelName));
-          const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
-          const modelFilename = `${modelName}.php`;
-          const migrationFilename = `${date}_create_${tableName}_table.php`;
-          const tableFields = fields.filter(byTable);
-          const fillable = tableFields.map(item => item.name);
-          const model = modelTemplate(modelName, fillable);
-          const migration = migrationTemplate(
-            modelName,
-            table.options,
-            tableFields
-          );
-
-          fs.writeFileSync(`${modelPath}/${modelFilename}`, model);
-          fs.writeFileSync(`${migrationPath}/${migrationFilename}`, migration);
-
-          if (index === tables.length - 1) {
-            dialog.showMessageBox(mainWindow, {
-              type: "info",
-              message: "Project successfully exported!",
-              buttons: ["OK"]
-            });
-          }
-        });
-      }
-    );
-  }
-
-  /**
    * Zoom in or zoom out WorkArea
    *
    * @param {object} event DOM event
@@ -392,27 +122,51 @@ class Toolbar extends Component {
 
   render() {
     const { project } = this.props;
+    const { dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
 
     return (
       <Container>
-        <Tool tooltip="New Project" icon={MdAddBox} onClick={this.newProject} />
+        <Tool
+          tooltip="New Project"
+          icon={MdAddBox}
+          onClick={() => {
+            createProject(filePath => {
+              this.filePath = filePath;
+            });
+          }}
+        />
         <Tool
           tooltip="Open Project"
           icon={MdFolderOpen}
-          onClick={this.openProject}
+          onClick={() => {
+            openProject(filePath => {
+              this.filePath = filePath;
+            });
+          }}
         />
         <Tool
           tooltip="Save Project"
           icon={MdSave}
           isDisabled={!project}
-          onClick={this.saveProject}
+          onClick={() => {
+            saveProject(this.filePath);
+          }}
         />
         <Separator />
         <Tool
           tooltip="Export"
           icon={MdArchive}
           isDisabled={!project}
-          onClick={this.export}
+          onClick={() => {
+            toLaravel(() => {
+              dialog.showMessageBox(mainWindow, {
+                type: "info",
+                message: "Project successfully exported!",
+                buttons: ["OK"]
+              });
+            });
+          }}
         />
         <Separator />
         <Tool
@@ -443,12 +197,7 @@ class Toolbar extends Component {
 Toolbar.propTypes = {
   project: PropTypes.object,
   tables: PropTypes.array,
-  fields: PropTypes.array,
-  relations: PropTypes.array,
   applyProject: PropTypes.func,
-  applyTables: PropTypes.func,
-  applyFields: PropTypes.func,
-  applyRelations: PropTypes.func,
   createTable: PropTypes.func,
   createField: PropTypes.func
 };
@@ -457,9 +206,6 @@ const mapStateToProps = state => state;
 
 const mapDispatchToProps = dispatch => ({
   applyProject: project => dispatch(setProject(project)),
-  applyTables: tables => dispatch(setTables(tables)),
-  applyFields: fields => dispatch(setFields(fields)),
-  applyRelations: relations => dispatch(setRelations(relations)),
   createTable: table => dispatch(addTable(table)),
   createField: field => dispatch(addField(field))
 });
