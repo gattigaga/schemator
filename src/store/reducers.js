@@ -19,7 +19,8 @@ import {
   SET_PROJECT,
   CLEAR_PROJECT,
   SET_ALERT,
-  UPDATE_PROJECT
+  UPDATE_PROJECT,
+  SET_RECENT_PROJECTS
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -159,6 +160,18 @@ export const alert = (
         ...state,
         ...payload
       };
+
+    default:
+      return state;
+  }
+};
+
+export const recentProjects = (state = [], action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case SET_RECENT_PROJECTS:
+      return payload;
 
     default:
       return state;
