@@ -40,23 +40,29 @@ class App extends Component {
     this.createMenu();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     const { Menu } = remote;
     const { project } = this.props;
-    const isProjectInitializedOrClosed = !nextProps.project || !project;
+    const isProjectInitializedOrClosed = !prevProps.project || !project;
     const isProjectChanged =
       !!project &&
-      !!nextProps.project &&
-      nextProps.project.name !== project.name;
+      !!prevProps.project &&
+      prevProps.project.name !== project.name;
 
     if (isProjectInitializedOrClosed || isProjectChanged) {
-      const closeProjectMenu = this.menu.getMenuItemById("close-project");
-      const saveProjectMenu = this.menu.getMenuItemById("save-project");
-      const exportProjectMenu = this.menu.getMenuItemById("export-project");
+      const menuIDs = [
+        "close-project",
+        "save-project",
+        "export-project",
+        "zoom-in",
+        "zoom-out"
+      ];
 
-      closeProjectMenu.enabled = !!nextProps.project;
-      saveProjectMenu.enabled = !!nextProps.project;
-      exportProjectMenu.enabled = !!nextProps.project;
+      const menus = menuIDs.map(this.menu.getMenuItemById);
+
+      menus.forEach(item => {
+        item.enabled = !!project;
+      });
 
       Menu.setApplicationMenu(this.menu);
     }
@@ -68,15 +74,9 @@ class App extends Component {
    * @memberof App
    */
   createMenu() {
-    const {
-      project,
-      removeProject,
-      removeAllTables,
-      removeAllFields,
-      removeAllRelations
-    } = this.props;
     const { Menu, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
+    const zoomPercentages = [25, 33, 50, 67, 75, 80, 90, 100];
 
     const template = [
       {
@@ -86,36 +86,30 @@ class App extends Component {
           {
             id: "new-project",
             label: "New Project",
-            accelerator: "CmdOrCtrl+N",
-            click() {
-              createProject();
-            }
+            acceleratoclickr: "CmdOrCtrl+N",
+            click: () => createProject()
           },
           {
             id: "open-project",
             label: "Open Project",
             accelerator: "CmdOrCtrl+O",
-            click() {
-              openProject();
-            }
+            click: () => openProject()
           },
           { type: "separator" },
           {
             id: "save-project",
             label: "Save",
             accelerator: "CmdOrCtrl+S",
-            enabled: !!project,
-            click() {
-              saveProject();
-            }
+            enabled: false,
+            click: () => saveProject()
           },
           { type: "separator" },
           {
             id: "export-project",
             label: "Export to Laravel",
             accelerator: "CmdOrCtrl+E",
-            enabled: !!project,
-            click() {
+            enabled: false,
+            click: () => {
               toLaravel(() => {
                 dialog.showMessageBox(mainWindow, {
                   type: "info",
@@ -132,8 +126,15 @@ class App extends Component {
             id: "close-project",
             label: "Close Project",
             accelerator: "CmdOrCtrl+W",
-            enabled: !!project,
-            click() {
+            enabled: false,
+            click: () => {
+              const {
+                removeProject,
+                removeAllTables,
+                removeAllFields,
+                removeAllRelations
+              } = this.props;
+
               removeProject();
               removeAllTables();
               removeAllFields();
@@ -147,8 +148,49 @@ class App extends Component {
             id: "exit",
             label: "Exit",
             accelerator: "CmdOrCtrl+Q",
-            click() {
+            click: () => {
               remote.getCurrentWindow().close();
+            }
+          }
+        ]
+      },
+      {
+        label: "View",
+        submenu: [
+          {
+            id: "zoom-in",
+            label: "Zoom In",
+            enabled: false,
+            click: () => {
+              const { project, modifyProject } = this.props;
+              const { zoom } = project;
+              const zoomIndex = zoomPercentages.findIndex(
+                item => item === zoom
+              );
+
+              if (zoomIndex < zoomPercentages.length - 1) {
+                modifyProject({
+                  zoom: zoomPercentages[zoomIndex + 1]
+                });
+              }
+            }
+          },
+          {
+            id: "zoom-out",
+            label: "Zoom Out",
+            enabled: false,
+            click: () => {
+              const { project, modifyProject } = this.props;
+              const { zoom } = project;
+              const zoomIndex = zoomPercentages.findIndex(
+                item => item === zoom
+              );
+
+              if (zoomIndex > 0) {
+                modifyProject({
+                  zoom: zoomPercentages[zoomIndex - 1]
+                });
+              }
             }
           }
         ]
@@ -192,7 +234,8 @@ App.propTypes = {
   removeProject: PropTypes.func,
   removeAllTables: PropTypes.func,
   removeAllFields: PropTypes.func,
-  removeAllRelations: PropTypes.func
+  removeAllRelations: PropTypes.func,
+  modifyProject: PropTypes.func
 };
 
 const mapStateToProps = ({ project }) => ({ project });
@@ -201,7 +244,8 @@ const mapDispatchToProps = dispatch => ({
   removeProject: () => dispatch(clearProject()),
   removeAllTables: () => dispatch(clearTables()),
   removeAllFields: () => dispatch(clearFields()),
-  removeAllRelations: () => dispatch(clearRelations())
+  removeAllRelations: () => dispatch(clearRelations()),
+  modifyProject: project => dispatch(updateProject(project))
 });
 
 export default connect(
