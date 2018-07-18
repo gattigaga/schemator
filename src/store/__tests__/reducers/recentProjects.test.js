@@ -1,4 +1,4 @@
-import { setRecentProjects } from "../../actions";
+import { setRecentProjects, addRecentProject } from "../../actions";
 import { recentProjects } from "../../reducers";
 
 describe("recentProjects()", () => {
@@ -13,6 +13,16 @@ describe("recentProjects()", () => {
     const expected = ["/file-1.json", "/file-2.json", "/file-3.json"];
     const action = setRecentProjects(expected);
     const result = recentProjects(undefined, action);
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should add new recent project", () => {
+    const initial = ["/file-1.json"];
+    const newRecent = "/file-2.json";
+    const expected = [...initial, newRecent];
+    const action = addRecentProject(newRecent);
+    const result = recentProjects(initial, action);
 
     expect(result).toEqual(expected);
   });

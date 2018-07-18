@@ -20,7 +20,8 @@ import {
   CLEAR_PROJECT,
   SET_ALERT,
   UPDATE_PROJECT,
-  SET_RECENT_PROJECTS
+  SET_RECENT_PROJECTS,
+  ADD_RECENT_PROJECT
 } from "./actions";
 
 export const tables = (state = [], action) => {
@@ -172,6 +173,9 @@ export const recentProjects = (state = [], action) => {
   switch (type) {
     case SET_RECENT_PROJECTS:
       return payload;
+
+    case ADD_RECENT_PROJECT:
+      return [...state, payload];
 
     default:
       return state;
