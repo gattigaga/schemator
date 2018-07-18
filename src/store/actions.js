@@ -21,6 +21,7 @@ export const CLEAR_PROJECT = "CLEAR_PROJECT";
 export const UPDATE_PROJECT = "UPDATE_PROJECT";
 
 export const SET_ALERT = "SET_ALERT";
+export const SET_RECENT_PROJECTS = "SET_RECENT_PROJECTS";
 
 /**
  * Get action to set tables
@@ -270,4 +271,15 @@ export const updateProject = project => ({
 export const setAlert = alert => ({
   type: SET_ALERT,
   payload: alert
+});
+
+/**
+ * Get action to set recent opened projects
+ *
+ * @param {string[]} recents File path lists
+ * @returns {object} Action
+ */
+export const setRecentProjects = recents => ({
+  type: SET_RECENT_PROJECTS,
+  payload: recents
 });
