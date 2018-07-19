@@ -9,11 +9,13 @@ import {
   clearFields,
   clearRelations,
   clearProject,
-  updateProject
+  updateProject,
+  setRecentProjects
 } from "./store/actions";
 import {
   createProject,
   openProject,
+  loadProject,
   saveProject,
   toLaravel
 } from "./helpers/file";
@@ -21,6 +23,7 @@ import Toolbar from "./components/container/Toolbar";
 import WorkArea from "./components/container/WorkArea";
 
 const { remote } = window.require("electron");
+const fs = window.require("fs");
 
 const Container = styled.div`
   display: flex;
@@ -37,12 +40,13 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.initConfig();
     this.createMenu();
   }
 
   componentDidUpdate(prevProps) {
-    const { Menu } = remote;
-    const { project } = this.props;
+    const { Menu, MenuItem } = remote;
+    const { project, recentProjects } = this.props;
     const isProjectInitializedOrClosed = !prevProps.project || !project;
     const isProjectChanged =
       !!project &&
@@ -65,6 +69,25 @@ class App extends Component {
       });
 
       Menu.setApplicationMenu(this.menu);
+    }
+
+    if (recentProjects.length) {
+      const { submenu } = this.menu.getMenuItemById("open-recent");
+      const recents = recentProjects
+        .filter(label => {
+          return !submenu.items.find(item => item.label === label);
+        })
+        .map(label => {
+          return new MenuItem({
+            label,
+            click: () => loadProject(label)
+          });
+        });
+
+      if (recents.length) {
+        recents.forEach(submenu.append);
+        Menu.setApplicationMenu(this.menu);
+      }
     }
   }
 
@@ -94,6 +117,16 @@ class App extends Component {
             label: "Open Project",
             accelerator: "CmdOrCtrl+O",
             click: () => openProject()
+          },
+          {
+            id: "open-recent",
+            label: "Open Recent",
+            submenu: [
+              {
+                id: "clear-recent",
+                label: "Clear Recently Opened"
+              }
+            ]
           },
           { type: "separator" },
           {
@@ -209,6 +242,36 @@ class App extends Component {
     Menu.setApplicationMenu(this.menu);
   }
 
+  /**
+   * Load app config file if exists otherwise create it
+   *
+   * @memberof App
+   */
+  initConfig() {
+    const { app } = remote;
+    const osConfigPath = app.getPath("appData");
+    const appConfigPath = `${osConfigPath}/schemator`;
+    const fileRecents = `${appConfigPath}/recents.txt`;
+
+    if (!fs.existsSync(osConfigPath)) {
+      fs.mkdirSync(osConfigPath);
+    }
+
+    if (!fs.existsSync(appConfigPath)) {
+      fs.mkdirSync(appConfigPath);
+    }
+
+    if (!fs.existsSync(fileRecents)) {
+      fs.writeFileSync(fileRecents, "");
+    } else {
+      const { applyRecentProjects } = this.props;
+      const content = fs.readFileSync(fileRecents, "utf8");
+      const recents = content.split("\n");
+
+      applyRecentProjects(recents);
+    }
+  }
+
   render() {
     const { project } = this.props;
 
@@ -231,21 +294,27 @@ class App extends Component {
 
 App.propTypes = {
   project: PropTypes.object,
+  recentProjects: PropTypes.array,
   removeProject: PropTypes.func,
   removeAllTables: PropTypes.func,
   removeAllFields: PropTypes.func,
   removeAllRelations: PropTypes.func,
-  modifyProject: PropTypes.func
+  modifyProject: PropTypes.func,
+  applyRecentProjects: PropTypes.func
 };
 
-const mapStateToProps = ({ project }) => ({ project });
+const mapStateToProps = ({ project, recentProjects }) => ({
+  project,
+  recentProjects
+});
 
 const mapDispatchToProps = dispatch => ({
   removeProject: () => dispatch(clearProject()),
   removeAllTables: () => dispatch(clearTables()),
   removeAllFields: () => dispatch(clearFields()),
   removeAllRelations: () => dispatch(clearRelations()),
-  modifyProject: project => dispatch(updateProject(project))
+  modifyProject: project => dispatch(updateProject(project)),
+  applyRecentProjects: recents => dispatch(setRecentProjects(recents))
 });
 
 export default connect(

@@ -8,7 +8,8 @@ import {
   setTables,
   setFields,
   setRelations,
-  updateProject
+  updateProject,
+  addRecentProject
 } from "../store/actions";
 import store from "../store/store";
 import { modelTemplate, migrationTemplate } from "./template";
@@ -37,8 +38,7 @@ export const createProject = callback => {
       ]
     },
     filePath => {
-      if (filePath === undefined) {
-        dialog.showErrorBox("Error", "You should define your project name !");
+      if (!filePath) {
         return;
       }
 
@@ -103,10 +103,24 @@ export const createProject = callback => {
           return;
         }
 
+        const { recentProjects } = store.getState();
+
         store.dispatch(setProject({ ...project, filePath, isModified: false }));
         store.dispatch(setTables(tables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
+
+        if (!recentProjects.includes(filePath)) {
+          const { app } = remote;
+          const osConfigPath = app.getPath("appData");
+          const appConfigPath = `${osConfigPath}/schemator`;
+          const fileRecents = `${appConfigPath}/recents.txt`;
+          const recents = [...recentProjects, filePath];
+          const data = recents.join("\n");
+
+          fs.writeFileSync(fileRecents, data);
+          store.dispatch(addRecentProject(filePath));
+        }
 
         if (callback) {
           callback();
@@ -137,45 +151,13 @@ export const openProject = callback => {
       ]
     },
     filePaths => {
-      if (filePaths === undefined) {
-        dialog.showErrorBox("Error", "No file selected !");
+      if (!filePaths) {
         return;
       }
 
       const filePath = filePaths[0];
 
-      fs.readFile(filePath, "utf-8", (error, content) => {
-        if (error) {
-          dialog.showErrorBox("Error", error.message);
-          return;
-        }
-
-        const { project, tables, fields, relations } = JSON.parse(content);
-
-        store.dispatch(
-          setProject({
-            ...project,
-            filePath,
-            zoom: project.zoom || 100
-          })
-        );
-
-        if (tables) {
-          store.dispatch(setTables(tables));
-        }
-
-        if (fields) {
-          store.dispatch(setFields(fields));
-        }
-
-        if (relations) {
-          store.dispatch(setRelations(relations));
-        }
-
-        if (callback) {
-          callback();
-        }
-      });
+      loadProject(filePath, callback);
     }
   );
 };
@@ -214,6 +196,62 @@ export const saveProject = callback => {
 };
 
 /**
+ * Load a project
+ *
+ * @param {string} filePath
+ * @param {function} [callback]
+ */
+export const loadProject = (filePath, callback) => {
+  fs.readFile(filePath, "utf-8", (error, content) => {
+    if (error) {
+      const { dialog } = remote;
+
+      dialog.showErrorBox("Error", error.message);
+      return;
+    }
+
+    const { recentProjects } = store.getState();
+    const { project, tables, fields, relations } = JSON.parse(content);
+
+    store.dispatch(
+      setProject({
+        ...project,
+        filePath,
+        zoom: project.zoom || 100
+      })
+    );
+
+    if (tables) {
+      store.dispatch(setTables(tables));
+    }
+
+    if (fields) {
+      store.dispatch(setFields(fields));
+    }
+
+    if (relations) {
+      store.dispatch(setRelations(relations));
+    }
+
+    if (!recentProjects.includes(filePath)) {
+      const { app } = remote;
+      const osConfigPath = app.getPath("appData");
+      const appConfigPath = `${osConfigPath}/schemator`;
+      const fileRecents = `${appConfigPath}/recents.txt`;
+      const recents = [...recentProjects, filePath];
+      const data = recents.join("\n");
+
+      fs.writeFileSync(fileRecents, data);
+      store.dispatch(addRecentProject(filePath));
+    }
+
+    if (callback) {
+      callback();
+    }
+  });
+};
+
+/**
  * Export to Laravel model and migration
  *
  * @param {function} [callback]
@@ -229,8 +267,7 @@ export const toLaravel = callback => {
       properties: ["openDirectory"]
     },
     dirPaths => {
-      if (dirPaths === undefined) {
-        dialog.showErrorBox("Error", "No folder selected !");
+      if (!dirPaths) {
         return;
       }
 
