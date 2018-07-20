@@ -205,11 +205,25 @@ class App extends Component {
             enabled: false,
             click: () => {
               const {
+                project,
                 removeProject,
                 removeAllTables,
                 removeAllFields,
                 removeAllRelations
               } = this.props;
+
+              if (project.isModified) {
+                const choice = dialog.showMessageBox(mainWindow, {
+                  type: "question",
+                  buttons: ["Yes", "No"],
+                  title: "Your current project has been modified",
+                  message: "Do you want to save changes your current project ?"
+                });
+
+                if (choice === 0) {
+                  saveProject();
+                }
+              }
 
               removeProject();
               removeAllTables();
