@@ -46,7 +46,7 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { Menu, MenuItem } = remote;
-    const { project, recentProjects } = this.props;
+    const { project, recentProjects, applyRecentProjects } = this.props;
     const isProjectInitializedOrClosed = !prevProps.project || !project;
     const isProjectChanged =
       !!project &&
@@ -71,23 +71,44 @@ class App extends Component {
       Menu.setApplicationMenu(this.menu);
     }
 
-    if (recentProjects.length) {
+    if (recentProjects.length !== prevProps.recentProjects.length) {
       const { submenu } = this.menu.getMenuItemById("open-recent");
-      const recents = recentProjects
-        .filter(label => {
-          return !submenu.items.find(item => item.label === label);
-        })
-        .map(label => {
-          return new MenuItem({
-            label,
-            click: () => loadProject(label)
-          });
-        });
 
-      if (recents.length) {
-        recents.forEach(submenu.append);
-        Menu.setApplicationMenu(this.menu);
-      }
+      submenu.clear();
+
+      const recents = recentProjects.map(label => {
+        return new MenuItem({
+          label,
+          click: () => loadProject(label)
+        });
+      });
+
+      submenu.append(
+        new MenuItem({
+          id: "clear-recent",
+          label: "Clear Recently Opened",
+          click: () => {
+            const { app } = remote;
+            const osConfigPath = app.getPath("appData");
+            const appConfigPath = `${osConfigPath}/schemator`;
+            const fileRecents = `${appConfigPath}/recents.txt`;
+
+            if (!fs.existsSync(osConfigPath)) {
+              fs.mkdirSync(osConfigPath);
+            }
+
+            if (!fs.existsSync(appConfigPath)) {
+              fs.mkdirSync(appConfigPath);
+            }
+
+            fs.writeFileSync(fileRecents, "");
+            applyRecentProjects([]);
+          }
+        })
+      );
+
+      recents.forEach(submenu.append);
+      Menu.setApplicationMenu(this.menu);
     }
   }
 
@@ -97,6 +118,7 @@ class App extends Component {
    * @memberof App
    */
   createMenu() {
+    const { applyRecentProjects } = this.props;
     const { Menu, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
     const zoomPercentages = [25, 33, 50, 67, 75, 80, 90, 100];
@@ -124,7 +146,24 @@ class App extends Component {
             submenu: [
               {
                 id: "clear-recent",
-                label: "Clear Recently Opened"
+                label: "Clear Recently Opened",
+                click: () => {
+                  const { app } = remote;
+                  const osConfigPath = app.getPath("appData");
+                  const appConfigPath = `${osConfigPath}/schemator`;
+                  const fileRecents = `${appConfigPath}/recents.txt`;
+
+                  if (!fs.existsSync(osConfigPath)) {
+                    fs.mkdirSync(osConfigPath);
+                  }
+
+                  if (!fs.existsSync(appConfigPath)) {
+                    fs.mkdirSync(appConfigPath);
+                  }
+
+                  fs.writeFileSync(fileRecents, "");
+                  applyRecentProjects([]);
+                }
               }
             ]
           },
@@ -266,7 +305,7 @@ class App extends Component {
     } else {
       const { applyRecentProjects } = this.props;
       const content = fs.readFileSync(fileRecents, "utf8");
-      const recents = content.split("\n");
+      const recents = content.split("\n").filter(item => !!item);
 
       applyRecentProjects(recents);
     }
