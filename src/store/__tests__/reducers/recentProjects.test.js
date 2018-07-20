@@ -20,7 +20,7 @@ describe("recentProjects()", () => {
   it("should add new recent project", () => {
     const initial = ["/file-1.json"];
     const newRecent = "/file-2.json";
-    const expected = [...initial, newRecent];
+    const expected = [newRecent, ...initial];
     const action = addRecentProject(newRecent);
     const result = recentProjects(initial, action);
 

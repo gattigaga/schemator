@@ -175,7 +175,7 @@ export const recentProjects = (state = [], action) => {
       return payload;
 
     case ADD_RECENT_PROJECT:
-      return [...state, payload];
+      return [payload, ...state];
 
     default:
       return state;
