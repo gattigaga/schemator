@@ -104,23 +104,21 @@ export const createProject = callback => {
         }
 
         const { recentProjects } = store.getState();
+        const { app } = remote;
+        const osConfigPath = app.getPath("appData");
+        const appConfigPath = `${osConfigPath}/schemator`;
+        const fileRecents = `${appConfigPath}/recents.txt`;
+        const remainings = recentProjects.filter(item => item !== filePath);
+        const recents = [filePath, ...remainings];
+        const data = recents.join("\n").slice(0, 10);
+
+        fs.writeFileSync(fileRecents, data);
 
         store.dispatch(setProject({ ...project, filePath, isModified: false }));
         store.dispatch(setTables(tables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
-
-        if (!recentProjects.includes(filePath)) {
-          const { app } = remote;
-          const osConfigPath = app.getPath("appData");
-          const appConfigPath = `${osConfigPath}/schemator`;
-          const fileRecents = `${appConfigPath}/recents.txt`;
-          const recents = [...recentProjects, filePath];
-          const data = recents.join("\n");
-
-          fs.writeFileSync(fileRecents, data);
-          store.dispatch(addRecentProject(filePath));
-        }
+        store.dispatch(addRecentProject(filePath));
 
         if (callback) {
           callback();
@@ -212,6 +210,16 @@ export const loadProject = (filePath, callback) => {
 
     const { recentProjects } = store.getState();
     const { project, tables, fields, relations } = JSON.parse(content);
+    const { app } = remote;
+    const osConfigPath = app.getPath("appData");
+    const appConfigPath = `${osConfigPath}/schemator`;
+    const fileRecents = `${appConfigPath}/recents.txt`;
+    const remainings = recentProjects.filter(item => item !== filePath);
+    const recents = [filePath, ...remainings];
+    const data = recents.join("\n").slice(0, 10);
+
+    fs.writeFileSync(fileRecents, data);
+    store.dispatch(addRecentProject(filePath));
 
     store.dispatch(
       setProject({
@@ -231,18 +239,6 @@ export const loadProject = (filePath, callback) => {
 
     if (relations) {
       store.dispatch(setRelations(relations));
-    }
-
-    if (!recentProjects.includes(filePath)) {
-      const { app } = remote;
-      const osConfigPath = app.getPath("appData");
-      const appConfigPath = `${osConfigPath}/schemator`;
-      const fileRecents = `${appConfigPath}/recents.txt`;
-      const recents = [...recentProjects, filePath];
-      const data = recents.join("\n");
-
-      fs.writeFileSync(fileRecents, data);
-      store.dispatch(addRecentProject(filePath));
     }
 
     if (callback) {

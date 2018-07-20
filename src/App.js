@@ -107,6 +107,10 @@ class App extends Component {
         })
       );
 
+      if (recents.length) {
+        submenu.append(new MenuItem({ type: "separator" }));
+      }
+
       recents.forEach(submenu.append);
       Menu.setApplicationMenu(this.menu);
     }
