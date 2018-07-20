@@ -9,7 +9,7 @@ import {
   setFields,
   setRelations,
   updateProject,
-  addRecentProject
+  setRecentProjects
 } from "../store/actions";
 import store from "../store/store";
 import { modelTemplate, migrationTemplate } from "./template";
@@ -108,17 +108,16 @@ export const createProject = callback => {
         const osConfigPath = app.getPath("appData");
         const appConfigPath = `${osConfigPath}/schemator`;
         const fileRecents = `${appConfigPath}/recents.txt`;
-        const remainings = recentProjects.filter(item => item !== filePath);
-        const recents = [filePath, ...remainings];
-        const data = recents.join("\n").slice(0, 10);
+        const remainings = [...new Set([filePath, ...recentProjects])];
+        const recents = remainings.slice(0, 10);
+        const data = recents.join("\n");
 
         fs.writeFileSync(fileRecents, data);
-
+        store.dispatch(setRecentProjects(recents));
         store.dispatch(setProject({ ...project, filePath, isModified: false }));
         store.dispatch(setTables(tables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
-        store.dispatch(addRecentProject(filePath));
 
         if (callback) {
           callback();
@@ -214,12 +213,12 @@ export const loadProject = (filePath, callback) => {
     const osConfigPath = app.getPath("appData");
     const appConfigPath = `${osConfigPath}/schemator`;
     const fileRecents = `${appConfigPath}/recents.txt`;
-    const remainings = recentProjects.filter(item => item !== filePath);
-    const recents = [filePath, ...remainings];
-    const data = recents.join("\n").slice(0, 10);
+    const remainings = [...new Set([filePath, ...recentProjects])];
+    const recents = remainings.slice(0, 10);
+    const data = recents.join("\n");
 
     fs.writeFileSync(fileRecents, data);
-    store.dispatch(addRecentProject(filePath));
+    store.dispatch(setRecentProjects(recents));
 
     store.dispatch(
       setProject({

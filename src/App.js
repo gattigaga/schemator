@@ -113,6 +113,54 @@ class App extends Component {
 
       recents.forEach(submenu.append);
       Menu.setApplicationMenu(this.menu);
+    } else {
+      const comparison = recentProjects.map(
+        (item, index) => item === prevProps.recentProjects[index]
+      );
+
+      if (comparison.includes(false)) {
+        const { submenu } = this.menu.getMenuItemById("open-recent");
+
+        submenu.clear();
+
+        const recents = recentProjects.map(label => {
+          return new MenuItem({
+            label,
+            click: () => loadProject(label)
+          });
+        });
+
+        submenu.append(
+          new MenuItem({
+            id: "clear-recent",
+            label: "Clear Recently Opened",
+            click: () => {
+              const { app } = remote;
+              const osConfigPath = app.getPath("appData");
+              const appConfigPath = `${osConfigPath}/schemator`;
+              const fileRecents = `${appConfigPath}/recents.txt`;
+
+              if (!fs.existsSync(osConfigPath)) {
+                fs.mkdirSync(osConfigPath);
+              }
+
+              if (!fs.existsSync(appConfigPath)) {
+                fs.mkdirSync(appConfigPath);
+              }
+
+              fs.writeFileSync(fileRecents, "");
+              applyRecentProjects([]);
+            }
+          })
+        );
+
+        if (recents.length) {
+          submenu.append(new MenuItem({ type: "separator" }));
+        }
+
+        recents.forEach(submenu.append);
+        Menu.setApplicationMenu(this.menu);
+      }
     }
   }
 
