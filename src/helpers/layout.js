@@ -2,6 +2,7 @@ import uuid from "uuid/v4";
 
 import { updateProject, addTable, addField } from "../store/actions";
 import store from "../store/store";
+import { stripIndent } from "common-tags";
 
 /**
  * Get relation line path points (for SVG d attribute)
@@ -32,22 +33,32 @@ export const getPathPoints = (
   let points = "";
 
   if (isFromTableInRight) {
-    points = `
-        M${fPosX + halfHeaderHeight} ${fPosY + inputY} 
-        C${fPosX - curvePoint} ${fPosY + inputY} 
-          ${tPosX + tableWidth + curvePoint} ${tPosY + halfHeaderHeight} 
-          ${tPosX + tableWidth} ${tPosY + halfHeaderHeight}
-      `;
+    const m = [fPosX + halfHeaderHeight, fPosY + inputY].join(" ");
+    const c = [
+      fPosX - curvePoint,
+      fPosY + inputY,
+      tPosX + tableWidth + curvePoint,
+      tPosY + halfHeaderHeight,
+      tPosX + tableWidth,
+      tPosY + halfHeaderHeight
+    ].join(" ");
+
+    points = `M${m} C${c}`;
   } else {
-    points = `
-        M${fPosX + tableWidth - halfHeaderHeight} ${fPosY + inputY} 
-        C${fPosX + tableWidth + curvePoint} ${fPosY + inputY} 
-          ${tPosX - curvePoint} ${tPosY + halfHeaderHeight} 
-          ${tPosX + halfHeaderHeight} ${tPosY + halfHeaderHeight}
-      `;
+    const m = [fPosX + tableWidth - halfHeaderHeight, fPosY + inputY].join(" ");
+    const c = [
+      fPosX + tableWidth + curvePoint,
+      fPosY + inputY,
+      tPosX - curvePoint,
+      tPosY + halfHeaderHeight,
+      tPosX + halfHeaderHeight,
+      tPosY + halfHeaderHeight
+    ].join(" ");
+
+    points = `M${m} C${c}`;
   }
 
-  return points;
+  return points.replace("\n", "");
 };
 
 /**

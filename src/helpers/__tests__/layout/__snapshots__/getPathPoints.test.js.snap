@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getPathPoints() should returns path points (foreign key in left table) 1`] = `"M254 87 C336 87 256 50 338 50"`;
+
+exports[`getPathPoints() should returns path points (foreign key in right table) 1`] = `"M338 87 C256 87 336 50 272 50"`;
