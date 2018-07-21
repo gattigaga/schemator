@@ -2,7 +2,6 @@ import uuid from "uuid/v4";
 
 import { updateProject, addTable, addField } from "../store/actions";
 import store from "../store/store";
-import { stripIndent } from "common-tags";
 
 /**
  * Get relation line path points (for SVG d attribute)
