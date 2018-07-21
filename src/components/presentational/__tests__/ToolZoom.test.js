@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import ToolZoom, { Select } from "../ToolZoom";
 
@@ -24,7 +23,7 @@ describe("ToolZoom", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it("should renders as disabled", () => {

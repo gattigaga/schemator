@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import TableHeader, { Caption } from "../TableHeader";
 
@@ -23,7 +22,7 @@ describe("TableHeader", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it("should calls 'onChangeCaption' while caption changed", () => {

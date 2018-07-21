@@ -47,7 +47,6 @@ const Alert = ({
 }) => {
   const Icon = styled(icon)`
     font-size: 48px;
-    color: ${({ iconColor }) => iconColor};
     margin-right: 24px;
   `;
 
@@ -72,7 +71,7 @@ const Alert = ({
       onRequestClose={onRequestClose}
     >
       <Row>
-        <Icon iconColor={iconColor} />
+        <Icon color={iconColor} />
         <Message>{message}</Message>
       </Row>
       <ButtonWrapper>

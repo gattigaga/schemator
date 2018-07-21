@@ -56,7 +56,7 @@ const ToolZoom = ({ value, tooltip, isDisabled, onChange }) => {
 };
 
 ToolZoom.propTypes = {
-  value: PropTypes.func,
+  value: PropTypes.number,
   tooltip: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool

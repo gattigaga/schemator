@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import TableOption, { Input } from "../TableOption";
 
@@ -28,7 +27,7 @@ describe("TableOption", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it("should calls 'onChange' while changed", () => {

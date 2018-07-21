@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import RelationLines from "../RelationLines";
 
@@ -99,6 +98,6 @@ describe("RelationLines", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });

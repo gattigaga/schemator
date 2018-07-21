@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import Tooltip from "../Tooltip";
 
@@ -22,12 +21,12 @@ describe("Tooltip", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it("should renders with addtional class", () => {
     const { wrapper } = setup({ className: "my-class" });
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });

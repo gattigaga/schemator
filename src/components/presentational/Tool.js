@@ -29,7 +29,6 @@ const Container = styled.div`
 
 const Tool = ({ icon, tooltip, isDisabled, onClick }) => {
   const StyledIcon = styled(icon)`
-    color: ${({ isDisabled }) => (isDisabled ? "#666" : "#aaa")};
     font-size: 24px;
     margin: auto;
   `;
@@ -37,7 +36,7 @@ const Tool = ({ icon, tooltip, isDisabled, onClick }) => {
   return (
     <Container onClick={() => !isDisabled && onClick()} isDisabled={isDisabled}>
       {tooltip && <StyledTooltip text={tooltip} />}
-      <StyledIcon name={icon} isDisabled={isDisabled} />
+      <StyledIcon name={icon} color={isDisabled ? "#666" : "#aaa"} />
     </Container>
   );
 };

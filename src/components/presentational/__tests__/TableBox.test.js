@@ -2,6 +2,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import toJSON from "enzyme-to-json";
 
+import TableInput from "../TableInput";
 import TableBox from "../TableBox";
 
 describe("TableBox", () => {
@@ -87,5 +88,54 @@ describe("TableBox", () => {
     wrapper.simulate("contextmenu");
 
     expect(props.onContextMenu).toBeCalled();
+  });
+
+  it("should calls 'onChangeName' while TableInput name changed", () => {
+    const { wrapper, props } = setup();
+    const fieldID = "1";
+    const event = {
+      target: {
+        value: "name"
+      }
+    };
+
+    wrapper
+      .find(TableInput)
+      .at(0)
+      .props()
+      .onChangeName(event);
+
+    expect(props.onChangeFieldName).toBeCalledWith(event, fieldID);
+  });
+
+  it("should calls 'onChangeType' while TableInput type changed", () => {
+    const { wrapper, props } = setup();
+    const fieldID = "1";
+    const event = {
+      target: {
+        value: "INT"
+      }
+    };
+
+    wrapper
+      .find(TableInput)
+      .at(0)
+      .props()
+      .onChangeType(event);
+
+    expect(props.onChangeFieldType).toBeCalledWith(event, fieldID);
+  });
+
+  it("should calls 'onClickRemove' while TableInput remove button clicked", () => {
+    const { wrapper, props } = setup();
+    const fieldID = "1";
+
+    wrapper
+      .find(TableInput)
+      .at(0)
+      .props()
+      .onClickRemove();
+
+    expect(props.onClickRemoveField).toBeCalledWith(fieldID);
   });
 });

@@ -9,7 +9,7 @@ exports[`Tool should renders as disabled 1`] = `
     text="Save Schema"
   />
   <Styled(MdSave)
-    isDisabled={true}
+    color="#666"
     name={[Function]}
   />
 </styled.div>
@@ -23,6 +23,7 @@ exports[`Tool should renders default 1`] = `
     text="Save Schema"
   />
   <Styled(MdSave)
+    color="#aaa"
     name={[Function]}
   />
 </styled.div>

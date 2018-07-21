@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import TableInput, { CloseButton, Input, Select } from "../TableInput";
 
@@ -26,7 +25,7 @@ describe("TableInput", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it("should renders with disabled selection", () => {

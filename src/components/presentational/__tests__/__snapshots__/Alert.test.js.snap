@@ -33,7 +33,7 @@ exports[`Alert should renders default 1`] = `
 >
   <styled.div>
     <Styled(MdInfo)
-      iconColor="black"
+      color="black"
     />
     <styled.p>
       My message

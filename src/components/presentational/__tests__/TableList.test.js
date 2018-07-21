@@ -1,6 +1,5 @@
 import React, { createRef } from "react";
 import { shallow } from "enzyme";
-import toJSON from "enzyme-to-json";
 
 import TableList from "../TableList";
 
@@ -111,6 +110,6 @@ describe("TableList", () => {
   it("should renders default", () => {
     const { wrapper } = setup();
 
-    expect(toJSON(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });
