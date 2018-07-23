@@ -101,6 +101,15 @@ describe("tables()", () => {
           x: 0,
           y: 0
         }
+      },
+      {
+        id: "2",
+        name: "User 1",
+        timestamp: 1529420034779,
+        position: {
+          x: 32,
+          y: 32
+        }
       }
     ];
 
@@ -112,7 +121,8 @@ describe("tables()", () => {
       {
         ...initial[0],
         ...data
-      }
+      },
+      initial[1]
     ];
 
     const action = updateTable("1", data);

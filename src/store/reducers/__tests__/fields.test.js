@@ -86,6 +86,12 @@ describe("fields()", () => {
         tableID: "1",
         name: "id",
         type: "INCREMENT"
+      },
+      {
+        id: "2",
+        tableID: "1",
+        name: "name",
+        type: "STRING"
       }
     ];
 
@@ -97,7 +103,8 @@ describe("fields()", () => {
       {
         ...initial[0],
         ...data
-      }
+      },
+      initial[1]
     ];
 
     const action = updateField("1", data);

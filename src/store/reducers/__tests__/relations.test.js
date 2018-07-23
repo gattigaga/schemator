@@ -86,6 +86,12 @@ describe("relations()", () => {
         fieldID: "2",
         fromTableID: "2",
         toTableID: "1"
+      },
+      {
+        id: "2",
+        fieldID: "3",
+        fromTableID: "3",
+        toTableID: "2"
       }
     ];
 
@@ -97,7 +103,8 @@ describe("relations()", () => {
       {
         ...initial[0],
         ...data
-      }
+      },
+      initial[1]
     ];
 
     const action = updateRelation("1", data);
