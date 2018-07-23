@@ -11,7 +11,7 @@ import {
 } from "react-icons/lib/md";
 import { connect } from "react-redux";
 
-import { updateProject } from "../../store/actions";
+import { updateProject } from "../../store/actions/project";
 import { randomBetween } from "../../helpers/math";
 import { createTable } from "../../helpers/layout";
 import {

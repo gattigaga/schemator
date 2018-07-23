@@ -4,16 +4,10 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import uuid from "uuid/v4";
 
-import {
-  addField,
-  updateField,
-  removeField,
-  updateTable,
-  addRelation,
-  removeRelation,
-  removeTable,
-  updateProject
-} from "../../store/actions";
+import { updateProject } from "../../store/actions/project";
+import { updateTable, removeTable } from "../../store/actions/tables";
+import { addField, updateField, removeField } from "../../store/actions/fields";
+import { addRelation, removeRelation } from "../../store/actions/relations";
 import { capitalize } from "../../helpers/formatter";
 import { createTable } from "../../helpers/layout";
 import BGLines from "../presentational/BGLines";

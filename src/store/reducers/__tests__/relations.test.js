@@ -4,8 +4,8 @@ import {
   addRelation,
   removeRelation,
   updateRelation
-} from "../../actions";
-import { relations } from "../../reducers";
+} from "../../actions/relations";
+import relations from "../relations";
 
 describe("relations()", () => {
   it("should returns initial state", () => {

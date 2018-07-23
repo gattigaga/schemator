@@ -1,5 +1,8 @@
-import { setRecentProjects, addRecentProject } from "../../actions";
-import { recentProjects } from "../../reducers";
+import {
+  setRecentProjects,
+  addRecentProject
+} from "../../actions/recentProjects";
+import recentProjects from "../recentProjects";
 
 describe("recentProjects()", () => {
   it("should returns initial state", () => {

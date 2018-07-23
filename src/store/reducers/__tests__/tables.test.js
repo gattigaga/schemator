@@ -4,8 +4,8 @@ import {
   addTable,
   removeTable,
   updateTable
-} from "../../actions";
-import { tables } from "../../reducers";
+} from "../../actions/tables";
+import tables from "../tables";
 
 describe("tables()", () => {
   it("should returns initial state", () => {

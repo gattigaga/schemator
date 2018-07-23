@@ -4,14 +4,11 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
 
-import {
-  clearTables,
-  clearFields,
-  clearRelations,
-  clearProject,
-  updateProject,
-  setRecentProjects
-} from "./store/actions";
+import { clearProject, updateProject } from "./store/actions/project";
+import { clearTables } from "./store/actions/tables";
+import { clearFields } from "./store/actions/fields";
+import { clearRelations } from "./store/actions/relations";
+import { setRecentProjects } from "./store/actions/recentProjects";
 import {
   createProject,
   openProject,

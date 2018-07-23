@@ -3,14 +3,11 @@ import path from "path";
 import pluralize from "pluralize";
 import { format } from "date-fns";
 
-import {
-  setProject,
-  setTables,
-  setFields,
-  setRelations,
-  updateProject,
-  setRecentProjects
-} from "../store/actions";
+import { setProject, updateProject } from "../store/actions/project";
+import { setTables } from "../store/actions/tables";
+import { setFields } from "../store/actions/fields";
+import { setRelations } from "../store/actions/relations";
+import { setRecentProjects } from "../store/actions/recentProjects";
 import store from "../store/store";
 import { modelTemplate, migrationTemplate } from "./template";
 import { toSnakeCase } from "./formatter";

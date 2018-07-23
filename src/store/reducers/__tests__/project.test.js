@@ -1,5 +1,5 @@
-import { setProject, updateProject, clearProject } from "../../actions";
-import { project } from "../../reducers";
+import { setProject, updateProject, clearProject } from "../../actions/project";
+import project from "../project";
 
 describe("project()", () => {
   it("should returns initial state", () => {

@@ -4,8 +4,8 @@ import {
   addField,
   removeField,
   updateField
-} from "../../actions";
-import { fields } from "../../reducers";
+} from "../../actions/fields";
+import fields from "../fields";
 
 describe("fields()", () => {
   it("should returns initial state", () => {

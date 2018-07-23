@@ -1,6 +1,8 @@
 import uuid from "uuid/v4";
 
-import { updateProject, addTable, addField } from "../store/actions";
+import { updateProject } from "../store/actions/project";
+import { addTable } from "../store/actions/tables";
+import { addField } from "../store/actions/fields";
 import store from "../store/store";
 
 /**
