@@ -6,7 +6,7 @@ import "typeface-roboto";
 
 const Container = styled.div`
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 16px;
   box-sizing: border-box;
   cursor: pointer;
   user-select: none;
