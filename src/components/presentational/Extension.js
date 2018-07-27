@@ -30,7 +30,7 @@ const Wrapper = styled.div`
 
 const Name = styled.h4`
   color: #ccc;
-  font-size: 14px;
+  font-size: 12px;
   font-family: Roboto;
   margin: 0px;
   margin-bottom: 4px;
