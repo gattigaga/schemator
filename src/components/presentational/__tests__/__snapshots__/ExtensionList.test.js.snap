@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExtensionList should renders default 1`] = `
+<styled.div>
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to Laravel file"
+    image="image.png"
+    key="0"
+    name="Laravel Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to SQL file"
+    image="image.png"
+    key="1"
+    name="SQL Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to MongoDB file"
+    image="image.png"
+    key="2"
+    name="MongoDB Exporter"
+    onClick={[Function]}
+  />
+</styled.div>
+`;
+
+exports[`ExtensionList should renders with excerpt 1`] = `
+<styled.div>
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export scheme to Larav..."
+    image="image.png"
+    key="0"
+    name="Laravel Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export scheme to SQL f..."
+    image="image.png"
+    key="1"
+    name="SQL Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export scheme to Mongo..."
+    image="image.png"
+    key="2"
+    name="MongoDB Exporter"
+    onClick={[Function]}
+  />
+</styled.div>
+`;
+
+exports[`ExtensionList should renders with keyword 1`] = `
+<styled.div>
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to MongoDB file"
+    image="image.png"
+    key="0"
+    name="MongoDB Exporter"
+    onClick={[Function]}
+  />
+</styled.div>
+`;
+
+exports[`ExtensionList should renders without extensions 1`] = `
+<styled.div>
+  <styled.p>
+    No extensions found
+  </styled.p>
+</styled.div>
+`;
