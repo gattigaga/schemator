@@ -9,6 +9,7 @@ import Extension from "./Extension";
 const Container = styled.div`
   width: 240px;
   height: 100%;
+  overflow-y: auto;
   background: #333;
 `;
 
