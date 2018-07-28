@@ -10,10 +10,10 @@ const Container = styled.div`
   background: #222;
   white-space: nowrap;
   position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  display: none;
   transition: all 0.1s;
 `;
 
@@ -22,8 +22,8 @@ const Arrow = styled.div`
   height: 8px;
   background: #222;
   position: absolute;
-  top: 0%;
-  left: 50%;
+  top: 50%;
+  left: 0%;
   transform: translate(-50%, -50%) rotate(45deg);
 `;
 
