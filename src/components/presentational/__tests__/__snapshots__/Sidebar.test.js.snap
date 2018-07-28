@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sidebar should renders default 1`] = `
+<styled.div>
+  <Tool
+    icon={[Function]}
+    id="workstage"
+    key="0"
+    onClick={[Function]}
+    tooltip="Workstage"
+  />
+  <Tool
+    icon={[Function]}
+    id="extensions"
+    key="1"
+    onClick={[Function]}
+    tooltip="Extensions"
+  />
+</styled.div>
+`;
