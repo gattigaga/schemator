@@ -7,45 +7,41 @@ import Tooltip from "./Tooltip";
 const StyledTooltip = styled(Tooltip)``;
 
 const Container = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   box-sizing: border-box;
-  border-radius: 4px;
-  background: #555;
-  margin: 4px;
   display: flex;
   cursor: pointer;
   user-select: none;
   position: relative;
 
-  &:hover {
-    background: "#eee";
+  &:hover * {
+    color: white;
   }
 
   &:hover ${StyledTooltip} {
-    opacity: 1;
+    display: block;
   }
 `;
 
-const Tool = ({ icon, tooltip, isDisabled, onClick }) => {
+const Tool = ({ icon, tooltip, onClick, isActive }) => {
   const StyledIcon = styled(icon)`
-    font-size: 24px;
     margin: auto;
   `;
 
   return (
-    <Container onClick={() => !isDisabled && onClick()} isDisabled={isDisabled}>
+    <Container onClick={onClick}>
       {tooltip && <StyledTooltip text={tooltip} />}
-      <StyledIcon name={icon} color={isDisabled ? "#666" : "#aaa"} />
+      <StyledIcon size={24} color={isActive ? "white" : "#999"} />
     </Container>
   );
 };
 
 Tool.propTypes = {
-  icon: PropTypes.func.isRequired,
-  tooltip: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-  isDisabled: PropTypes.bool
+  icon: PropTypes.func,
+  tooltip: PropTypes.string,
+  onClick: PropTypes.func,
+  isActive: PropTypes.bool
 };
 
 export default Tool;

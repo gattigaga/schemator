@@ -27,8 +27,14 @@ describe("Tool", () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it("should renders as disabled", () => {
-    const { wrapper } = setup({ isDisabled: true });
+  it("should renders without tooltip", () => {
+    const { wrapper } = setup({ tooltip: "" });
+
+    expect(wrapper).toMatchSnapshot();
+  });
+
+  it("should renders in active", () => {
+    const { wrapper } = setup({ isActive: true });
 
     expect(wrapper).toMatchSnapshot();
   });
@@ -39,13 +45,5 @@ describe("Tool", () => {
     wrapper.simulate("click");
 
     expect(props.onClick).toBeCalled();
-  });
-
-  it("should not calls 'onClick' while clicked in disable", () => {
-    const { wrapper, props } = setup({ isDisabled: true });
-
-    wrapper.simulate("click");
-
-    expect(props.onClick).not.toBeCalled();
   });
 });

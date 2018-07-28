@@ -6,7 +6,9 @@ import styled from "styled-components";
 import Tool from "../Tool";
 
 const Container = styled.div`
-  margin-left: 32px;
+  width: 48px;
+  height: 48px;
+  background: #444;
 `;
 
 storiesOf("Tool", module)
@@ -14,11 +16,11 @@ storiesOf("Tool", module)
   .add("default", () => (
     <Tool icon={IconSave} tooltip="Save Schema" onClick={action("clicked")} />
   ))
-  .add("is disabled", () => (
+  .add("is active", () => (
     <Tool
       icon={IconSave}
       tooltip="Save Schema"
       onClick={action("clicked")}
-      isDisabled
+      isActive
     />
   ));
