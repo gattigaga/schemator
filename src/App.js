@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Helmet } from "react-helmet";
 import { connect } from "react-redux";
 
 import { clearProject, updateProject } from "./store/actions/project";
@@ -16,17 +15,24 @@ import {
   saveProject,
   toLaravel
 } from "./helpers/file";
-import Toolbar from "./components/container/Toolbar";
-import WorkArea from "./components/container/WorkArea";
+import StatusbarContainer from "./components/container/StatusbarContainer";
+import SidebarContainer from "./components/container/SidebarContainer";
+import PageSwitcher from "./components/container/PageSwitcher";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
   width: 100%;
   height: 100vh;
+  background: #383838;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex: 1;
 `;
 
 class App extends Component {
@@ -375,20 +381,13 @@ class App extends Component {
   }
 
   render() {
-    const { project } = this.props;
-
     return (
       <Container>
-        {project && (
-          <Helmet>
-            <title>
-              Schemator {project.name ? `- ${project.name}` : ""}{" "}
-              {project.isModified ? "- Modified" : ""}
-            </title>
-          </Helmet>
-        )}
-        <Toolbar />
-        <WorkArea />
+        <Wrapper>
+          <SidebarContainer />
+          <PageSwitcher />
+        </Wrapper>
+        <StatusbarContainer />
       </Container>
     );
   }
