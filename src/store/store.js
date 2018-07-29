@@ -5,13 +5,15 @@ import tables from "./reducers/tables";
 import fields from "./reducers/fields";
 import relations from "./reducers/relations";
 import recentProjects from "./reducers/recentProjects";
+import page from "./reducers/page";
 
 const rootReducer = combineReducers({
   project,
   tables,
   fields,
   relations,
-  recentProjects
+  recentProjects,
+  page
 });
 
 const store = createStore(
