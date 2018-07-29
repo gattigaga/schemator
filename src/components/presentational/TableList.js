@@ -7,6 +7,7 @@ const TableList = ({
   tables,
   fields,
   onMouseDown,
+  onMouseUp,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
@@ -30,6 +31,7 @@ const TableList = ({
           fields={currentFields}
           options={table.options}
           onMouseDown={event => onMouseDown(event, table.id)}
+          onMouseUp={event => onMouseUp(event, table.id)}
           onMouseMove={event => onMouseMove(event, table.id)}
           onMouseEnter={() => onMouseEnter(table.id)}
           onMouseLeave={() => onMouseLeave(table.id)}
@@ -56,6 +58,7 @@ TableList.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   onMouseDown: PropTypes.func,
+  onMouseUp: PropTypes.func,
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,

@@ -39,6 +39,7 @@ exports[`TableList should renders default 1`] = `
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
     onMouseMove={[Function]}
+    onMouseUp={[Function]}
     options={
       Object {
         "id": true,
@@ -92,6 +93,7 @@ exports[`TableList should renders default 1`] = `
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
     onMouseMove={[Function]}
+    onMouseUp={[Function]}
     options={
       Object {
         "id": true,

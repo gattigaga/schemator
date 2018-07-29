@@ -79,6 +79,7 @@ describe("TableList", () => {
         }
       ],
       onMouseDown: jest.fn(),
+      onMouseUp: jest.fn(),
       onMouseMove: jest.fn(),
       onMouseEnter: jest.fn(),
       onMouseLeave: jest.fn(),
