@@ -3,6 +3,8 @@ import { shallow } from "enzyme";
 
 import TableList from "../TableList";
 
+jest.mock("../TableBox", () => "TableBox");
+
 describe("TableList", () => {
   const setup = propOverrides => {
     const props = {
@@ -104,5 +106,183 @@ describe("TableList", () => {
     const { wrapper } = setup();
 
     expect(wrapper).toMatchSnapshot();
+  });
+
+  it("should calls 'onMouseDown' while mouse down on TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onMouseDown(event, table.id);
+
+      expect(props.onMouseDown).toBeCalledWith(event, table.id);
+    });
+  });
+
+  it("should calls 'onMouseUp' while mouse up on TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onMouseUp(event, table.id);
+
+      expect(props.onMouseUp).toBeCalledWith(event, table.id);
+    });
+  });
+
+  it("should calls 'onMouseMove' while mouse move on TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onMouseMove(event, table.id);
+
+      expect(props.onMouseMove).toBeCalledWith(event, table.id);
+    });
+  });
+
+  it("should calls 'onMouseEnter' while mouse entering TableBox", () => {
+    const { wrapper, props } = setup();
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onMouseEnter(table.id);
+
+      expect(props.onMouseEnter).toBeCalledWith(table.id);
+    });
+  });
+
+  it("should calls 'onMouseLeave' while mouse leaving TableBox", () => {
+    const { wrapper, props } = setup();
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onMouseLeave(table.id);
+
+      expect(props.onMouseLeave).toBeCalledWith(table.id);
+    });
+  });
+
+  it("should calls 'onContextMenu' while context menu shown in TableBox", () => {
+    const { wrapper, props } = setup();
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onContextMenu(table.id);
+
+      expect(props.onContextMenu).toBeCalledWith(table.id);
+    });
+  });
+
+  it("should calls 'onClickAddField' while add field button clicked in TableBox", () => {
+    const { wrapper, props } = setup();
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onClickAddField(table.id);
+
+      expect(props.onClickAddField).toBeCalledWith(table.id);
+    });
+  });
+
+  it("should calls 'onClickRemoveField' while remove field button clicked in TableBox", () => {
+    const { wrapper, props } = setup();
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onClickRemoveField();
+
+      expect(props.onClickRemoveField).toBeCalled();
+    });
+  });
+
+  it("should calls 'onChangeField' while field name changed in TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+    const fieldID = "field-id-12345";
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onChangeFieldName(event, fieldID);
+
+      expect(props.onChangeField).toBeCalledWith(event, fieldID, "name");
+    });
+  });
+
+  it("should calls 'onChangeField' while field type changed in TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+    const fieldID = "field-id-12345";
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onChangeFieldType(event, fieldID);
+
+      expect(props.onChangeField).toBeCalledWith(event, fieldID, "type");
+    });
+  });
+
+  it("should calls 'onChangeName' while table name changed in TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onChangeName(event, table.id);
+
+      expect(props.onChangeName).toBeCalledWith(event, table.id);
+    });
+  });
+
+  it("should calls 'onChangeOptions' while options changed in TableBox", () => {
+    const { wrapper, props } = setup();
+    const event = {};
+    const name = "rememberToken";
+
+    props.tables.forEach((table, index) => {
+      wrapper
+        .find("TableBox")
+        .at(index)
+        .props()
+        .onChangeOptions(event, name);
+
+      expect(props.onChangeOptions).toBeCalledWith(event, table.id, name);
+    });
   });
 });

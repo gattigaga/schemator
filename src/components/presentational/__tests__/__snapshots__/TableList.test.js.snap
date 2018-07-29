@@ -2,7 +2,7 @@
 
 exports[`TableList should renders default 1`] = `
 <g>
-  <[object Object]
+  <TableBox
     fields={
       Array [
         Object {
@@ -56,7 +56,7 @@ exports[`TableList should renders default 1`] = `
     }
     timestamp={1530376280298}
   />
-  <[object Object]
+  <TableBox
     fields={
       Array [
         Object {
