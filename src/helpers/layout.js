@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import uuid from "uuid/v4";
 
 import { updateProject } from "../store/actions/project";
@@ -76,6 +77,7 @@ export const createTable = position => {
 
   const newTable = {
     id: uuid(),
+    ref: createRef(),
     name: "NewTable",
     timestamp: Date.now(),
     position,
