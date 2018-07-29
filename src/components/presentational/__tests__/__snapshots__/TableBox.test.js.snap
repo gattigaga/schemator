@@ -8,6 +8,7 @@ exports[`TableBox should renders default 1`] = `
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
   onMouseMove={[Function]}
+  onMouseUp={[Function]}
   width={240}
   x={32}
   y={32}
