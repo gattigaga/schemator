@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import uuid from "uuid/v4";
 import path from "path";
 import pluralize from "pluralize";
@@ -50,6 +51,7 @@ export const createProject = callback => {
       const tables = [
         {
           id: uuid(),
+          ref: createRef(),
           name: "User",
           timestamp: Date.now(),
           position: {
@@ -162,13 +164,14 @@ export const openProject = callback => {
  * @param {function} [callback]
  */
 export const saveProject = callback => {
+  const { dialog } = remote;
   const { project, tables, fields, relations } = store.getState();
   const { isModified, filePath, ...newProject } = project;
-  const { dialog } = remote;
+  const newTables = tables.map(({ ref, ...newTable }) => newTable);
 
   const data = {
     project: newProject,
-    tables,
+    tables: newTables,
     fields,
     relations
   };
@@ -226,7 +229,10 @@ export const loadProject = (filePath, callback) => {
     );
 
     if (tables) {
-      store.dispatch(setTables(tables));
+      const addRef = table => ({ ...table, ref: createRef() });
+      const newTables = tables.map(addRef);
+
+      store.dispatch(setTables(newTables));
     }
 
     if (fields) {
