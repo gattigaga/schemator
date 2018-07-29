@@ -9,6 +9,7 @@ describe("TableList", () => {
       tables: [
         {
           id: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
+          ref: createRef(),
           name: "User",
           timestamp: 1530376280298,
           position: {
@@ -24,6 +25,7 @@ describe("TableList", () => {
         },
         {
           id: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
+          ref: createRef(),
           name: "Post",
           timestamp: 1530377404366,
           position: {
@@ -74,16 +76,6 @@ describe("TableList", () => {
           id: "5c0b69d3-f527-4a02-a095-1342f392b2c8",
           name: "content",
           type: "TEXT"
-        }
-      ],
-      tableRefs: [
-        {
-          id: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
-          ref: createRef()
-        },
-        {
-          id: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
-          ref: createRef()
         }
       ],
       onMouseDown: jest.fn(),

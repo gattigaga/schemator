@@ -6,7 +6,6 @@ import TableBox from "./TableBox";
 const TableList = ({
   tables,
   fields,
-  tableRefs,
   onMouseDown,
   onMouseMove,
   onMouseEnter,
@@ -17,47 +16,45 @@ const TableList = ({
   onChangeField,
   onChangeName,
   onChangeOptions
-}) => {
-  const byTableID = tableID => item => item.tableID === tableID;
-  const byID = itemID => item => item.id === itemID;
+}) => (
+  <g>
+    {tables.map(table => {
+      const byTableID = ({ tableID }) => tableID === table.id;
+      const currentFields = fields.filter(byTableID);
 
-  return tables.map(table => {
-    const currentFields = fields.filter(byTableID(table.id));
-    const { ref } = tableRefs.find(byID(table.id));
-
-    return (
-      <TableBox
-        key={table.id}
-        ref={ref}
-        {...table}
-        fields={currentFields}
-        options={table.options}
-        onMouseDown={event => onMouseDown(event, table.id)}
-        onMouseMove={event => onMouseMove(event, table.id)}
-        onMouseEnter={() => onMouseEnter(table.id)}
-        onMouseLeave={() => onMouseLeave(table.id)}
-        onContextMenu={() => onContextMenu(table.id)}
-        onClickAddField={() => onClickAddField(table.id)}
-        onClickRemoveField={onClickRemoveField}
-        onChangeFieldName={(event, fieldID) =>
-          onChangeField(event, fieldID, "name")
-        }
-        onChangeFieldType={(event, fieldID) =>
-          onChangeField(event, fieldID, "type")
-        }
-        onChangeName={event => onChangeName(event, table.id)}
-        onChangeOptions={(event, name) =>
-          onChangeOptions(event, table.id, name)
-        }
-      />
-    );
-  });
-};
+      return (
+        <TableBox
+          key={table.id}
+          ref={table.ref}
+          {...table}
+          fields={currentFields}
+          options={table.options}
+          onMouseDown={event => onMouseDown(event, table.id)}
+          onMouseMove={event => onMouseMove(event, table.id)}
+          onMouseEnter={() => onMouseEnter(table.id)}
+          onMouseLeave={() => onMouseLeave(table.id)}
+          onContextMenu={() => onContextMenu(table.id)}
+          onClickAddField={() => onClickAddField(table.id)}
+          onClickRemoveField={onClickRemoveField}
+          onChangeFieldName={(event, fieldID) =>
+            onChangeField(event, fieldID, "name")
+          }
+          onChangeFieldType={(event, fieldID) =>
+            onChangeField(event, fieldID, "type")
+          }
+          onChangeName={event => onChangeName(event, table.id)}
+          onChangeOptions={(event, name) =>
+            onChangeOptions(event, table.id, name)
+          }
+        />
+      );
+    })}
+  </g>
+);
 
 TableList.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
-  tableRefs: PropTypes.array,
   onMouseDown: PropTypes.func,
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
