@@ -371,7 +371,7 @@ class WorkArea extends Component {
     const { offset } = this.state;
     const { modifyProject, modifyTable } = this.props;
 
-    if (this.activeTable) {
+    if (this.activeTable && this.activeTable.current) {
       event.preventDefault();
 
       const activeTableDOM = this.activeTable.current;
