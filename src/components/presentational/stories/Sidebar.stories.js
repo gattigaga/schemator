@@ -29,4 +29,22 @@ storiesOf("Sidebar", module)
       ]}
       onClickItem={action("item clicked")}
     />
+  ))
+  .add("with active item", () => (
+    <Sidebar
+      items={[
+        {
+          id: "workstage",
+          icon: MdDesktopMac,
+          tooltip: "Workstage"
+        },
+        {
+          id: "extensions",
+          icon: MdDashboard,
+          tooltip: "Extensions"
+        }
+      ]}
+      onClickItem={action("item clicked")}
+      active="extensions"
+    />
   ));

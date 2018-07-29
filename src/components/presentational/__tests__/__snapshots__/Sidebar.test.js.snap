@@ -5,6 +5,7 @@ exports[`Sidebar should renders default 1`] = `
   <Tool
     icon={[Function]}
     id="workstage"
+    isActive={false}
     key="0"
     onClick={[Function]}
     tooltip="Workstage"
@@ -12,6 +13,28 @@ exports[`Sidebar should renders default 1`] = `
   <Tool
     icon={[Function]}
     id="extensions"
+    isActive={false}
+    key="1"
+    onClick={[Function]}
+    tooltip="Extensions"
+  />
+</styled.div>
+`;
+
+exports[`Sidebar should renders with active item 1`] = `
+<styled.div>
+  <Tool
+    icon={[Function]}
+    id="workstage"
+    isActive={false}
+    key="0"
+    onClick={[Function]}
+    tooltip="Workstage"
+  />
+  <Tool
+    icon={[Function]}
+    id="extensions"
+    isActive={true}
     key="1"
     onClick={[Function]}
     tooltip="Extensions"

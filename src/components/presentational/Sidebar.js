@@ -10,17 +10,23 @@ const Container = styled.div`
   background: #444;
 `;
 
-const Sidebar = ({ items, onClickItem }) => (
+const Sidebar = ({ items, onClickItem, active }) => (
   <Container>
     {items.map((item, index) => (
-      <Tool key={index} {...item} onClick={() => onClickItem(item)} />
+      <Tool
+        key={index}
+        {...item}
+        onClick={() => onClickItem(item)}
+        isActive={item.id === active}
+      />
     ))}
   </Container>
 );
 
 Sidebar.propTypes = {
   items: PropTypes.array,
-  onClickItem: PropTypes.func
+  onClickItem: PropTypes.func,
+  active: PropTypes.string
 };
 
 Sidebar.defaultProps = {

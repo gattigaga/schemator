@@ -38,6 +38,12 @@ describe("Sidebar", () => {
     expect(wrapper).toMatchSnapshot();
   });
 
+  it("should renders with active item", () => {
+    const { wrapper } = setup({ active: "extensions" });
+
+    expect(wrapper).toMatchSnapshot();
+  });
+
   it("should calls 'onClickItem' while item clicked", () => {
     const { wrapper, props } = setup();
 
