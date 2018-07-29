@@ -48,7 +48,6 @@ class WorkArea extends Component {
     this.area = createRef();
     this.activeTable = null;
     this.hoveredTable = null;
-    this.tables = [];
     this.menu = new Menu();
 
     this.getMousePosition = this.getMousePosition.bind(this);
@@ -69,7 +68,6 @@ class WorkArea extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.handleTableRefs(nextProps);
     this.setAreaSize(nextProps);
   }
 
@@ -104,37 +102,6 @@ class WorkArea extends Component {
         click: this.addField
       })
     );
-  }
-
-  /**
-   * Handle table refs to make it synchronize with table list
-   *
-   * @param {object} nextProps
-   * @memberof WorkArea
-   */
-  handleTableRefs(nextProps) {
-    const getID = item => item.id;
-    const newData = items => id => !items.includes(id);
-
-    const { tables } = nextProps;
-    const tableIDs = tables.map(getID);
-    const refTableIDs = this.tables.map(getID);
-    const addedTables = tableIDs.filter(newData(refTableIDs));
-    const removedTables = refTableIDs.filter(newData(tableIDs));
-
-    if (addedTables.length > 0) {
-      this.tables = [
-        ...this.tables,
-        ...addedTables.map(id => ({
-          id,
-          ref: createRef()
-        }))
-      ];
-    }
-
-    if (removedTables.length > 0) {
-      this.tables = this.tables.filter(newData(removedTables));
-    }
   }
 
   /**
@@ -181,8 +148,9 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   saveTableOffset(event, tableID) {
+    const { tables } = this.props;
     const byID = item => item.id === tableID;
-    this.activeTable = this.tables.find(byID).ref;
+    this.activeTable = tables.find(byID).ref;
 
     const getAttributeNS = attr => {
       const activeTableDOM = this.activeTable.current;
@@ -341,8 +309,6 @@ class WorkArea extends Component {
 
     modifyProject({ isModified: true });
     deleteTable(tableID);
-
-    this.tables = this.tables.filter(item => item.id !== tableID);
   }
 
   /**
@@ -524,7 +490,6 @@ class WorkArea extends Component {
             <TableList
               tables={tables}
               fields={fields}
-              tableRefs={this.tables}
               onContextMenu={tableID => {
                 this.hoveredTable = tableID;
               }}
