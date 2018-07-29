@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatusbarContainer should renders with project 1`] = `
+<Statusbar
+  isProjectModified={false}
+  projectName="LaravelScheme"
+  zoom={75}
+/>
+`;
+
+exports[`StatusbarContainer should renders without opened project 1`] = `
+<Statusbar
+  zoom={100}
+/>
+`;
