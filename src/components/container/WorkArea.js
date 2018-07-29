@@ -495,7 +495,9 @@ class WorkArea extends Component {
               }}
               onMouseDown={this.saveTableOffset}
               onMouseMove={this.updateTablePosition}
-              onMouseEnter={() => {
+              onMouseEnter={tableID => {
+                this.hoveredTable = tableID;
+
                 if (menuAddTable) {
                   menuAddTable.visible = false;
                 }
@@ -508,7 +510,9 @@ class WorkArea extends Component {
                   menuAddField.visible = true;
                 }
               }}
-              onMouseLeave={() => {
+              onMouseLeave={tableID => {
+                this.hoveredTable = tableID;
+
                 if (menuAddTable) {
                   menuAddTable.visible = true;
                 }
