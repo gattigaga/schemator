@@ -5,14 +5,13 @@ import { connect } from "react-redux";
 import uuid from "uuid/v4";
 
 import { updateProject } from "../../store/actions/project";
-import { updateTable, removeTable } from "../../store/actions/tables";
-import { addField, updateField, removeField } from "../../store/actions/fields";
-import { addRelation, removeRelation } from "../../store/actions/relations";
-import { capitalize } from "../../helpers/formatter";
+import { removeTable } from "../../store/actions/tables";
+import { addField, removeField } from "../../store/actions/fields";
+import { removeRelation } from "../../store/actions/relations";
 import { createTable } from "../../helpers/layout";
 import BGLines from "../presentational/BGLines";
 import RelationLinesContainer from "../container/RelationLinesContainer";
-import TableList from "../presentational/TableList";
+import TableListContainer from "../container/TableListContainer";
 
 const { remote, screen } = window.require("electron");
 
@@ -35,10 +34,6 @@ class WorkArea extends Component {
     const { Menu } = remote;
 
     this.state = {
-      offset: {
-        x: 0,
-        y: 0
-      },
       mouse: {
         x: 0,
         y: 0
@@ -46,20 +41,12 @@ class WorkArea extends Component {
     };
 
     this.area = createRef();
-    this.activeTable = null;
-    this.hoveredTable = null;
     this.menu = new Menu();
+    this.hoveredTable = null;
 
-    this.getMousePosition = this.getMousePosition.bind(this);
-    this.saveTableOffset = this.saveTableOffset.bind(this);
-    this.addField = this.addField.bind(this);
-    this.updateField = this.updateField.bind(this);
-    this.removeField = this.removeField.bind(this);
     this.addTable = this.addTable.bind(this);
     this.removeTable = this.removeTable.bind(this);
-    this.updateTableName = this.updateTableName.bind(this);
-    this.updateTablePosition = this.updateTablePosition.bind(this);
-    this.updateTableOptions = this.updateTableOptions.bind(this);
+    this.addField = this.addField.bind(this);
     this.zoom = this.zoom.bind(this);
   }
 
@@ -125,147 +112,6 @@ class WorkArea extends Component {
   }
 
   /**
-   * Get mouse position in SVG coordinate system
-   *
-   * @param {object} event DOM event
-   * @returns {object} Mouse position
-   * @memberof WorkArea
-   */
-  getMousePosition(event) {
-    const ctm = this.area.current.getScreenCTM();
-
-    return {
-      x: (event.clientX - ctm.e) / ctm.a,
-      y: (event.clientY - ctm.f) / ctm.d
-    };
-  }
-
-  /**
-   * Save table offset from the top left of object
-   *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
-   * @memberof WorkArea
-   */
-  saveTableOffset(event, tableID) {
-    const { tables } = this.props;
-    const byID = item => item.id === tableID;
-    this.activeTable = tables.find(byID).ref;
-
-    const getAttributeNS = attr => {
-      const activeTableDOM = this.activeTable.current;
-      return parseFloat(activeTableDOM.getAttributeNS(null, attr));
-    };
-    const offset = this.getMousePosition(event);
-
-    offset.x -= getAttributeNS("x");
-    offset.y -= getAttributeNS("y");
-
-    this.setState({ offset });
-  }
-
-  /**
-   * Add new field inside table
-   *
-   * @memberof WorkArea
-   */
-  addField() {
-    this.activeTable = null;
-
-    const { modifyProject, createField } = this.props;
-    const tableID = this.hoveredTable;
-
-    const data = {
-      tableID,
-      id: uuid(),
-      name: "field",
-      type: "INTEGER"
-    };
-
-    modifyProject({ isModified: true });
-    createField(data);
-  }
-
-  /**
-   * Update field data inside table
-   *
-   * @param {object} event DOM event
-   * @param {string} fieldID Field ID
-   * @param {string} type Input type
-   * @memberof WorkArea
-   */
-  updateField(event, fieldID, type) {
-    const {
-      tables,
-      fields,
-      relations,
-      modifyProject,
-      modifyField,
-      createRelation,
-      deleteRelation
-    } = this.props;
-    const { value } = event.target;
-
-    if (type === "name") {
-      const relation = relations.find(item => item.fieldID === fieldID);
-
-      if (value.endsWith("_id")) {
-        const tableName = capitalize(value.replace("_id", ""));
-        const field = fields.find(item => item.id === fieldID);
-        const fromTable = tables.find(item => item.id === field.tableID);
-        const toTable = tables.find(item => item.name === tableName);
-
-        if (fromTable && toTable && !relation) {
-          const newRelation = {
-            id: uuid(),
-            fieldID: field.id,
-            fromTableID: fromTable.id,
-            toTableID: toTable.id
-          };
-
-          createRelation(newRelation);
-        }
-      } else {
-        if (relation) {
-          deleteRelation(relation.id);
-        }
-      }
-    }
-
-    const data = {
-      [type]: value
-    };
-
-    modifyProject({ isModified: true });
-    modifyField(fieldID, data);
-  }
-
-  /**
-   * Remove existing field
-   *
-   * @param {number} fieldID Field ID
-   * @memberof WorkArea
-   */
-  removeField(fieldID) {
-    const {
-      fields,
-      relations,
-      modifyProject,
-      deleteField,
-      deleteRelation
-    } = this.props;
-    const field = fields.find(item => item.id === fieldID);
-    const relation = relations.find(item => item.fieldID === fieldID);
-
-    if (field.name.endsWith("_id") && relation) {
-      deleteRelation(relation.id);
-    }
-
-    modifyProject({ isModified: true });
-    deleteField(fieldID);
-  }
-
-  /**
    * Add new table
    *
    * @memberof WorkArea
@@ -312,102 +158,25 @@ class WorkArea extends Component {
   }
 
   /**
-   * Update table name
+   * Add new field inside table
    *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
    * @memberof WorkArea
    */
-  updateTableName(event, tableID) {
-    const {
-      fields,
-      relations,
-      modifyProject,
-      modifyTable,
-      deleteRelation,
-      createRelation
-    } = this.props;
-    const { value: newTableName } = event.target;
-    const fieldPrefix = newTableName.toLowerCase();
-    const foreignFields = fields.filter(
-      item => item.name === `${fieldPrefix}_id`
-    );
+  addField() {
+    this.activeTable = null;
 
-    if (foreignFields.length > 0) {
-      foreignFields.forEach(field => {
-        const newRelation = {
-          id: uuid(),
-          fieldID: field.id,
-          fromTableID: field.tableID,
-          toTableID: tableID
-        };
-
-        createRelation(newRelation);
-      });
-    } else {
-      const unneededRelations = relations
-        .filter(item => item.toTableID === tableID)
-        .map(item => item.id);
-
-      unneededRelations.forEach(deleteRelation);
-    }
+    const { modifyProject, createField } = this.props;
+    const tableID = this.hoveredTable;
 
     const data = {
-      name: newTableName
+      tableID,
+      id: uuid(),
+      name: "field",
+      type: "INTEGER"
     };
 
     modifyProject({ isModified: true });
-    modifyTable(tableID, data);
-  }
-
-  /**
-   * Update table position
-   *
-   * @param {object} event DOM event
-   * @param {string} tableID Table ID
-   * @memberof WorkArea
-   */
-  updateTablePosition(event, tableID) {
-    const { offset } = this.state;
-    const { modifyProject, modifyTable } = this.props;
-
-    if (this.activeTable && this.activeTable.current) {
-      event.preventDefault();
-
-      const activeTableDOM = this.activeTable.current;
-      const coord = this.getMousePosition(event);
-      const x = coord.x - offset.x;
-      const y = coord.y - offset.y;
-
-      activeTableDOM.setAttributeNS(null, "x", x);
-      activeTableDOM.setAttributeNS(null, "y", y);
-
-      modifyProject({ isModified: true });
-      modifyTable(tableID, {
-        position: { x, y }
-      });
-    }
-  }
-
-  /**
-   * Update table options like id, rememberToken, etc
-   *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
-   * @param {string} name Option name
-   * @memberof WorkArea
-   */
-  updateTableOptions(event, tableID, name) {
-    const { tables, modifyProject, modifyTable } = this.props;
-    const table = tables.find(item => item.id === tableID);
-
-    modifyProject({ isModified: true });
-    modifyTable(tableID, {
-      options: {
-        ...table.options,
-        [name]: event.target.checked
-      }
-    });
+    createField(data);
   }
 
   /**
@@ -438,7 +207,7 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { project, tables, fields } = this.props;
+    const { project } = this.props;
     const appWindow = remote.getCurrentWindow();
     const zoom = project ? project.zoom / 100 : 1;
     const area = this.area.current;
@@ -449,7 +218,7 @@ class WorkArea extends Component {
     const height = (areaHeight / 25) * 100;
     const totalHorizontalLines = parseInt(width / gap);
     const totalVerticalLines = parseInt(height / gap);
-    const [menuAddTable, menuRemoveTable, menuAddField] = this.menu.items;
+    const [menuAddTable] = this.menu.items;
 
     return (
       <Container isScrollable={!!project}>
@@ -457,9 +226,6 @@ class WorkArea extends Component {
           innerRef={this.area}
           style={{ zoom }}
           onWheel={this.zoom}
-          onMouseUp={() => {
-            this.activeTable = null;
-          }}
           onContextMenu={() => this.menu.popup({ window: appWindow })}
           onMouseEnter={() => {
             if (menuAddTable) {
@@ -487,49 +253,12 @@ class WorkArea extends Component {
           />
           <g>
             <RelationLinesContainer />
-            <TableList
-              tables={tables}
-              fields={fields}
+            <TableListContainer
+              menuItems={this.menu.items}
+              areaRef={this.area}
               onContextMenu={tableID => {
                 this.hoveredTable = tableID;
               }}
-              onMouseDown={this.saveTableOffset}
-              onMouseMove={this.updateTablePosition}
-              onMouseEnter={tableID => {
-                this.hoveredTable = tableID;
-
-                if (menuAddTable) {
-                  menuAddTable.visible = false;
-                }
-
-                if (menuRemoveTable) {
-                  menuRemoveTable.visible = true;
-                }
-
-                if (menuAddField) {
-                  menuAddField.visible = true;
-                }
-              }}
-              onMouseLeave={tableID => {
-                this.hoveredTable = tableID;
-
-                if (menuAddTable) {
-                  menuAddTable.visible = true;
-                }
-
-                if (menuRemoveTable) {
-                  menuRemoveTable.visible = false;
-                }
-
-                if (menuAddField) {
-                  menuAddField.visible = false;
-                }
-              }}
-              onClickAddField={this.addField}
-              onClickRemoveField={this.removeField}
-              onChangeField={this.updateField}
-              onChangeName={this.updateTableName}
-              onChangeOptions={this.updateTableOptions}
             />
           </g>
         </Area>
@@ -540,29 +269,26 @@ class WorkArea extends Component {
 
 WorkArea.propTypes = {
   project: PropTypes.object,
-  tables: PropTypes.array,
-  fields: PropTypes.array,
   relations: PropTypes.array,
+  fields: PropTypes.array,
   modifyProject: PropTypes.func,
-  modifyTable: PropTypes.func,
-  deleteTable: PropTypes.func,
-  modifyField: PropTypes.func,
   createField: PropTypes.func,
+  deleteTable: PropTypes.func,
   deleteField: PropTypes.func,
-  createRelation: PropTypes.func,
-  deleteRelation: PropTypes.func
+  deleteRelation: PropTypes.func,
 };
 
-const mapStateToProps = state => state;
+const mapStateToProps = ({ project, relations, fields }) => ({
+  project,
+  relations,
+  fields
+});
 
 const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
   createField: field => dispatch(addField(field)),
-  deleteField: fieldID => dispatch(removeField(fieldID)),
-  modifyTable: (id, data) => dispatch(updateTable(id, data)),
   deleteTable: id => dispatch(removeTable(id)),
-  modifyField: (id, data) => dispatch(updateField(id, data)),
-  createRelation: relation => dispatch(addRelation(relation)),
+  deleteField: fieldID => dispatch(removeField(fieldID)),
   deleteRelation: relationID => dispatch(removeRelation(relationID))
 });
 
