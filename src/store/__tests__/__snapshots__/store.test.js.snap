@@ -2,6 +2,7 @@
 
 exports[`store should not error 1`] = `
 Object {
+  "extensions": Array [],
   "fields": Array [],
   "page": "workarea",
   "project": null,
