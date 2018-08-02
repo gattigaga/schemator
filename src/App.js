@@ -43,7 +43,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.initConfig();
+    this.initConfigFolder();
+    this.initRecentProjects();
     this.createMenu();
   }
 
@@ -351,15 +352,14 @@ class App extends Component {
   }
 
   /**
-   * Load app config file if exists otherwise create it
+   * Initialize app config folder
    *
    * @memberof App
    */
-  initConfig() {
+  initConfigFolder() {
     const { app } = remote;
     const osConfigPath = app.getPath("appData");
     const appConfigPath = `${osConfigPath}/schemator`;
-    const fileRecents = `${appConfigPath}/recents.txt`;
 
     if (!fs.existsSync(osConfigPath)) {
       fs.mkdirSync(osConfigPath);
@@ -368,6 +368,18 @@ class App extends Component {
     if (!fs.existsSync(appConfigPath)) {
       fs.mkdirSync(appConfigPath);
     }
+  }
+
+  /**
+   * Load histories file if exists otherwise create it
+   *
+   * @memberof App
+   */
+  initRecentProjects() {
+    const { app } = remote;
+    const osConfigPath = app.getPath("appData");
+    const appConfigPath = `${osConfigPath}/schemator`;
+    const fileRecents = `${appConfigPath}/recents.txt`;
 
     if (!fs.existsSync(fileRecents)) {
       fs.writeFileSync(fileRecents, "");
