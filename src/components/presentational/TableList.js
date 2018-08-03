@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import TableBox from "./TableBox";
 
 const TableList = ({
+  types,
   tables,
   fields,
   onMouseDown,
@@ -28,6 +29,7 @@ const TableList = ({
           key={table.id}
           ref={table.ref}
           {...table}
+          types={types}
           fields={currentFields}
           options={table.options}
           onMouseDown={event => onMouseDown(event, table.id)}
@@ -55,6 +57,7 @@ const TableList = ({
 );
 
 TableList.propTypes = {
+  types: PropTypes.array,
   tables: PropTypes.array,
   fields: PropTypes.array,
   onMouseDown: PropTypes.func,

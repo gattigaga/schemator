@@ -41,12 +41,28 @@ exports[`TableList should renders default 1`] = `
     onMouseMove={[Function]}
     onMouseUp={[Function]}
     options={
-      Object {
-        "id": true,
-        "rememberToken": true,
-        "softDeletes": false,
-        "timestamps": true,
-      }
+      Array [
+        Object {
+          "id": "id",
+          "isChecked": true,
+          "label": "ID",
+        },
+        Object {
+          "id": "rememberToken",
+          "isChecked": false,
+          "label": "Remember Token",
+        },
+        Object {
+          "id": "softDeletes",
+          "isChecked": false,
+          "label": "Soft Deletes",
+        },
+        Object {
+          "id": "timestamps",
+          "isChecked": false,
+          "label": "Timestamps",
+        },
+      ]
     }
     position={
       Object {
@@ -55,6 +71,13 @@ exports[`TableList should renders default 1`] = `
       }
     }
     timestamp={1530376280298}
+    types={
+      Array [
+        "INTEGER",
+        "STRING",
+        "TEXT",
+      ]
+    }
   />
   <TableBox
     fields={
@@ -95,12 +118,28 @@ exports[`TableList should renders default 1`] = `
     onMouseMove={[Function]}
     onMouseUp={[Function]}
     options={
-      Object {
-        "id": true,
-        "rememberToken": false,
-        "softDeletes": false,
-        "timestamps": true,
-      }
+      Array [
+        Object {
+          "id": "id",
+          "isChecked": true,
+          "label": "ID",
+        },
+        Object {
+          "id": "rememberToken",
+          "isChecked": false,
+          "label": "Remember Token",
+        },
+        Object {
+          "id": "softDeletes",
+          "isChecked": false,
+          "label": "Soft Deletes",
+        },
+        Object {
+          "id": "timestamps",
+          "isChecked": false,
+          "label": "Timestamps",
+        },
+      ]
     }
     position={
       Object {
@@ -109,6 +148,13 @@ exports[`TableList should renders default 1`] = `
       }
     }
     timestamp={1530377404366}
+    types={
+      Array [
+        "INTEGER",
+        "STRING",
+        "TEXT",
+      ]
+    }
   />
 </g>
 `;

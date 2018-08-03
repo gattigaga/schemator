@@ -8,6 +8,7 @@ jest.mock("../TableBox", () => "TableBox");
 describe("TableList", () => {
   const setup = propOverrides => {
     const props = {
+      types: ["INTEGER", "STRING", "TEXT"],
       tables: [
         {
           id: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
@@ -18,12 +19,28 @@ describe("TableList", () => {
             x: 92,
             y: 110
           },
-          options: {
-            id: true,
-            rememberToken: true,
-            softDeletes: false,
-            timestamps: true
-          }
+          options: [
+            {
+              id: "id",
+              label: "ID",
+              isChecked: true
+            },
+            {
+              id: "rememberToken",
+              label: "Remember Token",
+              isChecked: false
+            },
+            {
+              id: "softDeletes",
+              label: "Soft Deletes",
+              isChecked: false
+            },
+            {
+              id: "timestamps",
+              label: "Timestamps",
+              isChecked: false
+            }
+          ]
         },
         {
           id: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
@@ -34,12 +51,28 @@ describe("TableList", () => {
             x: 548,
             y: 784
           },
-          options: {
-            id: true,
-            rememberToken: false,
-            softDeletes: false,
-            timestamps: true
-          }
+          options: [
+            {
+              id: "id",
+              label: "ID",
+              isChecked: true
+            },
+            {
+              id: "rememberToken",
+              label: "Remember Token",
+              isChecked: false
+            },
+            {
+              id: "softDeletes",
+              label: "Soft Deletes",
+              isChecked: false
+            },
+            {
+              id: "timestamps",
+              label: "Timestamps",
+              isChecked: false
+            }
+          ]
         }
       ],
       fields: [
