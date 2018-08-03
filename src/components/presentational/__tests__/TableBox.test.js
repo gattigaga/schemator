@@ -5,10 +5,16 @@ import toJSON from "enzyme-to-json";
 import TableInput from "../TableInput";
 import TableBox from "../TableBox";
 
+jest.mock("../TableHeader", () => "TableHeader");
+jest.mock("../TableInput", () => "TableInput");
+jest.mock("../TableOption", () => "TableOption");
+jest.mock("../TableButton", () => "TableButton");
+
 describe("TableBox", () => {
   const setup = propOverrides => {
     const props = {
       position: { x: 32, y: 32 },
+      types: ["NUMBER", "STRING", "BOOLEAN"],
       name: "User",
       fields: [
         {
@@ -19,7 +25,19 @@ describe("TableBox", () => {
         {
           id: "2",
           name: "username",
-          type: "VARCHAR"
+          type: "STRING"
+        }
+      ],
+      options: [
+        {
+          id: "id",
+          label: "ID",
+          isChecked: true
+        },
+        {
+          id: "rememberToken",
+          label: "Remember Token",
+          isChecked: false
         }
       ],
       onClickAddField: jest.fn(),

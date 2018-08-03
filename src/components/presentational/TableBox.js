@@ -21,6 +21,7 @@ const TableBox = forwardRef(
   (
     {
       position,
+      types,
       name,
       fields,
       options,
@@ -65,6 +66,7 @@ const TableBox = forwardRef(
           {fields.map(field => (
             <TableInput
               key={field.id}
+              types={types}
               name={field.name}
               type={field.type}
               onChangeName={event => onChangeFieldName(event, field.id)}
@@ -72,7 +74,7 @@ const TableBox = forwardRef(
               onClickRemove={() => onClickRemoveField(field.id)}
             />
           ))}
-          <TableOption onChange={onChangeOptions} value={options} />
+          <TableOption onChange={onChangeOptions} items={options} />
           <TableButton caption="Add New Field" onClick={onClickAddField} />
         </Container>
       </foreignObject>
@@ -84,7 +86,7 @@ TableBox.propTypes = {
   position: PropTypes.object,
   name: PropTypes.string,
   fields: PropTypes.array,
-  options: PropTypes.object,
+  options: PropTypes.array,
   onMouseDown: PropTypes.func,
   onMouseUp: PropTypes.func,
   onMouseMove: PropTypes.func,

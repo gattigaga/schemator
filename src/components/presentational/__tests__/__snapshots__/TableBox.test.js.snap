@@ -25,7 +25,13 @@ exports[`TableBox should renders default 1`] = `
       onChangeType={[Function]}
       onClickRemove={[Function]}
       type="STRING"
-      types={Array []}
+      types={
+        Array [
+          "NUMBER",
+          "STRING",
+          "BOOLEAN",
+        ]
+      }
     />
     <TableInput
       key="2"
@@ -33,11 +39,30 @@ exports[`TableBox should renders default 1`] = `
       onChangeName={[Function]}
       onChangeType={[Function]}
       onClickRemove={[Function]}
-      type="VARCHAR"
-      types={Array []}
+      type="STRING"
+      types={
+        Array [
+          "NUMBER",
+          "STRING",
+          "BOOLEAN",
+        ]
+      }
     />
     <TableOption
-      items={Array []}
+      items={
+        Array [
+          Object {
+            "id": "id",
+            "isChecked": true,
+            "label": "ID",
+          },
+          Object {
+            "id": "rememberToken",
+            "isChecked": false,
+            "label": "Remember Token",
+          },
+        ]
+      }
       onChange={[Function]}
     />
     <TableButton

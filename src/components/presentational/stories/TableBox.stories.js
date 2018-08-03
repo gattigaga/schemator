@@ -9,22 +9,32 @@ const Container = styled.svg`
   height: 480px;
 `;
 
+const types = ["NUMBER", "STRING", "BOOLEAN"];
+
 storiesOf("TableBox", module)
   .addDecorator(story => <Container>{story()}</Container>)
   .add("default", () => (
     <TableBox
       position={{ x: 32, y: 32 }}
+      types={types}
       name="User"
       fields={[
         { id: "1", name: "fullname", type: "STRING" },
         { id: "2", name: "username", type: "STRING" }
       ]}
-      options={{
-        id: true,
-        rememberToken: true,
-        softDeletes: true,
-        timestamps: true
-      }}
+      options={[
+        {
+          id: "id",
+          label: "ID",
+          isChecked: true
+        },
+        {
+          id: "rememberToken",
+          label: "Remember Token",
+          isChecked: false
+        }
+      ]}
+      onMouseUp={action("mouse up")}
       onMouseDown={action("mouse down")}
       onMouseMove={action("mouse move")}
       onMouseEnter={action("mouse enter")}
@@ -35,5 +45,6 @@ storiesOf("TableBox", module)
       onChangeFieldType={action("field type changed")}
       onChangeName={action("name changed")}
       onChangeOptions={action("options changed")}
+      onContextMenu={action("context menu")}
     />
   ));
