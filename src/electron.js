@@ -10,10 +10,7 @@ const {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+const createWindow = () => {
   // Create the browser window but don't show
   // to prevent resize event on startup.
   mainWindow = new BrowserWindow({
@@ -40,7 +37,12 @@ app.on("ready", () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-});
+};
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", createWindow);
 
 app.on("ready", () => {
   [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
