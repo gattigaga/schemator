@@ -25,6 +25,7 @@ exports[`TableBox should renders default 1`] = `
       onChangeType={[Function]}
       onClickRemove={[Function]}
       type="STRING"
+      types={Array []}
     />
     <TableInput
       key="2"
@@ -33,6 +34,7 @@ exports[`TableBox should renders default 1`] = `
       onChangeType={[Function]}
       onClickRemove={[Function]}
       type="VARCHAR"
+      types={Array []}
     />
     <TableOption
       items={Array []}

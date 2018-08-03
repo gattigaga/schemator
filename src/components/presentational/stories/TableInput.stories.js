@@ -9,12 +9,15 @@ const Container = styled.div`
   background: #222;
 `;
 
+const types = ["NUMBER", "STRING", "BOOLEAN"];
+
 storiesOf("TableInput", module)
   .addDecorator(story => <Container>{story()}</Container>)
   .add("default", () => (
     <TableInput
       name="username"
       type="STRING"
+      types={types}
       onClickRemove={action("remove clicked")}
       onChangeName={action("name changed")}
       onChangeType={action("type changed")}
@@ -22,10 +25,12 @@ storiesOf("TableInput", module)
   ))
   .add("with selection disabled", () => (
     <TableInput
-      name="user_id"
-      type="INTEGER"
+      name="username"
+      type="STRING"
+      types={types}
       onClickRemove={action("remove clicked")}
       onChangeName={action("name changed")}
       onChangeType={action("type changed")}
+      isTypeDisabled
     />
   ));

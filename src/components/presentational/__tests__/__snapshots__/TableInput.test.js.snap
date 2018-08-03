@@ -11,153 +11,26 @@ exports[`TableInput should renders default 1`] = `
   </styled.div>
   <styled.div>
     <styled.select
-      disabled={false}
       onChange={[Function]}
       value="STRING"
     >
       <option
         key="0"
-        value="BINARY"
+        value="NUMBER"
       >
-        BINARY
+        NUMBER
       </option>
       <option
         key="1"
-        value="BOOLEAN"
-      >
-        BOOLEAN
-      </option>
-      <option
-        key="2"
-        value="CHAR"
-      >
-        CHAR
-      </option>
-      <option
-        key="3"
-        value="DATE"
-      >
-        DATE
-      </option>
-      <option
-        key="4"
-        value="DATE_TIME"
-      >
-        DATE_TIME
-      </option>
-      <option
-        key="5"
-        value="DATE_TIME_TZ"
-      >
-        DATE_TIME_TZ
-      </option>
-      <option
-        key="6"
-        value="DECIMAL"
-      >
-        DECIMAL
-      </option>
-      <option
-        key="7"
-        value="DOUBLE"
-      >
-        DOUBLE
-      </option>
-      <option
-        key="8"
-        value="ENUM"
-      >
-        ENUM
-      </option>
-      <option
-        key="9"
-        value="FLOAT"
-      >
-        FLOAT
-      </option>
-      <option
-        key="10"
-        value="INTEGER"
-      >
-        INTEGER
-      </option>
-      <option
-        key="11"
-        value="IP_ADDRESS"
-      >
-        IP_ADDRESS
-      </option>
-      <option
-        key="12"
-        value="JSON"
-      >
-        JSON
-      </option>
-      <option
-        key="13"
-        value="JSONB"
-      >
-        JSONB
-      </option>
-      <option
-        key="14"
-        value="MAC_ADDRESS"
-      >
-        MAC_ADDRESS
-      </option>
-      <option
-        key="15"
-        value="MORPHS"
-      >
-        MORPHS
-      </option>
-      <option
-        key="16"
-        value="NULLABLE_MORPHS"
-      >
-        NULLABLE_MORPHS
-      </option>
-      <option
-        key="17"
         value="STRING"
       >
         STRING
       </option>
       <option
-        key="18"
-        value="TEXT"
+        key="2"
+        value="BOOLEAN"
       >
-        TEXT
-      </option>
-      <option
-        key="19"
-        value="TIME"
-      >
-        TIME
-      </option>
-      <option
-        key="20"
-        value="TIME_TZ"
-      >
-        TIME_TZ
-      </option>
-      <option
-        key="21"
-        value="TIMESTAMP"
-      >
-        TIMESTAMP
-      </option>
-      <option
-        key="22"
-        value="TIMESTAMP_TZ"
-      >
-        TIMESTAMP_TZ
-      </option>
-      <option
-        key="23"
-        value="UUID"
-      >
-        UUID
+        BOOLEAN
       </option>
     </styled.select>
   </styled.div>

@@ -60,70 +60,42 @@ const Column = styled.div`
 const TableInput = ({
   name,
   type,
+  types,
   onClickRemove,
   onChangeName,
-  onChangeType
-}) => {
-  const types = [
-    "BINARY",
-    "BOOLEAN",
-    "CHAR",
-    "DATE",
-    "DATE_TIME",
-    "DATE_TIME_TZ",
-    "DECIMAL",
-    "DOUBLE",
-    "ENUM",
-    "FLOAT",
-    "INTEGER",
-    "IP_ADDRESS",
-    "JSON",
-    "JSONB",
-    "MAC_ADDRESS",
-    "MORPHS",
-    "NULLABLE_MORPHS",
-    "STRING",
-    "TEXT",
-    "TIME",
-    "TIME_TZ",
-    "TIMESTAMP",
-    "TIMESTAMP_TZ",
-    "UUID"
-  ];
-
-  return (
-    <Container>
-      <Column>
-        <Input type="text" value={name} onChange={onChangeName} />
-      </Column>
-      <Column>
-        <Select
-          value={type}
-          onChange={onChangeType}
-          disabled={name.includes("_id")}
-        >
-          {types.map((type, index) => (
-            <option key={index} value={type}>
-              {type}
-            </option>
-          ))}
-        </Select>
-      </Column>
-      <CloseButton onClick={onClickRemove} />
-    </Container>
-  );
-};
+  onChangeType,
+  isTypeDisabled
+}) => (
+  <Container>
+    <Column>
+      <Input type="text" value={name} onChange={onChangeName} />
+    </Column>
+    <Column>
+      <Select value={type} onChange={onChangeType} disabled={isTypeDisabled}>
+        {types.map((type, index) => (
+          <option key={index} value={type}>
+            {type}
+          </option>
+        ))}
+      </Select>
+    </Column>
+    <CloseButton onClick={onClickRemove} />
+  </Container>
+);
 
 TableInput.propTypes = {
   name: PropTypes.string,
   type: PropTypes.string,
+  types: PropTypes.array,
   onClickRemove: PropTypes.func,
   onChangeName: PropTypes.func,
-  onChangeType: PropTypes.func
+  onChangeType: PropTypes.func,
+  isTypeDisabled: PropTypes.bool
 };
 
 TableInput.defaultProps = {
-  name: "field"
+  name: "field",
+  types: []
 };
 
 export default TableInput;

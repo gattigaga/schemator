@@ -8,6 +8,7 @@ describe("TableInput", () => {
     const props = {
       name: "username",
       type: "STRING",
+      types: ["NUMBER", "STRING", "BOOLEAN"],
       onChangeName: jest.fn(),
       onChangeType: jest.fn(),
       onClickRemove: jest.fn(),
@@ -29,10 +30,7 @@ describe("TableInput", () => {
   });
 
   it("should renders with disabled selection", () => {
-    const { wrapper } = setup({
-      name: "user_id",
-      type: "INTEGER"
-    });
+    const { wrapper } = setup({ isTypeDisabled: true });
 
     expect(wrapper.find(Select).props().disabled).toEqual(true);
   });
