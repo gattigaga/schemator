@@ -2,7 +2,7 @@ import React from "react";
 import { storiesOf, action } from "@storybook/react";
 import styled from "styled-components";
 
-import imgScreenshot from "../../../../res/screenshot.png";
+import imgIcon from "../../../assets/images/icon-black.png";
 import ExtensionList from "../ExtensionList";
 
 const Container = styled.div`
@@ -16,19 +16,19 @@ storiesOf("ExtensionList", module)
       items={[
         {
           name: "Laravel Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export to Laravel file"
         },
         {
           name: "SQL Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export to SQL file"
         },
         {
           name: "MongoDB Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export to MongoDB file"
         }
@@ -41,19 +41,19 @@ storiesOf("ExtensionList", module)
       items={[
         {
           name: "Laravel Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to Laravel model and migration"
         },
         {
           name: "SQL Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to SQL file"
         },
         {
           name: "MongoDB Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to MongoDB file"
         }
@@ -67,19 +67,19 @@ storiesOf("ExtensionList", module)
       items={[
         {
           name: "Laravel Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to Laravel model and migration"
         },
         {
           name: "SQL Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to SQL file"
         },
         {
           name: "MongoDB Exporter",
-          image: imgScreenshot,
+          image: imgIcon,
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to MongoDB file"
         }
