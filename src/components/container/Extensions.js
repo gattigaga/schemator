@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import ExtensionList from "../presentational/ExtensionList";
+import ExtensionListContainer from "./ExtensionListContainer";
 import SearchBox from "../presentational/SearchBox";
 
 const Container = styled.div`
@@ -25,13 +25,12 @@ class Extensions extends Component {
     super(props);
 
     this.state = {
-      keyword: "",
-      extensions: []
+      keyword: ""
     };
   }
 
   render() {
-    const { keyword, extensions } = this.state;
+    const { keyword } = this.state;
 
     return (
       <Container>
@@ -42,13 +41,11 @@ class Extensions extends Component {
               onChange={event => this.setState({ keyword: event.target.value })}
             />
           </SearchWrapper>
-          <ExtensionList keyword={keyword} items={extensions} />
+          <ExtensionListContainer keyword={keyword} />
         </Sidebar>
       </Container>
     );
   }
 }
-
-Extensions.propTypes = {};
 
 export default Extensions;
