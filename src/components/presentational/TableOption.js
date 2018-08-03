@@ -6,23 +6,24 @@ import "typeface-roboto";
 
 const Container = styled.div`
   width: 100%;
-  height: 72px;
+  height: 36px;
   padding: 0px 8px;
   box-sizing: border-box;
   background: #222;
-`;
-
-const Row = styled.div`
   display: flex;
   align-items: center;
-  height: 36px;
+`;
+
+export const Item = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: ${({ isFirst }) => (isFirst ? 16 : 0)}px;
 `;
 
 const Label = styled.label`
   font-family: Roboto;
   font-size: 12px;
   color: white;
-  margin-right: 16px;
 `;
 
 export const Input = styled.input`
@@ -30,51 +31,28 @@ export const Input = styled.input`
   margin-right: 4px;
 `;
 
-const TableOption = ({ value, onChange }) => (
+const TableOption = ({ items, onChange }) => (
   <Container>
-    <Row>
-      <Input
-        type="checkbox"
-        checked={value.id}
-        onChange={event => onChange(event, "id")}
-      />
-      <Label>ID</Label>
-      <Input
-        type="checkbox"
-        checked={value.rememberToken}
-        onChange={event => onChange(event, "rememberToken")}
-      />
-      <Label>Remember Token</Label>
-    </Row>
-    <Row>
-      <Input
-        type="checkbox"
-        checked={value.softDeletes}
-        onChange={event => onChange(event, "softDeletes")}
-      />
-      <Label>Soft Deletes</Label>
-      <Input
-        type="checkbox"
-        checked={value.timestamps}
-        onChange={event => onChange(event, "timestamps")}
-      />
-      <Label>Timestamps</Label>
-    </Row>
+    {items.slice(0, 2).map((item, index) => (
+      <Item key={item.id} isFirst={index === 0}>
+        <Input
+          type="checkbox"
+          checked={item.isChecked}
+          onChange={event => onChange(event, item.id)}
+        />
+        <Label>{item.label}</Label>
+      </Item>
+    ))}
   </Container>
 );
 
 TableOption.propTypes = {
-  value: PropTypes.object,
+  items: PropTypes.array,
   onChange: PropTypes.func
 };
 
 TableOption.defaultProps = {
-  value: {
-    id: false,
-    rememberToken: false,
-    softDeletes: false,
-    timestamps: false
-  }
+  items: []
 };
 
 export default TableOption;

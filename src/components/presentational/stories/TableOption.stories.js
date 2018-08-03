@@ -13,11 +13,9 @@ storiesOf("TableOption", module)
   .add("default", () => (
     <TableOption
       onChange={action("changed")}
-      value={{
-        id: true,
-        rememberToken: true,
-        softDeletes: true,
-        timestamps: true
-      }}
+      items={[
+        { id: "id", label: "ID", isChecked: true },
+        { id: "rememberToken", label: "Remember Token", isChecked: false }
+      ]}
     />
   ));

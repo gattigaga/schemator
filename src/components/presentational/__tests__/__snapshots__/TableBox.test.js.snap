@@ -35,15 +35,8 @@ exports[`TableBox should renders default 1`] = `
       type="VARCHAR"
     />
     <TableOption
+      items={Array []}
       onChange={[Function]}
-      value={
-        Object {
-          "id": false,
-          "rememberToken": false,
-          "softDeletes": false,
-          "timestamps": false,
-        }
-      }
     />
     <TableButton
       caption="Add New Field"
