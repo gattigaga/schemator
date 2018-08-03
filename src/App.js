@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import uuid from "uuid/v4";
 
 import { clearProject, updateProject } from "./store/actions/project";
 import { clearTables } from "./store/actions/tables";
 import { clearFields } from "./store/actions/fields";
 import { clearRelations } from "./store/actions/relations";
 import { setRecentProjects } from "./store/actions/recentProjects";
+import { setExtensions } from "./store/actions/extensions";
 import {
   createProject,
   openProject,
@@ -18,6 +20,7 @@ import {
 import StatusbarContainer from "./components/container/StatusbarContainer";
 import SidebarContainer from "./components/container/SidebarContainer";
 import PageSwitcher from "./components/container/PageSwitcher";
+import imgDefaultExtension from "./assets/images/icon-black.png";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
@@ -45,6 +48,7 @@ class App extends Component {
   componentDidMount() {
     this.initConfigFolder();
     this.initRecentProjects();
+    this.initExtensions();
     this.createMenu();
   }
 
@@ -392,6 +396,41 @@ class App extends Component {
     }
   }
 
+  /**
+   * Load all built-in extensions
+   *
+   * @memberof App
+   */
+  async initExtensions() {
+    const { applyExtensions } = this.props;
+    const internalPath = "./plugins";
+    const extensions = ["laravel"];
+
+    const extensionPaths = extensions.map(
+      dirName => `${internalPath}/${dirName}`
+    );
+
+    const manifests = extensionPaths.map(path => {
+      return require(`${path}/manifest.json`);
+    });
+
+    const newManifests = manifests.map((manifest, index) => {
+      const path = extensionPaths[index];
+      const iconPath = `${path}/${manifest.icon}`;
+      const image = manifest.icon
+        ? require(`${iconPath}`)
+        : imgDefaultExtension;
+
+      return {
+        id: uuid(),
+        ...manifest,
+        image
+      };
+    });
+
+    applyExtensions(newManifests);
+  }
+
   render() {
     return (
       <Container>
@@ -413,7 +452,8 @@ App.propTypes = {
   removeAllFields: PropTypes.func,
   removeAllRelations: PropTypes.func,
   modifyProject: PropTypes.func,
-  applyRecentProjects: PropTypes.func
+  applyRecentProjects: PropTypes.func,
+  applyExtensions: PropTypes.func
 };
 
 const mapStateToProps = ({ project, recentProjects }) => ({
@@ -427,7 +467,8 @@ const mapDispatchToProps = dispatch => ({
   removeAllFields: () => dispatch(clearFields()),
   removeAllRelations: () => dispatch(clearRelations()),
   modifyProject: project => dispatch(updateProject(project)),
-  applyRecentProjects: recents => dispatch(setRecentProjects(recents))
+  applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
+  applyExtensions: extensions => dispatch(setExtensions(extensions))
 });
 
 export default connect(
