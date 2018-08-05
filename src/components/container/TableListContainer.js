@@ -260,7 +260,7 @@ class TableListContainer extends Component {
       activeExtension
     } = this.props;
     const [menuAddTable, menuRemoveTable, menuAddField] = menuItems;
-    const types = activeExtension ? activeExtension.fieldTypes : [];
+    const types = activeExtension ? activeExtension.main.fieldTypes : [];
 
     return (
       <TableList
