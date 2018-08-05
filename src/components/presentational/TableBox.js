@@ -47,6 +47,15 @@ const TableBox = forwardRef(
     const optionHeight = 72;
     const height = headerHeight + buttonHeight + fieldHeight + optionHeight + 4;
 
+    // Count total needed of TableOption
+    const totalOptionChunks = Math.round(options.length / 2);
+
+    // Split options into several chunks.
+    // Each chunk contains 2 options.
+    const optionChunks = [...Array(totalOptionChunks)].map((_, index) =>
+      options.slice(index * 2, (index + 1) * 2)
+    );
+
     return (
       <foreignObject
         ref={ref}
@@ -74,7 +83,9 @@ const TableBox = forwardRef(
               onClickRemove={() => onClickRemoveField(field.id)}
             />
           ))}
-          <TableOption onChange={onChangeOptions} items={options} />
+          {optionChunks.map((chunk, index) => (
+            <TableOption key={index} onChange={onChangeOptions} items={chunk} />
+          ))}
           <TableButton caption="Add New Field" onClick={onClickAddField} />
         </Container>
       </foreignObject>

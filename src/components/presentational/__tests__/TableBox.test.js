@@ -38,6 +38,16 @@ describe("TableBox", () => {
           id: "rememberToken",
           label: "Remember Token",
           isChecked: false
+        },
+        {
+          id: "softDeletes",
+          label: "Soft Deletes",
+          isChecked: false
+        },
+        {
+          id: "timestamps",
+          label: "Timestamps",
+          isChecked: false
         }
       ],
       onClickAddField: jest.fn(),

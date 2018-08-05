@@ -63,6 +63,25 @@ exports[`TableBox should renders default 1`] = `
           },
         ]
       }
+      key="0"
+      onChange={[Function]}
+    />
+    <TableOption
+      items={
+        Array [
+          Object {
+            "id": "softDeletes",
+            "isChecked": false,
+            "label": "Soft Deletes",
+          },
+          Object {
+            "id": "timestamps",
+            "isChecked": false,
+            "label": "Timestamps",
+          },
+        ]
+      }
+      key="1"
       onChange={[Function]}
     />
     <TableButton
