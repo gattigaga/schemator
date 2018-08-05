@@ -1,4 +1,31 @@
-const dataType = [
+import {
+  createTable,
+  createField,
+  createOption
+} from "../../helpers/extension";
+
+// Option checkboxes would be used in table
+const tableOptions = [
+  {
+    id: "id",
+    label: "ID"
+  },
+  {
+    id: "rememberToken",
+    label: "Remember Token"
+  },
+  {
+    id: "softDeletes",
+    label: "Soft Deletes"
+  },
+  {
+    id: "timestamps",
+    label: "Timestamps"
+  }
+];
+
+// Types would be used as field type
+const fieldTypes = [
   "BIG_INT",
   "BINARY",
   "BOOLEAN",
@@ -36,9 +63,40 @@ const dataType = [
   "UUID"
 ];
 
-// Invoked while plugin activated.
-// i.e. after create new project based on this extension.
-const onActivate = () => {};
+/**
+ * Invoked while plugin initialized.
+ * i.e. after create new project based on this extension.
+ * We can initialize new scheme here.
+ *
+ * @returns {object} Created Scheme
+ */
+const onInit = () => {
+  const tables = [
+    createTable(
+      "User",
+      [
+        createOption("id", "ID", true),
+        createOption("rememberToken", "Remember Token", true),
+        createOption("softDeletes", "Soft Deletes"),
+        createOption("timestamps", "Timestamps", true)
+      ],
+      { x: 128, y: 128 }
+    )
+  ];
+
+  const fields = [
+    createField(tables[0].id, "name", "STRING"),
+    createField(tables[0].id, "email", "STRING"),
+    createField(tables[0].id, "password", "TEXT")
+  ];
+
+  const scheme = {
+    tables,
+    fields
+  };
+
+  return scheme;
+};
 
 // Invoked while table would be created.
 // You can define table data here.
@@ -72,7 +130,9 @@ const onUpdateOption = () => {};
 const onExport = () => {};
 
 export default {
-  onActivate,
+  tableOptions,
+  fieldTypes,
+  onInit,
   onCreateTable,
   onUpdateTable,
   onDeleteTable,
