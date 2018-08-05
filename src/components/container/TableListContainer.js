@@ -252,13 +252,21 @@ class TableListContainer extends Component {
   }
 
   render() {
-    const { tables, fields, menuItems, onContextMenu } = this.props;
+    const {
+      tables,
+      fields,
+      menuItems,
+      onContextMenu,
+      activeExtension
+    } = this.props;
     const [menuAddTable, menuRemoveTable, menuAddField] = menuItems;
+    const types = activeExtension ? activeExtension.fieldTypes : [];
 
     return (
       <TableList
         tables={tables}
         fields={fields}
+        types={types}
         onContextMenu={onContextMenu}
         onMouseDown={this.saveTableOffset}
         onMouseUp={() => {
@@ -307,6 +315,7 @@ TableListContainer.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
+  activeExtension: PropTypes.array,
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
   modifyProject: PropTypes.func,
@@ -318,10 +327,11 @@ TableListContainer.propTypes = {
   onContextMenu: PropTypes.func
 };
 
-const mapStateToProps = ({ tables, fields, relations }) => ({
+const mapStateToProps = ({ tables, fields, relations, activeExtension }) => ({
   tables,
   fields,
-  relations
+  relations,
+  activeExtension
 });
 
 const mapDispatchToProps = dispatch => ({
