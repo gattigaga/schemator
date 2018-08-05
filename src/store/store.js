@@ -7,6 +7,7 @@ import relations from "./reducers/relations";
 import recentProjects from "./reducers/recentProjects";
 import page from "./reducers/page";
 import extensions from "./reducers/extensions";
+import activeExtension from "./reducers/activeExtension";
 
 const rootReducer = combineReducers({
   project,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   relations,
   recentProjects,
   page,
-  extensions
+  extensions,
+  activeExtension
 });
 
 const store = createStore(
