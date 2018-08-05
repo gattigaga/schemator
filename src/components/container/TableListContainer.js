@@ -238,16 +238,22 @@ class TableListContainer extends Component {
    * @param {string} name Option name
    * @memberof WorkArea
    */
-  updateTableOptions(event, tableID, name) {
+  updateTableOptions(event, tableID, optionID) {
     const { tables, modifyProject, modifyTable } = this.props;
-    const table = tables.find(item => item.id === tableID);
+    const { options } = tables.find(item => item.id === tableID);
 
     modifyProject({ isModified: true });
     modifyTable(tableID, {
-      options: {
-        ...table.options,
-        [name]: event.target.checked
-      }
+      options: options.map(option => {
+        if (option.id === optionID) {
+          return {
+            ...option,
+            isChecked: event.target.checked
+          };
+        }
+
+        return option;
+      })
     });
   }
 
@@ -315,7 +321,7 @@ TableListContainer.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
-  activeExtension: PropTypes.array,
+  activeExtension: PropTypes.object,
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
   modifyProject: PropTypes.func,

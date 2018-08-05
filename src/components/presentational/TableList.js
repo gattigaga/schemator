@@ -47,8 +47,8 @@ const TableList = ({
             onChangeField(event, fieldID, "type")
           }
           onChangeName={event => onChangeName(event, table.id)}
-          onChangeOptions={(event, name) =>
-            onChangeOptions(event, table.id, name)
+          onChangeOptions={(event, optionID) =>
+            onChangeOptions(event, table.id, optionID)
           }
         />
       );
