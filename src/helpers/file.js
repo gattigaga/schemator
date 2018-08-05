@@ -11,6 +11,7 @@ import { setRecentProjects } from "../store/actions/recentProjects";
 import store from "../store/store";
 import { modelTemplate, migrationTemplate } from "./template";
 import { toSnakeCase } from "./formatter";
+import { setActiveExtension } from "../store/actions/activeExtension";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
@@ -162,14 +163,14 @@ export const saveProject = callback => {
  */
 export const loadProject = (filePath, callback) => {
   fs.readFile(filePath, "utf-8", (error, content) => {
-    if (error) {
-      const { dialog } = remote;
+    const { dialog } = remote;
 
+    if (error) {
       dialog.showErrorBox("Error", error.message);
       return;
     }
 
-    const { recentProjects } = store.getState();
+    const { recentProjects, extensions } = store.getState();
     const { project, tables, fields, relations } = JSON.parse(content);
     const { app } = remote;
     const osConfigPath = app.getPath("appData");
@@ -178,9 +179,16 @@ export const loadProject = (filePath, callback) => {
     const remainings = [...new Set([filePath, ...recentProjects])];
     const recents = remainings.slice(0, 10);
     const data = recents.join("\n");
+    const extension = extensions.find(item => item.id === project.extensionID);
+
+    if (!extension) {
+      dialog.showErrorBox("Error", "Extension not found !");
+      return;
+    }
 
     fs.writeFileSync(fileRecents, data);
     store.dispatch(setRecentProjects(recents));
+    store.dispatch(setActiveExtension(extension));
 
     store.dispatch(
       setProject({
