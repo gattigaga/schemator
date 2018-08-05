@@ -10,6 +10,7 @@ import { clearFields } from "./store/actions/fields";
 import { clearRelations } from "./store/actions/relations";
 import { setRecentProjects } from "./store/actions/recentProjects";
 import { setExtensions } from "./store/actions/extensions";
+import { setActiveExtension } from "./store/actions/activeExtension";
 import {
   createProject,
   openProject,
@@ -46,10 +47,10 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.createMenu();
     this.initConfigFolder();
     this.initRecentProjects();
     this.initExtensions();
-    this.createMenu();
   }
 
   componentDidUpdate(prevProps) {
@@ -191,8 +192,7 @@ class App extends Component {
           {
             id: "new-project",
             label: "New Project",
-            acceleratoclickr: "CmdOrCtrl+N",
-            click: () => createProject()
+            submenu: []
           },
           {
             id: "open-project",
@@ -402,19 +402,23 @@ class App extends Component {
    * @memberof App
    */
   async initExtensions() {
-    const { applyExtensions } = this.props;
+    const { MenuItem } = remote;
+    const { applyExtensions, loadExtension } = this.props;
+    const { submenu } = this.menu.getMenuItemById("new-project");
     const internalPath = "./plugins";
-    const extensions = ["laravel"];
+    const extensionDirs = ["laravel"];
 
-    const extensionPaths = extensions.map(
+    const extensionPaths = extensionDirs.map(
       dirName => `${internalPath}/${dirName}`
     );
 
-    const manifests = extensionPaths.map(path => {
-      return require(`${path}/manifest.json`);
-    });
+    const extensions = extensionPaths.map(path => ({
+      manifest: require(`${path}/manifest.json`),
+      main: require(`${path}/main`).default
+    }));
 
-    const newManifests = manifests.map((manifest, index) => {
+    const newExtensions = extensions.map((extension, index) => {
+      const { manifest, main } = extension;
       const path = extensionPaths[index];
       const iconPath = `${path}/${manifest.icon}`;
       const image = manifest.icon
@@ -424,11 +428,26 @@ class App extends Component {
       return {
         id: uuid(),
         ...manifest,
-        image
+        image,
+        main
       };
     });
 
-    applyExtensions(newManifests);
+    applyExtensions(newExtensions);
+
+    // Make all extensions to be accessible from New Project menu item
+    newExtensions.forEach(extension => {
+      submenu.append(
+        new MenuItem({
+          id: extension.id,
+          label: extension.name,
+          click: () => {
+            loadExtension(extension);
+            createProject();
+          }
+        })
+      );
+    });
   }
 
   render() {
@@ -453,7 +472,8 @@ App.propTypes = {
   removeAllRelations: PropTypes.func,
   modifyProject: PropTypes.func,
   applyRecentProjects: PropTypes.func,
-  applyExtensions: PropTypes.func
+  applyExtensions: PropTypes.func,
+  loadExtension: PropTypes.func
 };
 
 const mapStateToProps = ({ project, recentProjects }) => ({
@@ -468,7 +488,8 @@ const mapDispatchToProps = dispatch => ({
   removeAllRelations: () => dispatch(clearRelations()),
   modifyProject: project => dispatch(updateProject(project)),
   applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
-  applyExtensions: extensions => dispatch(setExtensions(extensions))
+  applyExtensions: extensions => dispatch(setExtensions(extensions)),
+  loadExtension: extension => dispatch(setActiveExtension(extension))
 });
 
 export default connect(

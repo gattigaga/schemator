@@ -1,5 +1,4 @@
 import { createRef } from "react";
-import uuid from "uuid/v4";
 import path from "path";
 import pluralize from "pluralize";
 import { format } from "date-fns";
@@ -17,11 +16,10 @@ const { remote } = window.require("electron");
 const fs = window.require("fs");
 
 /**
- * Open dialog to create new project file
+ * Open dialog to create new project file based on extension.
  *
- * @param {function} [callback]
  */
-export const createProject = callback => {
+export const createProject = () => {
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
 
@@ -40,53 +38,22 @@ export const createProject = callback => {
         return;
       }
 
+      const { recentProjects, activeExtension } = store.getState();
       const name = path.basename(filePath, ".json");
+      const scheme = activeExtension.main.onInit();
+      const { fields } = scheme;
 
       const project = {
         name,
+        extensionID: activeExtension.id,
         timestamp: Date.now(),
         zoom: 100
       };
 
-      const tables = [
-        {
-          id: uuid(),
-          ref: createRef(),
-          name: "User",
-          timestamp: Date.now(),
-          position: {
-            x: 128,
-            y: 128
-          },
-          options: {
-            id: true,
-            rememberToken: true,
-            softDeletes: false,
-            timestamps: true
-          }
-        }
-      ];
-
-      const fields = [
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "name",
-          type: "STRING"
-        },
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "email",
-          type: "STRING"
-        },
-        {
-          id: uuid(),
-          tableID: tables[0].id,
-          name: "password",
-          type: "STRING"
-        }
-      ];
+      const tables = scheme.tables.map(table => ({
+        ...table,
+        ref: createRef()
+      }));
 
       const data = {
         project,
@@ -102,7 +69,6 @@ export const createProject = callback => {
           return;
         }
 
-        const { recentProjects } = store.getState();
         const { app } = remote;
         const osConfigPath = app.getPath("appData");
         const appConfigPath = `${osConfigPath}/schemator`;
@@ -117,10 +83,6 @@ export const createProject = callback => {
         store.dispatch(setTables(tables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
-
-        if (callback) {
-          callback();
-        }
       });
     }
   );
