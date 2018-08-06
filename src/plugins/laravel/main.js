@@ -135,7 +135,9 @@ const onDeleteTable = () => {};
 
 // Invoked while field in a table would be created.
 // You can define field data here.
-const onCreateField = () => {};
+const onCreateField = tableID => {
+  return createField(tableID, "field", "INTEGER");
+};
 
 // Invoked while field in a table would be updated.
 // i.e. change field name and type.

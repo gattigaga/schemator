@@ -6,7 +6,7 @@ import uuid from "uuid/v4";
 import { capitalize } from "../../helpers/formatter";
 import { updateProject } from "../../store/actions/project";
 import { updateTable } from "../../store/actions/tables";
-import { updateField, removeField } from "../../store/actions/fields";
+import { addField, updateField, removeField } from "../../store/actions/fields";
 import { addRelation, removeRelation } from "../../store/actions/relations";
 import TableList from "../presentational/TableList";
 
@@ -29,6 +29,7 @@ class TableListContainer extends Component {
     this.getMousePosition = this.getMousePosition.bind(this);
     this.saveTableOffset = this.saveTableOffset.bind(this);
     this.updateField = this.updateField.bind(this);
+    this.addField = this.addField.bind(this);
     this.removeField = this.removeField.bind(this);
   }
 
@@ -125,6 +126,20 @@ class TableListContainer extends Component {
 
     modifyProject({ isModified: true });
     modifyField(fieldID, data);
+  }
+
+  /**
+   * Add new field inside table
+   *
+   * @param {string} tableID
+   * @memberof WorkArea
+   */
+  addField(tableID) {
+    const { modifyProject, createField, activeExtension } = this.props;
+    const field = activeExtension.main.onCreateField(tableID);
+
+    modifyProject({ isModified: true });
+    createField(field);
   }
 
   /**
@@ -325,6 +340,7 @@ TableListContainer.propTypes = {
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
   modifyProject: PropTypes.func,
+  createField: PropTypes.func,
   deleteField: PropTypes.func,
   modifyTable: PropTypes.func,
   modifyField: PropTypes.func,
@@ -342,6 +358,7 @@ const mapStateToProps = ({ tables, fields, relations, activeExtension }) => ({
 
 const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
+  createField: field => dispatch(addField(field)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   modifyField: (id, data) => dispatch(updateField(id, data)),

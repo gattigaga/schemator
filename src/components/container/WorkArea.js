@@ -169,20 +169,12 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addField() {
-    this.activeTable = null;
-
-    const { modifyProject, createField } = this.props;
+    const { modifyProject, createField, activeExtension } = this.props;
     const tableID = this.hoveredTable;
-
-    const data = {
-      tableID,
-      id: uuid(),
-      name: "field",
-      type: "INTEGER"
-    };
+    const field = activeExtension.main.onCreateField(tableID);
 
     modifyProject({ isModified: true });
-    createField(data);
+    createField(field);
   }
 
   /**
