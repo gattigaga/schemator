@@ -98,9 +98,32 @@ const onInit = () => {
   return scheme;
 };
 
-// Invoked while table would be created.
-// You can define table data here.
-const onCreateTable = () => {};
+/**
+ * Invoked while table would be created from Add Table context menu.
+ * You can define table data here.
+ *
+ * @param {object} cursorPosition
+ * @param {number} cursorPosition.x
+ * @param {number} cursorPosition.y
+ * @returns {object} Created table with it's field
+ */
+const onCreateTable = cursorPosition => {
+  const table = createTable(
+    "NewTable",
+    [
+      createOption("id", "ID", true),
+      createOption("rememberToken", "Remember Token"),
+      createOption("softDeletes", "Soft Deletes"),
+      createOption("timestamps", "Timestamps", true)
+    ],
+    cursorPosition
+  );
+
+  const field = createField(table.id, "field", "INTEGER");
+  const scheme = { table, field };
+
+  return scheme;
+};
 
 // Invoked while table would be updated.
 // i.e. change table name.
@@ -121,10 +144,6 @@ const onUpdateField = () => {};
 // Invoked while field in a table would be deleted.
 const onDeleteField = () => {};
 
-// Invoked while option checkbox in a table would be updated.
-// i.e. checked or unchecked.
-const onUpdateOption = () => {};
-
 // Invoked while project would be exported.
 // You can define exported data here.
 const onExport = () => {};
@@ -139,6 +158,5 @@ export default {
   onCreateField,
   onUpdateField,
   onDeleteField,
-  onUpdateOption,
   onExport
 };

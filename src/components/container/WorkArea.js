@@ -5,10 +5,9 @@ import { connect } from "react-redux";
 import uuid from "uuid/v4";
 
 import { updateProject } from "../../store/actions/project";
-import { removeTable } from "../../store/actions/tables";
+import { removeTable, addTable } from "../../store/actions/tables";
 import { addField, removeField } from "../../store/actions/fields";
 import { removeRelation } from "../../store/actions/relations";
-import { createTable } from "../../helpers/layout";
 import BGLines from "../presentational/BGLines";
 import RelationLinesContainer from "../container/RelationLinesContainer";
 import TableListContainer from "../container/TableListContainer";
@@ -118,10 +117,17 @@ class WorkArea extends Component {
    */
   addTable() {
     const { mouse } = this.state;
-    const { modifyProject } = this.props;
+    const {
+      activeExtension,
+      modifyProject,
+      createTable,
+      createField
+    } = this.props;
+    const { table, field } = activeExtension.main.onCreateTable(mouse);
 
     modifyProject({ isModified: true });
-    createTable(mouse);
+    createTable({ ...table, ref: createRef() });
+    createField(field);
   }
 
   /**
@@ -268,24 +274,28 @@ class WorkArea extends Component {
 }
 
 WorkArea.propTypes = {
+  activeExtension: PropTypes.object,
   project: PropTypes.object,
   relations: PropTypes.array,
   fields: PropTypes.array,
   modifyProject: PropTypes.func,
+  createTable: PropTypes.func,
   createField: PropTypes.func,
   deleteTable: PropTypes.func,
   deleteField: PropTypes.func,
-  deleteRelation: PropTypes.func,
+  deleteRelation: PropTypes.func
 };
 
-const mapStateToProps = ({ project, relations, fields }) => ({
+const mapStateToProps = ({ project, relations, fields, activeExtension }) => ({
   project,
   relations,
-  fields
+  fields,
+  activeExtension
 });
 
 const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
+  createTable: table => dispatch(addTable(table)),
   createField: field => dispatch(addField(field)),
   deleteTable: id => dispatch(removeTable(id)),
   deleteField: fieldID => dispatch(removeField(fieldID)),
