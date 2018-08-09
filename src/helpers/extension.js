@@ -43,3 +43,17 @@ export const createOption = (id, label, isChecked = false) => ({
   label,
   isChecked
 });
+
+/**
+ * Create new relation.
+ *
+ * @param {string} fieldID Camel cased Label as ID (i.e. rememberToken)
+ * @param {string} fromTableID ID of table which contains foreign key
+ * @param {string} toTableID ID of table destination
+ */
+export const createRelation = (fieldID, fromTableID, toTableID) => ({
+  id: uuid(),
+  fieldID,
+  fromTableID,
+  toTableID
+});
