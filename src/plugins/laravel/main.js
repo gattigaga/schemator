@@ -1,7 +1,8 @@
 import {
   createTable,
   createField,
-  createOption
+  createOption,
+  createRelation
 } from "../../helpers/extension";
 
 // Option checkboxes would be used in table
@@ -99,7 +100,7 @@ const onInit = () => {
 };
 
 /**
- * Invoked while table would be created from Add Table context menu.
+ * Invoked while table would be created from context menu.
  * You can define table data here.
  *
  * @param {object} cursorPosition
@@ -109,7 +110,7 @@ const onInit = () => {
  */
 const onCreateTable = cursorPosition => {
   const table = createTable(
-    "NewTable",
+    "Table",
     [
       createOption("id", "ID", true),
       createOption("rememberToken", "Remember Token"),
@@ -125,16 +126,40 @@ const onCreateTable = cursorPosition => {
   return scheme;
 };
 
-// Invoked while table would be updated.
-// i.e. change table name.
-const onUpdateTable = () => {};
+/**
+ * Invoked while table would be updated.
+ * i.e. change table name only.
+ *
+ * @param {object} table
+ * @param {string} table.id
+ * @param {string} table.name
+ * @param {object} data
+ * @param {object[]} data.tables
+ * @param {object[]} data.fields
+ */
+const onUpdateTable = (table, data) => {
+  const { fields } = data;
+  const foreignKey = `${table.name.toLowerCase()}_id`;
+  const foreignFields = fields.filter(field => field.name === foreignKey);
+  const relations = foreignFields.map(field =>
+    createRelation(field.id, field.tableID, table.id)
+  );
+
+  return relations;
+};
 
 // Invoked while table would be deleted.
 // You can remove table relation here.
 const onDeleteTable = () => {};
 
-// Invoked while field in a table would be created.
-// You can define field data here.
+/**
+ * Invoked while field in a table would be created
+ * from context menu or button.
+ * You can define field data here.
+ *
+ * @param {string} tableID
+ * @returns {object} Created field
+ */
 const onCreateField = tableID => {
   return createField(tableID, "field", "INTEGER");
 };

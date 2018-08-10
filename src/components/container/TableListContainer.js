@@ -176,30 +176,29 @@ class TableListContainer extends Component {
    */
   updateTableName(event, tableID) {
     const {
+      tables,
       fields,
       relations,
       modifyProject,
       modifyTable,
       deleteRelation,
-      createRelation
+      createRelation,
+      activeExtension
     } = this.props;
-    const { value: newTableName } = event.target;
-    const fieldPrefix = newTableName.toLowerCase();
-    const foreignFields = fields.filter(
-      item => item.name === `${fieldPrefix}_id`
-    );
+    const { value: tableName } = event.target;
 
-    if (foreignFields.length > 0) {
-      foreignFields.forEach(field => {
-        const newRelation = {
-          id: uuid(),
-          fieldID: field.id,
-          fromTableID: field.tableID,
-          toTableID: tableID
-        };
+    const table = {
+      id: tableID,
+      name: tableName
+    };
 
-        createRelation(newRelation);
-      });
+    const newRelations = activeExtension.main.onUpdateTable(table, {
+      tables,
+      fields
+    });
+
+    if (newRelations.length) {
+      newRelations.forEach(createRelation);
     } else {
       const unneededRelations = relations
         .filter(item => item.toTableID === tableID)
@@ -208,12 +207,8 @@ class TableListContainer extends Component {
       unneededRelations.forEach(deleteRelation);
     }
 
-    const data = {
-      name: newTableName
-    };
-
     modifyProject({ isModified: true });
-    modifyTable(tableID, data);
+    modifyTable(tableID, { name: tableName });
   }
 
   /**
