@@ -225,7 +225,7 @@ export const loadProject = (filePath, callback) => {
  * @param {function} [callback]
  */
 export const toLaravel = callback => {
-  const { project, tables, fields } = store.getState();
+  const { project, tables, fields, activeExtension } = store.getState();
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
 
@@ -240,36 +240,15 @@ export const toLaravel = callback => {
       }
 
       const dirPath = dirPaths[0];
-      const exportPath = `${dirPath}/${project.name}`;
-      const modelPath = `${exportPath}/app`;
-      const databasePath = `${exportPath}/database`;
-      const migrationPath = `${databasePath}/migrations`;
 
-      fs.mkdirSync(exportPath);
-      fs.mkdirSync(modelPath);
-      fs.mkdirSync(databasePath);
-      fs.mkdirSync(migrationPath);
-
-      tables.forEach(table => {
-        const byTable = field => field.tableID === table.id;
-
-        const modelName = table.name;
-        const tableName = pluralize(toSnakeCase(modelName));
-        const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
-        const modelFilename = `${modelName}.php`;
-        const migrationFilename = `${date}_create_${tableName}_table.php`;
-        const tableFields = fields.filter(byTable);
-        const fillable = tableFields.map(item => item.name);
-        const model = modelTemplate(modelName, fillable);
-        const migration = migrationTemplate(
-          modelName,
-          table.options,
-          tableFields
-        );
-
-        fs.writeFileSync(`${modelPath}/${modelFilename}`, model);
-        fs.writeFileSync(`${migrationPath}/${migrationFilename}`, migration);
+      const { paths, files } = activeExtension.main.onExport(dirPath, {
+        project,
+        tables,
+        fields
       });
+
+      paths.forEach(path => fs.mkdirSync(path));
+      files.forEach(file => fs.writeFileSync(file.path, file.content));
 
       if (callback) {
         callback();

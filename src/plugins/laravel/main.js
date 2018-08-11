@@ -1,9 +1,17 @@
+import pluralize from "pluralize";
+import { format } from "date-fns";
 import {
   createTable,
   createField,
   createOption,
   createRelation
 } from "../../helpers/extension";
+import {
+  capitalize,
+  toSnakeCase,
+  modelTemplate,
+  migrationTemplate
+} from "./helpers";
 
 // Option checkboxes would be used in table
 const tableOptions = [
@@ -186,8 +194,7 @@ const onUpdateField = (action, data) => {
   if (updatedType === "name") {
     if (updatedData.endsWith("_id")) {
       const lowercasedTableName = updatedData.replace("_id", "");
-      const tableInitial = lowercasedTableName.charAt(0).toUpperCase();
-      const tableName = tableInitial + lowercasedTableName.substr(1);
+      const tableName = capitalize(lowercasedTableName);
 
       const field = fields.find(item => item.id === fieldID);
       const fromTable = tables.find(item => item.id === field.tableID);
@@ -215,9 +222,52 @@ const onDeleteField = field => {
   return field.name.endsWith("_id");
 };
 
-// Invoked while project would be exported.
-// You can define exported data here.
-const onExport = () => {};
+/**
+ * Invoked while project would be exported.
+ * You can define exported data here.
+ *
+ * @param {string} dirPath Path where project would be exported
+ * @param {object} data
+ * @returns {object}
+ */
+const onExport = (dirPath, data) => {
+  const byTable = tableID => field => field.tableID === tableID;
+
+  const { project, tables, fields } = data;
+  const exportPath = `${dirPath}/${project.name}`;
+  const modelPath = `${exportPath}/app`;
+  const databasePath = `${exportPath}/database`;
+  const migrationPath = `${databasePath}/migrations`;
+  const paths = [exportPath, modelPath, databasePath, migrationPath];
+
+  const models = tables.map(table => {
+    const modelFilename = `${table.name}.php`;
+    const fillable = fields.filter(byTable(table.id)).map(item => item.name);
+    const model = modelTemplate(table.name, fillable);
+
+    return {
+      path: `${modelPath}/${modelFilename}`,
+      content: model
+    };
+  });
+
+  const migrations = tables.map(table => {
+    const tableName = pluralize(toSnakeCase(table.name));
+    const date = format(table.timestamp, "YYYY_MM_DD_HHmmss");
+    const migrationFilename = `${date}_create_${tableName}_table.php`;
+    const tableFields = fields.filter(byTable(table.id));
+    const migration = migrationTemplate(table.name, table.options, tableFields);
+
+    return {
+      path: `${migrationPath}/${migrationFilename}`,
+      content: migration
+    };
+  });
+
+  const files = [...models, ...migrations];
+
+  return { paths, files };
+};
 
 export default {
   tableOptions,
