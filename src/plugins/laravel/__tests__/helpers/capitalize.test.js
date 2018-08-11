@@ -1,4 +1,4 @@
-import { capitalize } from "../../formatter";
+import { capitalize } from "../../helpers";
 
 describe("capitalize()", () => {
   it("should returns string in capital", () => {

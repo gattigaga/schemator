@@ -1,4 +1,4 @@
-import { convertType } from "../../formatter";
+import { convertType } from "../../helpers";
 
 describe("convertType()", () => {
   it("should returns converted type", () => {

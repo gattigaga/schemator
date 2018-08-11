@@ -156,10 +156,6 @@ const onUpdateTable = (table, data) => {
   return relations;
 };
 
-// Invoked while table would be deleted.
-// You can remove table relation here.
-const onDeleteTable = () => {};
-
 /**
  * Invoked while field in a table would be created
  * from context menu or button.
@@ -275,7 +271,6 @@ export default {
   onInit,
   onCreateTable,
   onUpdateTable,
-  onDeleteTable,
   onCreateField,
   onUpdateField,
   onDeleteField,

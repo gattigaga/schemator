@@ -1,4 +1,4 @@
-import { toSnakeCase } from "../../formatter";
+import { toSnakeCase } from "../../helpers";
 
 describe("toSnakeCase()", () => {
   it("should returns string in snake case", () => {

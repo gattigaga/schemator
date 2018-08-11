@@ -1,4 +1,4 @@
-import { modelTemplate } from "../../template";
+import { modelTemplate } from "../../helpers";
 
 describe("modelTemplate()", () => {
   it("should returns created model", () => {
