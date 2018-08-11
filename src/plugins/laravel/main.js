@@ -205,8 +205,15 @@ const onUpdateField = (action, data) => {
   return relation && { type: "DELETE", relation };
 };
 
-// Invoked while field in a table would be deleted.
-const onDeleteField = () => {};
+/**
+ * Invoked while field in a table would be deleted.
+ *
+ * @param {object} field
+ * @returns {boolean} Condition where field should be removable
+ */
+const onDeleteField = field => {
+  return field.name.endsWith("_id");
+};
 
 // Invoked while project would be exported.
 // You can define exported data here.

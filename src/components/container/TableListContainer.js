@@ -153,12 +153,14 @@ class TableListContainer extends Component {
       relations,
       modifyProject,
       deleteField,
-      deleteRelation
+      deleteRelation,
+      activeExtension
     } = this.props;
     const field = fields.find(item => item.id === fieldID);
     const relation = relations.find(item => item.fieldID === fieldID);
+    const isRelationRemovable = activeExtension.main.onDeleteField(field);
 
-    if (field.name.endsWith("_id") && relation) {
+    if (isRelationRemovable && relation) {
       deleteRelation(relation.id);
     }
 
