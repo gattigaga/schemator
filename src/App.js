@@ -16,7 +16,7 @@ import {
   openProject,
   loadProject,
   saveProject,
-  toLaravel
+  exportProject
 } from "./helpers/file";
 import StatusbarContainer from "./components/container/StatusbarContainer";
 import SidebarContainer from "./components/container/SidebarContainer";
@@ -238,11 +238,11 @@ class App extends Component {
           { type: "separator" },
           {
             id: "export-project",
-            label: "Export to Laravel",
+            label: "Export Project",
             accelerator: "CmdOrCtrl+E",
             enabled: false,
             click: () => {
-              toLaravel(() => {
+              exportProject(() => {
                 dialog.showMessageBox(mainWindow, {
                   type: "info",
                   message: "Project successfully exported!",

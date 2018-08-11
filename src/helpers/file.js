@@ -1,7 +1,5 @@
 import { createRef } from "react";
 import path from "path";
-import pluralize from "pluralize";
-import { format } from "date-fns";
 
 import { setProject, updateProject } from "../store/actions/project";
 import { setTables } from "../store/actions/tables";
@@ -9,8 +7,6 @@ import { setFields } from "../store/actions/fields";
 import { setRelations } from "../store/actions/relations";
 import { setRecentProjects } from "../store/actions/recentProjects";
 import store from "../store/store";
-import { modelTemplate, migrationTemplate } from "./template";
-import { toSnakeCase } from "./formatter";
 import { setExtension } from "../store/actions/extension";
 
 const { remote } = window.require("electron");
@@ -224,7 +220,7 @@ export const loadProject = (filePath, callback) => {
  *
  * @param {function} [callback]
  */
-export const toLaravel = callback => {
+export const exportProject = callback => {
   const { project, tables, fields, extension } = store.getState();
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
