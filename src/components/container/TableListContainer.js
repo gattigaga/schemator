@@ -83,6 +83,8 @@ class TableListContainer extends Component {
    * @memberof WorkArea
    */
   updateField(event, fieldID, type) {
+    const { value } = event.target;
+
     const {
       tables,
       fields,
@@ -90,42 +92,39 @@ class TableListContainer extends Component {
       modifyProject,
       modifyField,
       createRelation,
-      deleteRelation
+      deleteRelation,
+      activeExtension
     } = this.props;
-    const { value } = event.target;
 
-    if (type === "name") {
-      const relation = relations.find(item => item.fieldID === fieldID);
+    const action = {
+      fieldID,
+      updatedType: type,
+      updatedData: value
+    };
 
-      if (value.endsWith("_id")) {
-        const tableName = capitalize(value.replace("_id", ""));
-        const field = fields.find(item => item.id === fieldID);
-        const fromTable = tables.find(item => item.id === field.tableID);
-        const toTable = tables.find(item => item.name === tableName);
+    const result = activeExtension.main.onUpdateField(action, {
+      tables,
+      fields,
+      relations
+    });
 
-        if (fromTable && toTable && !relation) {
-          const newRelation = {
-            id: uuid(),
-            fieldID: field.id,
-            fromTableID: fromTable.id,
-            toTableID: toTable.id
-          };
+    if (result) {
+      switch (result.type) {
+        case "CREATE":
+          createRelation(result.relation);
+          break;
 
-          createRelation(newRelation);
-        }
-      } else {
-        if (relation) {
-          deleteRelation(relation.id);
-        }
+        case "DELETE":
+          deleteRelation(result.relation.id);
+          break;
+
+        default:
+          break;
       }
     }
 
-    const data = {
-      [type]: value
-    };
-
     modifyProject({ isModified: true });
-    modifyField(fieldID, data);
+    modifyField(fieldID, { [type]: value });
   }
 
   /**

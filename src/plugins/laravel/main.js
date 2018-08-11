@@ -164,9 +164,46 @@ const onCreateField = tableID => {
   return createField(tableID, "field", "INTEGER");
 };
 
-// Invoked while field in a table would be updated.
-// i.e. change field name and type.
-const onUpdateField = () => {};
+/**
+ * Invoked while field in a table would be updated.
+ * i.e. change field name and type.
+ *
+ * @param {object} action
+ * @param {string} action.fieldID
+ * @param {string} action.updateType
+ * @param {string} action.updateData
+ * @param {object} data
+ * @param {object[]} data.tables
+ * @param {object[]} data.fields
+ * @param {object[]} data.relations
+ * @return {object} Created relation
+ */
+const onUpdateField = (action, data) => {
+  const { tables, fields, relations } = data;
+  const { fieldID, updatedType, updatedData } = action;
+  const relation = relations.find(item => item.fieldID === fieldID);
+
+  if (updatedType === "name") {
+    if (updatedData.endsWith("_id")) {
+      const lowercasedTableName = updatedData.replace("_id", "");
+      const tableInitial = lowercasedTableName.charAt(0).toUpperCase();
+      const tableName = tableInitial + lowercasedTableName.substr(1);
+
+      const field = fields.find(item => item.id === fieldID);
+      const fromTable = tables.find(item => item.id === field.tableID);
+      const toTable = tables.find(item => item.name === tableName);
+
+      if (fromTable && toTable && !relation) {
+        return {
+          type: "CREATE",
+          relation: createRelation(field.id, fromTable.id, toTable.id)
+        };
+      }
+    }
+  }
+
+  return relation && { type: "DELETE", relation };
+};
 
 // Invoked while field in a table would be deleted.
 const onDeleteField = () => {};
