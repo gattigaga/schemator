@@ -11,7 +11,7 @@ import { setRecentProjects } from "../store/actions/recentProjects";
 import store from "../store/store";
 import { modelTemplate, migrationTemplate } from "./template";
 import { toSnakeCase } from "./formatter";
-import { setActiveExtension } from "../store/actions/activeExtension";
+import { setExtension } from "../store/actions/extension";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
@@ -39,14 +39,14 @@ export const createProject = () => {
         return;
       }
 
-      const { recentProjects, activeExtension } = store.getState();
+      const { recentProjects, extension } = store.getState();
       const name = path.basename(filePath, ".json");
-      const scheme = activeExtension.main.onInit();
+      const scheme = extension.main.onInit();
       const { fields } = scheme;
 
       const project = {
         name,
-        extensionID: activeExtension.id,
+        extensionID: extension.id,
         timestamp: Date.now(),
         zoom: 100
       };
@@ -188,7 +188,7 @@ export const loadProject = (filePath, callback) => {
 
     fs.writeFileSync(fileRecents, data);
     store.dispatch(setRecentProjects(recents));
-    store.dispatch(setActiveExtension(extension));
+    store.dispatch(setExtension(extension));
 
     store.dispatch(
       setProject({
@@ -225,7 +225,7 @@ export const loadProject = (filePath, callback) => {
  * @param {function} [callback]
  */
 export const toLaravel = callback => {
-  const { project, tables, fields, activeExtension } = store.getState();
+  const { project, tables, fields, extension } = store.getState();
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
 
@@ -241,7 +241,7 @@ export const toLaravel = callback => {
 
       const dirPath = dirPaths[0];
 
-      const { paths, files } = activeExtension.main.onExport(dirPath, {
+      const { paths, files } = extension.main.onExport(dirPath, {
         project,
         tables,
         fields

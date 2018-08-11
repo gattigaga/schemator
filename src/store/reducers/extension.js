@@ -1,10 +1,10 @@
-import { SET_ACTIVE_EXTENSION } from "../actions/activeExtension";
+import { SET_EXTENSION } from "../actions/extension";
 
 const extension = (state = null, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case SET_ACTIVE_EXTENSION:
+    case SET_EXTENSION:
       return payload;
 
     default:

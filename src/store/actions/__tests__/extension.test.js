@@ -1,6 +1,6 @@
-import { SET_ACTIVE_EXTENSION, setActiveExtension } from "../activeExtension";
+import { SET_EXTENSION, setExtension } from "../extension";
 
-describe("SET_ACTIVE_EXTENSION", () => {
+describe("SET_EXTENSION", () => {
   it("should return expected action", () => {
     const extension = {
       tableOptions: [
@@ -14,11 +14,11 @@ describe("SET_ACTIVE_EXTENSION", () => {
     };
 
     const expected = {
-      type: SET_ACTIVE_EXTENSION,
+      type: SET_EXTENSION,
       payload: extension
     };
 
-    const action = setActiveExtension(extension);
+    const action = setExtension(extension);
 
     expect(action).toEqual(expected);
   });

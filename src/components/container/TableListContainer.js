@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 
-import { capitalize } from "../../helpers/formatter";
 import { updateProject } from "../../store/actions/project";
 import { updateTable } from "../../store/actions/tables";
 import { addField, updateField, removeField } from "../../store/actions/fields";
@@ -93,7 +91,7 @@ class TableListContainer extends Component {
       modifyField,
       createRelation,
       deleteRelation,
-      activeExtension
+      extension
     } = this.props;
 
     const action = {
@@ -102,7 +100,7 @@ class TableListContainer extends Component {
       updatedData: value
     };
 
-    const result = activeExtension.main.onUpdateField(action, {
+    const result = extension.main.onUpdateField(action, {
       tables,
       fields,
       relations
@@ -134,8 +132,8 @@ class TableListContainer extends Component {
    * @memberof WorkArea
    */
   addField(tableID) {
-    const { modifyProject, createField, activeExtension } = this.props;
-    const field = activeExtension.main.onCreateField(tableID);
+    const { modifyProject, createField, extension } = this.props;
+    const field = extension.main.onCreateField(tableID);
 
     modifyProject({ isModified: true });
     createField(field);
@@ -154,11 +152,11 @@ class TableListContainer extends Component {
       modifyProject,
       deleteField,
       deleteRelation,
-      activeExtension
+      extension
     } = this.props;
     const field = fields.find(item => item.id === fieldID);
     const relation = relations.find(item => item.fieldID === fieldID);
-    const isRelationRemovable = activeExtension.main.onDeleteField(field);
+    const isRelationRemovable = extension.main.onDeleteField(field);
 
     if (isRelationRemovable && relation) {
       deleteRelation(relation.id);
@@ -184,7 +182,7 @@ class TableListContainer extends Component {
       modifyTable,
       deleteRelation,
       createRelation,
-      activeExtension
+      extension
     } = this.props;
     const { value: tableName } = event.target;
 
@@ -193,7 +191,7 @@ class TableListContainer extends Component {
       name: tableName
     };
 
-    const newRelations = activeExtension.main.onUpdateTable(table, {
+    const newRelations = extension.main.onUpdateTable(table, {
       tables,
       fields
     });
@@ -269,15 +267,9 @@ class TableListContainer extends Component {
   }
 
   render() {
-    const {
-      tables,
-      fields,
-      menuItems,
-      onContextMenu,
-      activeExtension
-    } = this.props;
+    const { tables, fields, menuItems, onContextMenu, extension } = this.props;
     const [menuAddTable, menuRemoveTable, menuAddField] = menuItems;
-    const types = activeExtension ? activeExtension.main.fieldTypes : [];
+    const types = extension ? extension.main.fieldTypes : [];
 
     return (
       <TableList
@@ -332,7 +324,7 @@ TableListContainer.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
   relations: PropTypes.array,
-  activeExtension: PropTypes.object,
+  extension: PropTypes.object,
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
   modifyProject: PropTypes.func,
@@ -345,11 +337,11 @@ TableListContainer.propTypes = {
   onContextMenu: PropTypes.func
 };
 
-const mapStateToProps = ({ tables, fields, relations, activeExtension }) => ({
+const mapStateToProps = ({ tables, fields, relations, extension }) => ({
   tables,
   fields,
   relations,
-  activeExtension
+  extension
 });
 
 const mapDispatchToProps = dispatch => ({

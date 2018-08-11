@@ -1,4 +1,4 @@
-export const SET_ACTIVE_EXTENSION = "SET_ACTIVE_EXTENSION";
+export const SET_EXTENSION = "SET_EXTENSION";
 
 /**
  * Get action to set active extension.
@@ -6,7 +6,7 @@ export const SET_ACTIVE_EXTENSION = "SET_ACTIVE_EXTENSION";
  * @param {object} extension Active extension
  * @returns {object} Action
  */
-export const setActiveExtension = extension => ({
-  type: SET_ACTIVE_EXTENSION,
+export const setExtension = extension => ({
+  type: SET_EXTENSION,
   payload: extension
 });

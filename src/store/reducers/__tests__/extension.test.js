@@ -1,10 +1,10 @@
-import { setActiveExtension } from "../../actions/activeExtension";
-import activeExtension from "../activeExtension";
+import { setExtension } from "../../actions/extension";
+import extension from "../extension";
 
-describe("activeExtension()", () => {
+describe("extension()", () => {
   it("should returns initial state", () => {
     const expected = null;
-    const result = activeExtension(undefined, {});
+    const result = extension(undefined, {});
 
     expect(result).toEqual(expected);
   });
@@ -21,8 +21,8 @@ describe("activeExtension()", () => {
       fieldTypes: ["STRING"]
     };
 
-    const action = setActiveExtension(expected);
-    const result = activeExtension(undefined, action);
+    const action = setExtension(expected);
+    const result = extension(undefined, action);
 
     expect(result).toEqual(expected);
   });

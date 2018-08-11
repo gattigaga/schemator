@@ -10,7 +10,7 @@ import { clearFields } from "./store/actions/fields";
 import { clearRelations } from "./store/actions/relations";
 import { setRecentProjects } from "./store/actions/recentProjects";
 import { setExtensions } from "./store/actions/extensions";
-import { setActiveExtension } from "./store/actions/activeExtension";
+import { setExtension } from "./store/actions/extension";
 import {
   createProject,
   openProject,
@@ -489,7 +489,7 @@ const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
   applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
   applyExtensions: extensions => dispatch(setExtensions(extensions)),
-  loadExtension: extension => dispatch(setActiveExtension(extension))
+  loadExtension: extension => dispatch(setExtension(extension))
 });
 
 export default connect(

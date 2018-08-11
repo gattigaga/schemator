@@ -2,7 +2,6 @@ import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 
 import { updateProject } from "../../store/actions/project";
 import { removeTable, addTable } from "../../store/actions/tables";
@@ -117,13 +116,8 @@ class WorkArea extends Component {
    */
   addTable() {
     const { mouse } = this.state;
-    const {
-      activeExtension,
-      modifyProject,
-      createTable,
-      createField
-    } = this.props;
-    const { table, field } = activeExtension.main.onCreateTable(mouse);
+    const { extension, modifyProject, createTable, createField } = this.props;
+    const { table, field } = extension.main.onCreateTable(mouse);
 
     modifyProject({ isModified: true });
     createTable({ ...table, ref: createRef() });
@@ -169,9 +163,9 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addField() {
-    const { modifyProject, createField, activeExtension } = this.props;
+    const { modifyProject, createField, extension } = this.props;
     const tableID = this.hoveredTable;
-    const field = activeExtension.main.onCreateField(tableID);
+    const field = extension.main.onCreateField(tableID);
 
     modifyProject({ isModified: true });
     createField(field);
@@ -266,7 +260,7 @@ class WorkArea extends Component {
 }
 
 WorkArea.propTypes = {
-  activeExtension: PropTypes.object,
+  extension: PropTypes.object,
   project: PropTypes.object,
   relations: PropTypes.array,
   fields: PropTypes.array,
@@ -278,11 +272,11 @@ WorkArea.propTypes = {
   deleteRelation: PropTypes.func
 };
 
-const mapStateToProps = ({ project, relations, fields, activeExtension }) => ({
+const mapStateToProps = ({ project, relations, fields, extension }) => ({
   project,
   relations,
   fields,
-  activeExtension
+  extension
 });
 
 const mapDispatchToProps = dispatch => ({
