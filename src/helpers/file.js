@@ -221,7 +221,7 @@ export const loadProject = (filePath, callback) => {
  * @param {function} [callback]
  */
 export const exportProject = callback => {
-  const { project, tables, fields, extension } = store.getState();
+  const { project, tables, fields, relations, extension } = store.getState();
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
 
@@ -236,12 +236,14 @@ export const exportProject = callback => {
       }
 
       const dirPath = dirPaths[0];
-
-      const { paths, files } = extension.main.onExport(dirPath, {
+      const data = {
         project,
         tables,
-        fields
-      });
+        fields,
+        relations
+      };
+
+      const { paths, files } = extension.main.onExport(dirPath, data);
 
       paths.forEach(path => fs.mkdirSync(path));
       files.forEach(file => fs.writeFileSync(file.path, file.content));

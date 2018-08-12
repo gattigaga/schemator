@@ -5,7 +5,8 @@ import {
   createField,
   createOption,
   createRelation
-} from "../../helpers/extension";
+} from "schemator-utils";
+
 import {
   capitalize,
   toSnakeCase,
@@ -13,7 +14,7 @@ import {
   migrationTemplate
 } from "./helpers";
 
-// Option checkboxes would be used in table
+// Option checkboxes would be used in table.
 const tableOptions = [
   {
     id: "id",
@@ -33,7 +34,7 @@ const tableOptions = [
   }
 ];
 
-// Types would be used as field type
+// Types would be used as field type.
 const fieldTypes = [
   "BIG_INT",
   "BINARY",
@@ -77,26 +78,54 @@ const fieldTypes = [
  * i.e. after create new project based on this extension.
  * We can initialize new scheme here.
  *
- * @returns {object} Created Scheme
+ * @returns {object} Created scheme.
  */
 const onInit = () => {
   const tables = [
-    createTable(
-      "User",
-      [
-        createOption("id", "ID", true),
-        createOption("rememberToken", "Remember Token", true),
-        createOption("softDeletes", "Soft Deletes"),
-        createOption("timestamps", "Timestamps", true)
+    createTable({
+      name: "User",
+      options: [
+        createOption({
+          id: "id",
+          label: "ID",
+          isChecked: true
+        }),
+        createOption({
+          id: "rememberToken",
+          label: "Remember Token",
+          isChecked: true
+        }),
+        createOption({
+          id: "softDeletes",
+          label: "Soft Deletes",
+          isChecked: false
+        }),
+        createOption({
+          id: "timestamps",
+          label: "Timestamps",
+          isChecked: true
+        })
       ],
-      { x: 128, y: 128 }
-    )
+      position: { x: 128, y: 128 }
+    })
   ];
 
   const fields = [
-    createField(tables[0].id, "name", "STRING"),
-    createField(tables[0].id, "email", "STRING"),
-    createField(tables[0].id, "password", "TEXT")
+    createField({
+      tableID: tables[0].id,
+      name: "name",
+      type: "STRING"
+    }),
+    createField({
+      tableID: tables[0].id,
+      name: "email",
+      type: "STRING"
+    }),
+    createField({
+      tableID: tables[0].id,
+      name: "password",
+      type: "TEXT"
+    })
   ];
 
   const scheme = {
@@ -109,27 +138,51 @@ const onInit = () => {
 
 /**
  * Invoked while table would be created from context menu.
- * You can define table data here.
+ * You can define table and field here.
  *
- * @param {object} cursorPosition
+ * @param {object} cursorPosition Usually used as table position.
  * @param {number} cursorPosition.x
  * @param {number} cursorPosition.y
- * @returns {object} Created table with it's field
+ * @returns {object} Created table with it's field.
  */
 const onCreateTable = cursorPosition => {
-  const table = createTable(
-    "Table",
-    [
-      createOption("id", "ID", true),
-      createOption("rememberToken", "Remember Token"),
-      createOption("softDeletes", "Soft Deletes"),
-      createOption("timestamps", "Timestamps", true)
+  const table = createTable({
+    name: "Table",
+    options: [
+      createOption({
+        id: "id",
+        label: "ID",
+        isChecked: true
+      }),
+      createOption({
+        id: "rememberToken",
+        label: "Remember Token",
+        isChecked: false
+      }),
+      createOption({
+        id: "softDeletes",
+        label: "Soft Deletes",
+        isChecked: false
+      }),
+      createOption({
+        id: "timestamps",
+        label: "Timestamps",
+        isChecked: true
+      })
     ],
-    cursorPosition
-  );
+    position: cursorPosition
+  });
 
-  const field = createField(table.id, "field", "INTEGER");
-  const scheme = { table, field };
+  const field = createField({
+    tableID: table.id,
+    name: "field",
+    type: "INTEGER"
+  });
+
+  const scheme = {
+    table,
+    field
+  };
 
   return scheme;
 };
@@ -138,19 +191,26 @@ const onCreateTable = cursorPosition => {
  * Invoked while table would be updated.
  * i.e. change table name only.
  *
- * @param {object} table
- * @param {string} table.id
- * @param {string} table.name
- * @param {object} data
- * @param {object[]} data.tables
- * @param {object[]} data.fields
+ * @param {object} table Updated table.
+ * @param {string} table.id ID of updated table.
+ * @param {string} table.updatedData Updated data like table name.
+ * @param {object} data Project data used for reference.
+ * @param {object[]} data.tables All created tables.
+ * @param {object[]} data.fields All created fields.
+ * @param {object[]} data.relations All created relations.
+ * @return {object[]} Created relations.
  */
 const onUpdateTable = (table, data) => {
   const { fields } = data;
-  const foreignKey = `${table.name.toLowerCase()}_id`;
+  const { updatedData } = table;
+  const foreignKey = `${updatedData.toLowerCase()}_id`;
   const foreignFields = fields.filter(field => field.name === foreignKey);
   const relations = foreignFields.map(field =>
-    createRelation(field.id, field.tableID, table.id)
+    createRelation({
+      fieldID: field.id,
+      fromTableID: field.tableID,
+      toTableID: table.id
+    })
   );
 
   return relations;
@@ -161,31 +221,35 @@ const onUpdateTable = (table, data) => {
  * from context menu or button.
  * You can define field data here.
  *
- * @param {string} tableID
- * @returns {object} Created field
+ * @param {string} tableID ID of table which has this field.
+ * @returns {object} Created field.
  */
 const onCreateField = tableID => {
-  return createField(tableID, "field", "INTEGER");
+  return createField({
+    tableID,
+    name: "field",
+    type: "INTEGER"
+  });
 };
 
 /**
  * Invoked while field in a table would be updated.
  * i.e. change field name and type.
  *
- * @param {object} action
- * @param {string} action.fieldID
- * @param {string} action.updateType
- * @param {string} action.updateData
- * @param {object} data
- * @param {object[]} data.tables
- * @param {object[]} data.fields
- * @param {object[]} data.relations
- * @return {object} Created relation
+ * @param {object} field Updated field.
+ * @param {string} field.id ID of updated field.
+ * @param {string} field.updateType Type data which has been updated (field "name" or "type").
+ * @param {string} field.updateData Updated value.
+ * @param {object} data Project data used for reference.
+ * @param {object[]} data.tables All created tables.
+ * @param {object[]} data.fields All created fields.
+ * @param {object[]} data.relations All created relations.
+ * @return {object} Created relation.
  */
-const onUpdateField = (action, data) => {
+const onUpdateField = (field, data) => {
   const { tables, fields, relations } = data;
-  const { fieldID, updatedType, updatedData } = action;
-  const relation = relations.find(item => item.fieldID === fieldID);
+  const { id: fieldID, updatedType, updatedData } = field;
+  const relation = relations.find(item => item.fieldID === field.id);
 
   if (updatedType === "name") {
     if (updatedData.endsWith("_id")) {
@@ -199,7 +263,11 @@ const onUpdateField = (action, data) => {
       if (fromTable && toTable && !relation) {
         return {
           type: "CREATE",
-          relation: createRelation(field.id, fromTable.id, toTable.id)
+          relation: createRelation({
+            fieldID: field.id,
+            fromTableID: fromTable.id,
+            toTableID: toTable.id
+          })
         };
       }
     }
@@ -211,26 +279,28 @@ const onUpdateField = (action, data) => {
 /**
  * Invoked while field in a table would be deleted.
  *
- * @param {object} field
- * @returns {boolean} Condition where field should be removable
+ * @param {object} field Deleted field.
+ * @returns {boolean} Condition where relation should be removed.
  */
-const onDeleteField = field => {
-  return field.name.endsWith("_id");
-};
+const onDeleteField = field => field.name.endsWith("_id");
 
 /**
  * Invoked while project would be exported.
  * You can define exported data here.
  *
- * @param {string} dirPath Path where project would be exported
- * @param {object} data
- * @returns {object}
+ * @param {string} destinationPath Path where project would be exported.
+ * @param {object} data Project data used for reference.
+ * @param {object[]} data.project Active project
+ * @param {object[]} data.tables All created tables.
+ * @param {object[]} data.fields All created fields.
+ * @param {object[]} data.relations All created relations.
+ * @returns {object} Paths and files which should be created.
  */
-const onExport = (dirPath, data) => {
+const onExport = (destinationPath, data) => {
   const byTable = tableID => field => field.tableID === tableID;
 
   const { project, tables, fields } = data;
-  const exportPath = `${dirPath}/${project.name}`;
+  const exportPath = `${destinationPath}/${project.name}`;
   const modelPath = `${exportPath}/app`;
   const databasePath = `${exportPath}/database`;
   const migrationPath = `${databasePath}/migrations`;

@@ -94,17 +94,19 @@ class TableListContainer extends Component {
       extension
     } = this.props;
 
-    const action = {
-      fieldID,
+    const field = {
+      id: fieldID,
       updatedType: type,
       updatedData: value
     };
 
-    const result = extension.main.onUpdateField(action, {
+    const data = {
       tables,
       fields,
       relations
-    });
+    };
+
+    const result = extension.main.onUpdateField(field, data);
 
     if (result) {
       switch (result.type) {
@@ -188,13 +190,16 @@ class TableListContainer extends Component {
 
     const table = {
       id: tableID,
-      name: tableName
+      updatedData: tableName
     };
 
-    const newRelations = extension.main.onUpdateTable(table, {
+    const data = {
       tables,
-      fields
-    });
+      fields,
+      relations
+    };
+
+    const newRelations = extension.main.onUpdateTable(table, data);
 
     if (newRelations.length) {
       newRelations.forEach(createRelation);
