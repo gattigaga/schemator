@@ -8,7 +8,20 @@ jest.mock("../TableBox", () => "TableBox");
 describe("TableList", () => {
   const setup = propOverrides => {
     const props = {
-      types: ["INTEGER", "STRING", "TEXT"],
+      types: [
+        {
+          id: "string",
+          label: "String"
+        },
+        {
+          id: "integer",
+          label: "Integer"
+        },
+        {
+          id: "text",
+          label: "Text"
+        }
+      ],
       tables: [
         {
           id: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
@@ -80,37 +93,37 @@ describe("TableList", () => {
           id: "079cff9a-7603-4d7a-b178-2da03d6faf8c",
           tableID: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
           name: "name",
-          type: "STRING"
+          type: "string"
         },
         {
           id: "34fd94df-d5d4-41ab-8f01-a2b95a2b2050",
           tableID: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
           name: "email",
-          type: "STRING"
+          type: "string"
         },
         {
           id: "6f159bff-ebe0-4d4e-8794-b75a1a34f79c",
           tableID: "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
           name: "password",
-          type: "STRING"
+          type: "string"
         },
         {
           id: "26737c00-7a54-4b58-b112-f17060fa49f6",
           tableID: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
           name: "title",
-          type: "INTEGER"
+          type: "string"
         },
         {
           tableID: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
           id: "ccbc8a47-ae75-4ab6-8d6f-7a90747d60be",
           name: "user_id",
-          type: "INTEGER"
+          type: "integer"
         },
         {
           tableID: "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
           id: "5c0b69d3-f527-4a02-a095-1342f392b2c8",
           name: "content",
-          type: "TEXT"
+          type: "text"
         }
       ],
       onMouseDown: jest.fn(),
