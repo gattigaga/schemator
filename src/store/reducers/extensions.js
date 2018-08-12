@@ -1,5 +1,6 @@
 import { SET_EXTENSIONS } from "../actions/extensions";
 
+// Contains extension list.
 const extensions = (state = [], action) => {
   const { type, payload } = action;
 

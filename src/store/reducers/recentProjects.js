@@ -3,6 +3,7 @@ import {
   ADD_RECENT_PROJECT
 } from "../actions/recentProjects";
 
+// Contains recently opened project paths.
 const recentProjects = (state = [], action) => {
   const { type, payload } = action;
 

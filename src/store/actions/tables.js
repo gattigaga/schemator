@@ -5,16 +5,16 @@ export const REMOVE_TABLE = "REMOVE_TABLE";
 export const UPDATE_TABLE = "UPDATE_TABLE";
 
 /**
- * Get action to set tables
+ * Get action to set table list.
  *
- * @param {object[]} tables Specified tables
- * @param {string} tables[].id Table ID
- * @param {string} tables[].name Table name
- * @param {number} tables[].timestamp Table creation date timestamp
- * @param {object} tables[].position Table position
- * @param {number} tables[].position.x Position X
- * @param {number} tables[].position.y Position Y
- * @returns {object} Action
+ * @param {object[]} tables Table list.
+ * @param {string} tables[].id ID of table.
+ * @param {string} tables[].name Name of table.
+ * @param {number} tables[].timestamp Table creation date timestamp.
+ * @param {object} tables[].position Table position in WorkArea.
+ * @param {number} tables[].position.x
+ * @param {number} tables[].position.y
+ * @returns {object} Action.
  */
 export const setTables = tables => ({
   type: SET_TABLES,
@@ -22,15 +22,15 @@ export const setTables = tables => ({
 });
 
 /**
- * Get action to add new table
+ * Get action to add new table.
  *
- * @param {object} table Specified table
- * @param {string} table.id Table ID
- * @param {string} table.name Table name
- * @param {number} table.timestamp Table creation date timestamp
- * @param {object} table.position Table position
- * @param {number} table.position.x Position X
- * @param {number} table.position.y Position Y
+ * @param {object} table New table.
+ * @param {string} table.id ID of table.
+ * @param {string} table.name Name of table.
+ * @param {number} table.timestamp Table creation date timestamp.
+ * @param {object} table.position Table position in WorkArea.
+ * @param {number} table.position.x
+ * @param {number} table.position.y
  * @returns {object} Action
  */
 export const addTable = table => ({
@@ -39,10 +39,10 @@ export const addTable = table => ({
 });
 
 /**
- * Get action to remove existing table
+ * Get action to remove an existing table.
  *
- * @param {string} tableID Table ID
- * @returns {object} Action
+ * @param {string} tableID ID of table should be removed.
+ * @returns {object} Action.
  */
 export const removeTable = tableID => ({
   type: REMOVE_TABLE,
@@ -50,11 +50,11 @@ export const removeTable = tableID => ({
 });
 
 /**
- * Get action to update existing table
+ * Get action to update an existing table.
  *
- * @param {string} tableID Table ID
- * @param {object} data New Data
- * @returns {object} Action
+ * @param {string} tableID ID of table should be updated.
+ * @param {object} data New Data.
+ * @returns {object} Action.
  */
 export const updateTable = (tableID, data) => ({
   type: UPDATE_TABLE,
@@ -65,9 +65,9 @@ export const updateTable = (tableID, data) => ({
 });
 
 /**
- * Get action to clear all tables
+ * Get action to clear all tables.
  *
- * @returns {object} Action
+ * @returns {object} Action.
  */
 export const clearTables = () => ({
   type: CLEAR_TABLES

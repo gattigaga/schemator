@@ -1,5 +1,6 @@
 import { SET_EXTENSION } from "../actions/extension";
 
+// Contains active extension.
 const extension = (state = null, action) => {
   const { type, payload } = action;
 

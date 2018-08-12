@@ -32,10 +32,10 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Get mouse position in SVG coordinate system
+   * Get mouse position in SVG coordinate system.
    *
-   * @param {object} event DOM event
-   * @returns {object} Mouse position
+   * @param {object} event DOM event.
+   * @returns {object} Mouse position.
    * @memberof WorkArea
    */
   getMousePosition(event) {
@@ -49,10 +49,10 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Save table offset from the top left of object
+   * Save table offset from the top left of object.
    *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
+   * @param {object} event DOM event.
+   * @param {string} tableID ID of dragged table.
    * @memberof WorkArea
    */
   saveTableOffset(event, tableID) {
@@ -73,11 +73,11 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Update field data inside table
+   * Update field data inside a table.
    *
-   * @param {object} event DOM event
-   * @param {string} fieldID Field ID
-   * @param {string} type Input type
+   * @param {object} event DOM event.
+   * @param {string} fieldID ID of updated field.
+   * @param {string} type Input type ('name' or 'type').
    * @memberof WorkArea
    */
   updateField(event, fieldID, type) {
@@ -128,9 +128,9 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Add new field inside table
+   * Add new field inside table.
    *
-   * @param {string} tableID
+   * @param {string} tableID ID of table which contains this field
    * @memberof WorkArea
    */
   addField(tableID) {
@@ -142,9 +142,9 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Remove existing field
+   * Remove an existing field.
    *
-   * @param {number} fieldID Field ID
+   * @param {string} fieldID ID of field which would be removed.
    * @memberof WorkArea
    */
   removeField(fieldID) {
@@ -169,10 +169,10 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Update table name
+   * Update table name.
    *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
+   * @param {object} event DOM event.
+   * @param {string} tableID ID of updated table.
    * @memberof WorkArea
    */
   updateTableName(event, tableID) {
@@ -216,10 +216,10 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Update table position
+   * Update table position.
    *
-   * @param {object} event DOM event
-   * @param {string} tableID Table ID
+   * @param {object} event DOM event.
+   * @param {string} tableID ID of updated table.
    * @memberof WorkArea
    */
   updateTablePosition(event, tableID) {
@@ -245,11 +245,11 @@ class TableListContainer extends Component {
   }
 
   /**
-   * Update table options like id, rememberToken, etc
+   * Update table options.
    *
-   * @param {object} event DOM event
-   * @param {number} tableID Table ID
-   * @param {string} name Option name
+   * @param {object} event DOM event.
+   * @param {string} tableID ID of updated table.
+   * @param {string} optionID ID of updated option.
    * @memberof WorkArea
    */
   updateTableOptions(event, tableID, optionID) {

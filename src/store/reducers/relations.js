@@ -6,6 +6,7 @@ import {
   UPDATE_RELATION
 } from "../actions/relations";
 
+// Contains relation list.
 const relations = (state = [], action) => {
   const { type, payload } = action;
 

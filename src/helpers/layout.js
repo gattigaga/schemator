@@ -1,12 +1,12 @@
 /**
  * Get relation line path points (for SVG d attribute).
  *
- * @param {object} coordinate
+ * @param {object} coordinate Line coordinate.
  * @param {number} coordinate.x1
  * @param {number} coordinate.y1
  * @param {number} coordinate.x2
  * @param {number} coordinate.y2
- * @returns {string} Path points
+ * @returns {string} Path points.
  */
 export const getPathPoints = coordinate => {
   const { x1, y1, x2, y2 } = coordinate;

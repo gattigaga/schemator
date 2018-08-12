@@ -5,14 +5,14 @@ export const REMOVE_FIELD = "REMOVE_FIELD";
 export const UPDATE_FIELD = "UPDATE_FIELD";
 
 /**
- * Get action to set fields
+ * Get action to set field list.
  *
- * @param {object[]} fields Field list
- * @param {string} fields[].id Field ID
- * @param {string} fields[].tableID Table ID
- * @param {string} fields[].name Field name
- * @param {string} fields[].type Field type
- * @returns {object} Action
+ * @param {object[]} fields Field list.
+ * @param {string} fields[].id
+ * @param {string} fields[].tableID
+ * @param {string} fields[].name
+ * @param {string} fields[].type
+ * @returns {object} Action.
  */
 export const setFields = fields => ({
   type: SET_FIELDS,
@@ -20,23 +20,23 @@ export const setFields = fields => ({
 });
 
 /**
- * Get action to clear all fields
+ * Get action to clear all fields.
  *
- * @returns {object} Action
+ * @returns {object} Action.
  */
 export const clearFields = () => ({
   type: CLEAR_FIELDS
 });
 
 /**
- * Get action to add new field
+ * Get action to add new field.
  *
- * @param {object} field Field data
- * @param {string} field.id Field ID
- * @param {string} field.tableID Table ID
- * @param {string} field.name Field name
- * @param {string} field.type Field type
- * @returns {object} Action
+ * @param {object} field New field.
+ * @param {string} field.id
+ * @param {string} field.tableID
+ * @param {string} field.name
+ * @param {string} field.type
+ * @returns {object} Action.
  */
 export const addField = field => ({
   type: ADD_FIELD,
@@ -44,10 +44,10 @@ export const addField = field => ({
 });
 
 /**
- * Get action to remove existing field
+ * Get action to remove an existing field.
  *
- * @param {string} fieldID Field ID
- * @returns {object} Action
+ * @param {string} fieldID ID of field which should be removed.
+ * @returns {object} Action.
  */
 export const removeField = fieldID => ({
   type: REMOVE_FIELD,
@@ -55,11 +55,11 @@ export const removeField = fieldID => ({
 });
 
 /**
- * Get action to update existing field
+ * Get action to update an existing field.
  *
- * @param {string} fieldID Field ID
- * @param {object} data New Data
- * @returns {object} Action
+ * @param {string} fieldID ID of field which should be updated.
+ * @param {object} data New data.
+ * @returns {object} Action.
  */
 export const updateField = (fieldID, data) => ({
   type: UPDATE_FIELD,

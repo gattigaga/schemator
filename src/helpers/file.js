@@ -86,7 +86,7 @@ export const createProject = () => {
 };
 
 /**
- * Open dialog to load existing project
+ * Open dialog to load existing project.
  *
  * @param {function} [callback]
  */
@@ -118,7 +118,7 @@ export const openProject = callback => {
 };
 
 /**
- * Save current project
+ * Save current project.
  *
  * @param {function} [callback]
  */
@@ -152,9 +152,10 @@ export const saveProject = callback => {
 };
 
 /**
- * Load a project
+ * Load a project based on extension.
+ * Project wouldn't be loaded if extension wasn't exists.
  *
- * @param {string} filePath
+ * @param {string} filePath Path where project exists.
  * @param {function} [callback]
  */
 export const loadProject = (filePath, callback) => {
@@ -216,7 +217,7 @@ export const loadProject = (filePath, callback) => {
 };
 
 /**
- * Export to Laravel model and migration
+ * Export project based on extension.
  *
  * @param {function} [callback]
  */

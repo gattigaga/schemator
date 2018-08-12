@@ -1,5 +1,6 @@
 import { SET_PAGE } from "../actions/page";
 
+// Contains active page.
 const page = (state = "workarea", action) => {
   const { type, payload } = action;
 

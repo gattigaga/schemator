@@ -52,12 +52,12 @@ class WorkArea extends Component {
     this.createContextMenus();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setAreaSize(nextProps);
+  componentDidUpdate(prevProps) {
+    this.setAreaSize(prevProps);
   }
 
   /**
-   * Create all context menus
+   * Create all context menus.
    *
    * @memberof WorkArea
    */
@@ -90,15 +90,15 @@ class WorkArea extends Component {
   }
 
   /**
-   * Set default size of working area in 100%
+   * Set default size of working area in 100%.
    *
-   * @param {object} nextProps
+   * @param {object} prevProps
    * @memberof WorkArea
    */
-  setAreaSize(nextProps) {
+  setAreaSize(prevProps) {
     const { project } = this.props;
 
-    if (nextProps.project !== project) {
+    if (prevProps.project !== project) {
       const { workAreaSize } = screen.getPrimaryDisplay();
       const area = this.area.current;
       const width = (workAreaSize.width / 25) * 100;
@@ -110,7 +110,7 @@ class WorkArea extends Component {
   }
 
   /**
-   * Add new table
+   * Add new table.
    *
    * @memberof WorkArea
    */
@@ -125,7 +125,7 @@ class WorkArea extends Component {
   }
 
   /**
-   * Remove a table
+   * Remove a table.
    *
    * @memberof WorkArea
    */
@@ -158,7 +158,7 @@ class WorkArea extends Component {
   }
 
   /**
-   * Add new field inside table
+   * Add new field inside table.
    *
    * @memberof WorkArea
    */
@@ -172,9 +172,9 @@ class WorkArea extends Component {
   }
 
   /**
-   * Handle zoom from mouse wheel offset
+   * Handle zoom from mouse wheel offset.
    *
-   * @param {object} event DOM event
+   * @param {object} event DOM event.
    * @memberof WorkArea
    */
   zoom(event) {

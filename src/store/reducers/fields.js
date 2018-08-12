@@ -6,6 +6,7 @@ import {
   UPDATE_FIELD
 } from "../actions/fields";
 
+// Contains field list.
 const fields = (state = [], action) => {
   const { type, payload } = action;
 

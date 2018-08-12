@@ -6,6 +6,7 @@ import {
   UPDATE_TABLE
 } from "../actions/tables";
 
+// Contains table list.
 const tables = (state = [], action) => {
   const { type, payload } = action;
 
