@@ -7,8 +7,21 @@ describe("TableInput", () => {
   const setup = propOverrides => {
     const props = {
       name: "username",
-      type: "STRING",
-      types: ["NUMBER", "STRING", "BOOLEAN"],
+      type: "string",
+      types: [
+        {
+          id: "string",
+          label: "String"
+        },
+        {
+          id: "boolean",
+          label: "Boolean"
+        },
+        {
+          id: "char",
+          label: "Char"
+        }
+      ],
       onChangeName: jest.fn(),
       onChangeType: jest.fn(),
       onClickRemove: jest.fn(),

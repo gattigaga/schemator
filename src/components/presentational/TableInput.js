@@ -72,9 +72,9 @@ const TableInput = ({
     </Column>
     <Column>
       <Select value={type} onChange={onChangeType} disabled={isTypeDisabled}>
-        {types.map((type, index) => (
-          <option key={index} value={type}>
-            {type}
+        {types.map(type => (
+          <option key={type.id} value={type.id}>
+            {type.label}
           </option>
         ))}
       </Select>

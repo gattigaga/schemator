@@ -12,25 +12,25 @@ exports[`TableInput should renders default 1`] = `
   <styled.div>
     <styled.select
       onChange={[Function]}
-      value="STRING"
+      value="string"
     >
       <option
-        key="0"
-        value="NUMBER"
+        key="string"
+        value="string"
       >
-        NUMBER
+        String
       </option>
       <option
-        key="1"
-        value="STRING"
+        key="boolean"
+        value="boolean"
       >
-        STRING
+        Boolean
       </option>
       <option
-        key="2"
-        value="BOOLEAN"
+        key="char"
+        value="char"
       >
-        BOOLEAN
+        Char
       </option>
     </styled.select>
   </styled.div>
