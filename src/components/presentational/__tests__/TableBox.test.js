@@ -14,18 +14,31 @@ describe("TableBox", () => {
   const setup = propOverrides => {
     const props = {
       position: { x: 32, y: 32 },
-      types: ["NUMBER", "STRING", "BOOLEAN"],
+      types: [
+        {
+          id: "string",
+          label: "String"
+        },
+        {
+          id: "boolean",
+          label: "Boolean"
+        },
+        {
+          id: "char",
+          label: "Char"
+        }
+      ],
       name: "User",
       fields: [
         {
           id: "1",
           name: "fullname",
-          type: "STRING"
+          type: "string"
         },
         {
           id: "2",
           name: "username",
-          type: "STRING"
+          type: "string"
         }
       ],
       options: [

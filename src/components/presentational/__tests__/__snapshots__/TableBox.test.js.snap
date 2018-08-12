@@ -24,12 +24,21 @@ exports[`TableBox should renders default 1`] = `
       onChangeName={[Function]}
       onChangeType={[Function]}
       onClickRemove={[Function]}
-      type="STRING"
+      type="string"
       types={
         Array [
-          "NUMBER",
-          "STRING",
-          "BOOLEAN",
+          Object {
+            "id": "string",
+            "label": "String",
+          },
+          Object {
+            "id": "boolean",
+            "label": "Boolean",
+          },
+          Object {
+            "id": "char",
+            "label": "Char",
+          },
         ]
       }
     />
@@ -39,12 +48,21 @@ exports[`TableBox should renders default 1`] = `
       onChangeName={[Function]}
       onChangeType={[Function]}
       onClickRemove={[Function]}
-      type="STRING"
+      type="string"
       types={
         Array [
-          "NUMBER",
-          "STRING",
-          "BOOLEAN",
+          Object {
+            "id": "string",
+            "label": "String",
+          },
+          Object {
+            "id": "boolean",
+            "label": "Boolean",
+          },
+          Object {
+            "id": "char",
+            "label": "Char",
+          },
         ]
       }
     />

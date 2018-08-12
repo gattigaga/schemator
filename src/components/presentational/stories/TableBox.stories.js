@@ -9,7 +9,20 @@ const Container = styled.svg`
   height: 480px;
 `;
 
-const types = ["NUMBER", "STRING", "BOOLEAN"];
+const types = [
+  {
+    id: "string",
+    label: "String"
+  },
+  {
+    id: "boolean",
+    label: "Boolean"
+  },
+  {
+    id: "char",
+    label: "Char"
+  }
+];
 
 storiesOf("TableBox", module)
   .addDecorator(story => <Container>{story()}</Container>)
@@ -19,8 +32,8 @@ storiesOf("TableBox", module)
       types={types}
       name="User"
       fields={[
-        { id: "1", name: "fullname", type: "STRING" },
-        { id: "2", name: "username", type: "STRING" }
+        { id: "1", name: "fullname", type: "string" },
+        { id: "2", name: "username", type: "string" }
       ]}
       options={[
         {
