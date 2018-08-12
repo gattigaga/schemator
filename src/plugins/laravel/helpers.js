@@ -13,30 +13,6 @@ export const capitalize = words => {
 };
 
 /**
- * Change label field type into Laravel migration field type
- *
- * @param {string} type Field type
- * @returns {string} Laravel field type
- */
-export const convertType = type => {
-  const camelize = (word, index) => {
-    if (index > 0) {
-      return capitalize(word);
-    }
-
-    return word;
-  };
-
-  const result = type
-    .toLowerCase()
-    .split("_")
-    .map(camelize)
-    .join("");
-
-  return result;
-};
-
-/**
  * Convert from Camel Case string to Snake Case
  *
  * @param {string} words Camel case string
@@ -110,8 +86,6 @@ export const migrationTemplate = (modelName, options, fields) => {
   const timestampsField = timestamps.isChecked && `$table->timestamps();`;
 
   const createField = field => {
-    const type = convertType(field.type);
-
     if (field.name.includes("_id")) {
       const singularTable = field.name.replace("_id", "");
       const tableName = pluralize(singularTable);
@@ -124,7 +98,7 @@ export const migrationTemplate = (modelName, options, fields) => {
       ];
     }
 
-    return [`$table->${type}('${field.name}');`];
+    return [`$table->${field.type}('${field.name}');`];
   };
 
   const mainFields = [].concat(...fields.map(createField));

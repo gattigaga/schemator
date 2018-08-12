@@ -36,41 +36,146 @@ const tableOptions = [
 
 // Types would be used as field type.
 const fieldTypes = [
-  "BIG_INT",
-  "BINARY",
-  "BOOLEAN",
-  "CHAR",
-  "DATE",
-  "DATE_TIME",
-  "DATE_TIME_TZ",
-  "DECIMAL",
-  "DOUBLE",
-  "ENUM",
-  "FLOAT",
-  "INTEGER",
-  "IP_ADDRESS",
-  "JSON",
-  "JSONB",
-  "LONG_TEXT",
-  "MAC_ADDRESS",
-  "MEDIUM_INT",
-  "MEDIUM_TEXT",
-  "MORPHS",
-  "NULLABLE_MORPHS",
-  "SMALL_INT",
-  "STRING",
-  "TEXT",
-  "TIME",
-  "TIME_TZ",
-  "TINY_INT",
-  "TIMESTAMP",
-  "TIMESTAMP_TZ",
-  "U_BIG_INT",
-  "U_INT",
-  "U_MEDIUM_INT",
-  "U_SMALL_INT",
-  "U_TINY_INT",
-  "UUID"
+  {
+    id: "bigInteger",
+    label: "Big Integer"
+  },
+  {
+    id: "binary",
+    label: "Binary"
+  },
+  {
+    id: "boolean",
+    label: "Boolean"
+  },
+  {
+    id: "char",
+    label: "Char"
+  },
+  {
+    id: "date",
+    label: "Date"
+  },
+  {
+    id: "dateTime",
+    label: "Date Time"
+  },
+  {
+    id: "dateTimeTz",
+    label: "Date Time TZ"
+  },
+  {
+    id: "decimal",
+    label: "Decimal"
+  },
+  {
+    id: "double",
+    label: "Double"
+  },
+  {
+    id: "enum",
+    label: "Enum"
+  },
+  {
+    id: "float",
+    label: "Float"
+  },
+  {
+    id: "integer",
+    label: "Integer"
+  },
+  {
+    id: "ipAddress",
+    label: "IP Address"
+  },
+  {
+    id: "json",
+    label: "JSON"
+  },
+  {
+    id: "jsonb",
+    label: "JSONB"
+  },
+  {
+    id: "longText",
+    label: "Long Text"
+  },
+  {
+    id: "macAddress",
+    label: "MAC Address"
+  },
+  {
+    id: "mediumInteger",
+    label: "Medium Integer"
+  },
+  {
+    id: "mediumText",
+    label: "Medium Text"
+  },
+  {
+    id: "morphs",
+    label: "Morphs"
+  },
+  {
+    id: "nullableMorphs",
+    label: "Nullable Morphs"
+  },
+  {
+    id: "smallInteger",
+    label: "Small Integer"
+  },
+  {
+    id: "string",
+    label: "String"
+  },
+  {
+    id: "text",
+    label: "Text"
+  },
+  {
+    id: "time",
+    label: "Time"
+  },
+  {
+    id: "timeTz",
+    label: "Time TZ"
+  },
+  {
+    id: "tinyInt",
+    label: "Tiny Integer"
+  },
+  {
+    id: "timestamp",
+    label: "Timestamp"
+  },
+  {
+    id: "timestampTz",
+    label: "Timestamp TZ"
+  },
+  {
+    id: "unsignedBigInteger",
+    label: "Unsigned Big Integer"
+  },
+  {
+    id: "unsignedInteger",
+    label: "Unsigned Integer"
+  },
+  {
+    id: "unsignedMediumInteger",
+    label: "Unsigned Medium Integer"
+  },
+  {
+    id: "unsignedSmallInteger",
+    label: "Unsigned Small Integer"
+  },
+  {
+    id: "unsignedTinyInteger",
+    label: "Unsigned Tiny Integer"
+  },
+  {
+    id: "uuid",
+    label: "UUID"
+  }
 ];
 
 /**
