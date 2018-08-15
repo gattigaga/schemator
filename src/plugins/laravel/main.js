@@ -293,36 +293,7 @@ const onCreateTable = cursorPosition => {
 };
 
 /**
- * Invoked while table would be updated.
- * i.e. change table name only.
- *
- * @param {object} table Updated table.
- * @param {string} table.id ID of updated table.
- * @param {string} table.updatedData Updated data like table name.
- * @param {object} data Project data used for reference.
- * @param {object[]} data.tables All created tables.
- * @param {object[]} data.fields All created fields.
- * @param {object[]} data.relations All created relations.
- * @return {object[]} Created relations.
- */
-const onUpdateTable = (table, data) => {
-  const { fields } = data;
-  const { updatedData } = table;
-  const foreignKey = `${updatedData.toLowerCase()}_id`;
-  const foreignFields = fields.filter(field => field.name === foreignKey);
-  const relations = foreignFields.map(field =>
-    createRelation({
-      fieldID: field.id,
-      fromTableID: field.tableID,
-      toTableID: table.id
-    })
-  );
-
-  return relations;
-};
-
-/**
- * Invoked while field in a table would be created
+ * Invoked while field in a table would be created.
  * from context menu or button.
  * You can define field data here.
  *
@@ -338,56 +309,38 @@ const onCreateField = tableID => {
 };
 
 /**
- * Invoked while field in a table would be updated.
- * i.e. change field name and type.
+ * Invoked after table or field has been updated.
+ * You can make relations here.
  *
- * @param {object} field Updated field.
- * @param {string} field.id ID of updated field.
- * @param {string} field.updateType Type data which has been updated (field "name" or "type").
- * @param {string} field.updateData Updated value.
  * @param {object} data Project data used for reference.
- * @param {object[]} data.tables All created tables.
- * @param {object[]} data.fields All created fields.
- * @param {object[]} data.relations All created relations.
- * @return {object} Created relation.
+ * @param {object[]} tables All created tables.
+ * @param {object[]} fields All created fields.
+ * @returns {object[]} Created relations.
  */
-const onUpdateField = (field, data) => {
-  const { tables, fields, relations } = data;
-  const { id: fieldID, updatedType, updatedData } = field;
-  const relation = relations.find(item => item.fieldID === field.id);
+const onUpdate = data => {
+  const { tables, fields } = data;
+  const foreignKeyFields = fields.filter(field => field.name.endsWith("_id"));
+  const relations = foreignKeyFields.map(field => {
+    const table = tables.find(table => {
+      const pattern = new RegExp(table.name, "i");
+      const isMatch = field.name.match(pattern);
 
-  if (updatedType === "name") {
-    if (updatedData.endsWith("_id")) {
-      const lowercasedTableName = updatedData.replace("_id", "");
-      const tableName = capitalize(lowercasedTableName);
+      return isMatch;
+    });
 
-      const field = fields.find(item => item.id === fieldID);
-      const fromTable = tables.find(item => item.id === field.tableID);
-      const toTable = tables.find(item => item.name === tableName);
-
-      if (fromTable && toTable && !relation) {
-        return {
-          type: "CREATE",
-          relation: createRelation({
-            fieldID: field.id,
-            fromTableID: fromTable.id,
-            toTableID: toTable.id
-          })
-        };
-      }
+    if (!table) {
+      return null;
     }
-  }
 
-  return relation && { type: "DELETE", relation };
+    return createRelation({
+      fieldID: field.id,
+      fromTableID: field.tableID,
+      toTableID: table.id
+    });
+  });
+
+  return relations.filter(relation => !!relation);
 };
-
-/**
- * Invoked while field in a table would be deleted.
- *
- * @param {object} field Deleted field.
- * @returns {boolean} Condition where relation should be removed.
- */
-const onDeleteField = field => field.name.endsWith("_id");
 
 /**
  * Invoked while project would be exported.
@@ -445,9 +398,7 @@ export default {
   fieldTypes,
   onInit,
   onCreateTable,
-  onUpdateTable,
   onCreateField,
-  onUpdateField,
-  onDeleteField,
+  onUpdate,
   onExport
 };

@@ -52,10 +52,13 @@ export const createProject = () => {
         ref: createRef()
       }));
 
+      const relations = extension.main.onUpdate({ tables, fields });
+
       const data = {
         project,
         tables,
-        fields
+        fields,
+        relations
       };
 
       const content = JSON.stringify(data, null, 2);

@@ -4,9 +4,9 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 
 import { updateProject } from "../../store/actions/project";
-import { removeTable, addTable } from "../../store/actions/tables";
-import { addField, removeField } from "../../store/actions/fields";
-import { removeRelation } from "../../store/actions/relations";
+import { addTable, setTables } from "../../store/actions/tables";
+import { addField, setFields } from "../../store/actions/fields";
+import { setRelations } from "../../store/actions/relations";
 import BGLines from "../presentational/BGLines";
 import RelationLinesContainer from "../container/RelationLinesContainer";
 import TableListContainer from "../container/TableListContainer";
@@ -115,13 +115,31 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addTable() {
+    const {
+      tables,
+      fields,
+      extension,
+      modifyProject,
+      createTable,
+      createField,
+      applyRelations
+    } = this.props;
     const { mouse } = this.state;
-    const { extension, modifyProject, createTable, createField } = this.props;
     const { table, field } = extension.main.onCreateTable(mouse);
+    const newTable = { ...table, ref: createRef() };
+    const newTables = [...tables, newTable];
 
-    modifyProject({ isModified: true });
-    createTable({ ...table, ref: createRef() });
+    const data = {
+      tables: newTables,
+      fields
+    };
+
+    const relations = extension.main.onUpdate(data);
+
+    applyRelations(relations);
+    createTable(newTable);
     createField(field);
+    modifyProject({ isModified: true });
   }
 
   /**
@@ -131,30 +149,29 @@ class WorkArea extends Component {
    */
   removeTable() {
     const {
-      relations,
+      tables,
       fields,
+      extension,
       modifyProject,
-      deleteTable,
-      deleteField,
-      deleteRelation
+      applyTables,
+      applyFields,
+      applyRelations
     } = this.props;
     const tableID = this.hoveredTable;
+    const newTables = tables.filter(table => table.id !== tableID);
+    const newFields = fields.filter(field => field.tableID !== tableID);
 
-    const getID = item => item.id;
-    const byThisTable = field => item => item[field] === tableID;
+    const data = {
+      tables: newTables,
+      fields: newFields
+    };
 
-    relations
-      .filter(byThisTable("toTable"))
-      .map(getID)
-      .forEach(deleteRelation);
+    const relations = extension.main.onUpdate(data);
 
-    fields
-      .filter(byThisTable("tableID"))
-      .map(getID)
-      .forEach(deleteField);
-
+    applyRelations(relations);
+    applyTables(newTables);
+    applyFields(newFields);
     modifyProject({ isModified: true });
-    deleteTable(tableID);
   }
 
   /**
@@ -163,12 +180,28 @@ class WorkArea extends Component {
    * @memberof WorkArea
    */
   addField() {
-    const { modifyProject, createField, extension } = this.props;
+    const {
+      tables,
+      fields,
+      extension,
+      modifyProject,
+      createField,
+      applyRelations
+    } = this.props;
     const tableID = this.hoveredTable;
     const field = extension.main.onCreateField(tableID);
+    const newFields = [...fields, field];
 
-    modifyProject({ isModified: true });
+    const data = {
+      tables,
+      fields: newFields
+    };
+
+    const relations = extension.main.onUpdate(data);
+
+    applyRelations(relations);
     createField(field);
+    modifyProject({ isModified: true });
   }
 
   /**
@@ -262,19 +295,19 @@ class WorkArea extends Component {
 WorkArea.propTypes = {
   extension: PropTypes.object,
   project: PropTypes.object,
-  relations: PropTypes.array,
+  tables: PropTypes.array,
   fields: PropTypes.array,
   modifyProject: PropTypes.func,
   createTable: PropTypes.func,
   createField: PropTypes.func,
-  deleteTable: PropTypes.func,
-  deleteField: PropTypes.func,
-  deleteRelation: PropTypes.func
+  applyTables: PropTypes.func,
+  applyFields: PropTypes.func,
+  applyRelations: PropTypes.func
 };
 
-const mapStateToProps = ({ project, relations, fields, extension }) => ({
+const mapStateToProps = ({ project, tables, fields, extension }) => ({
   project,
-  relations,
+  tables,
   fields,
   extension
 });
@@ -283,9 +316,9 @@ const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
   createTable: table => dispatch(addTable(table)),
   createField: field => dispatch(addField(field)),
-  deleteTable: id => dispatch(removeTable(id)),
-  deleteField: fieldID => dispatch(removeField(fieldID)),
-  deleteRelation: relationID => dispatch(removeRelation(relationID))
+  applyTables: tables => dispatch(setTables(tables)),
+  applyFields: fields => dispatch(setFields(fields)),
+  applyRelations: relations => dispatch(setRelations(relations))
 });
 
 export default connect(

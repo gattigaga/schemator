@@ -5,7 +5,11 @@ import { connect } from "react-redux";
 import { updateProject } from "../../store/actions/project";
 import { updateTable } from "../../store/actions/tables";
 import { addField, updateField, removeField } from "../../store/actions/fields";
-import { addRelation, removeRelation } from "../../store/actions/relations";
+import {
+  addRelation,
+  removeRelation,
+  setRelations
+} from "../../store/actions/relations";
 import TableList from "../presentational/TableList";
 
 class TableListContainer extends Component {
@@ -82,49 +86,34 @@ class TableListContainer extends Component {
    */
   updateField(event, fieldID, type) {
     const { value } = event.target;
-
+    const updatedData = { [type]: value };
     const {
       tables,
       fields,
-      relations,
+      extension,
       modifyProject,
       modifyField,
-      createRelation,
-      deleteRelation,
-      extension
+      applyRelations
     } = this.props;
 
-    const field = {
-      id: fieldID,
-      updatedType: type,
-      updatedData: value
-    };
+    const newFields = fields.map(field => {
+      if (field.id === fieldID) {
+        return { ...field, ...updatedData };
+      }
+
+      return field;
+    });
 
     const data = {
       tables,
-      fields,
-      relations
+      fields: newFields
     };
 
-    const result = extension.main.onUpdateField(field, data);
+    const relations = extension.main.onUpdate(data);
 
-    if (result) {
-      switch (result.type) {
-        case "CREATE":
-          createRelation(result.relation);
-          break;
-
-        case "DELETE":
-          deleteRelation(result.relation.id);
-          break;
-
-        default:
-          break;
-      }
-    }
-
+    applyRelations(relations);
+    modifyField(fieldID, updatedData);
     modifyProject({ isModified: true });
-    modifyField(fieldID, { [type]: value });
   }
 
   /**
@@ -134,11 +123,27 @@ class TableListContainer extends Component {
    * @memberof WorkArea
    */
   addField(tableID) {
-    const { modifyProject, createField, extension } = this.props;
+    const {
+      tables,
+      fields,
+      modifyProject,
+      createField,
+      extension,
+      applyRelations
+    } = this.props;
     const field = extension.main.onCreateField(tableID);
+    const newFields = [...fields, field];
 
-    modifyProject({ isModified: true });
+    const data = {
+      tables,
+      fields: newFields
+    };
+
+    const relations = extension.main.onUpdate(data);
+
+    applyRelations(relations);
     createField(field);
+    modifyProject({ isModified: true });
   }
 
   /**
@@ -149,23 +154,25 @@ class TableListContainer extends Component {
    */
   removeField(fieldID) {
     const {
+      tables,
       fields,
-      relations,
+      extension,
       modifyProject,
       deleteField,
-      deleteRelation,
-      extension
+      applyRelations
     } = this.props;
-    const field = fields.find(item => item.id === fieldID);
-    const relation = relations.find(item => item.fieldID === fieldID);
-    const isRelationRemovable = extension.main.onDeleteField(field);
+    const newFields = fields.filter(item => item.id !== fieldID);
 
-    if (isRelationRemovable && relation) {
-      deleteRelation(relation.id);
-    }
+    const data = {
+      tables,
+      fields: newFields
+    };
 
-    modifyProject({ isModified: true });
+    const relations = extension.main.onUpdate(data);
+
+    applyRelations(relations);
     deleteField(fieldID);
+    modifyProject({ isModified: true });
   }
 
   /**
@@ -176,43 +183,35 @@ class TableListContainer extends Component {
    * @memberof WorkArea
    */
   updateTableName(event, tableID) {
+    const { value } = event.target;
+    const updatedData = { name: value };
     const {
       tables,
       fields,
-      relations,
+      extension,
       modifyProject,
       modifyTable,
-      deleteRelation,
-      createRelation,
-      extension
+      applyRelations
     } = this.props;
-    const { value: tableName } = event.target;
 
-    const table = {
-      id: tableID,
-      updatedData: tableName
-    };
+    const newTables = tables.map(table => {
+      if (table.id === tableID) {
+        return { ...table, ...updatedData };
+      }
+
+      return table;
+    });
 
     const data = {
-      tables,
-      fields,
-      relations
+      tables: newTables,
+      fields
     };
 
-    const newRelations = extension.main.onUpdateTable(table, data);
+    const relations = extension.main.onUpdate(data);
 
-    if (newRelations.length) {
-      newRelations.forEach(createRelation);
-    } else {
-      const unneededRelations = relations
-        .filter(item => item.toTableID === tableID)
-        .map(item => item.id);
-
-      unneededRelations.forEach(deleteRelation);
-    }
-
+    applyRelations(relations);
+    modifyTable(tableID, updatedData);
     modifyProject({ isModified: true });
-    modifyTable(tableID, { name: tableName });
   }
 
   /**
@@ -339,6 +338,7 @@ TableListContainer.propTypes = {
   modifyField: PropTypes.func,
   createRelation: PropTypes.func,
   deleteRelation: PropTypes.func,
+  applyRelations: PropTypes.func,
   onContextMenu: PropTypes.func
 };
 
@@ -356,7 +356,8 @@ const mapDispatchToProps = dispatch => ({
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
   createRelation: relation => dispatch(addRelation(relation)),
-  deleteRelation: relationID => dispatch(removeRelation(relationID))
+  deleteRelation: relationID => dispatch(removeRelation(relationID)),
+  applyRelations: relations => dispatch(setRelations(relations))
 });
 
 export default connect(
