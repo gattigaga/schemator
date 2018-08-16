@@ -322,8 +322,8 @@ const onUpdate = data => {
   const foreignKeyFields = fields.filter(field => field.name.endsWith("_id"));
   const relations = foreignKeyFields.map(field => {
     const table = tables.find(table => {
-      const pattern = new RegExp(table.name, "i");
-      const isMatch = field.name.match(pattern);
+      const tableName = `${table.name.toLowerCase()}_id`;
+      const isMatch = field.name === tableName;
 
       return isMatch;
     });
