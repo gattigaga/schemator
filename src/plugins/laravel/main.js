@@ -219,17 +219,17 @@ const onInit = () => {
     createField({
       tableID: tables[0].id,
       name: "name",
-      type: "STRING"
+      type: "string"
     }),
     createField({
       tableID: tables[0].id,
       name: "email",
-      type: "STRING"
+      type: "string"
     }),
     createField({
       tableID: tables[0].id,
       name: "password",
-      type: "TEXT"
+      type: "text"
     })
   ];
 
@@ -281,7 +281,7 @@ const onCreateTable = cursorPosition => {
   const field = createField({
     tableID: table.id,
     name: "field",
-    type: "INTEGER"
+    type: "integer"
   });
 
   const scheme = {
@@ -304,7 +304,7 @@ const onCreateField = tableID => {
   return createField({
     tableID,
     name: "field",
-    type: "INTEGER"
+    type: "integer"
   });
 };
 
