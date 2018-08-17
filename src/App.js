@@ -25,6 +25,7 @@ import imgDefaultExtension from "./assets/images/icon-black.png";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
+const { NodeVM, VMScript } = window.require("vm2");
 
 const Container = styled.div`
   width: 100%;
@@ -364,6 +365,7 @@ class App extends Component {
     const { app } = remote;
     const osConfigPath = app.getPath("appData");
     const appConfigPath = `${osConfigPath}/schemator`;
+    const pluginPath = `${appConfigPath}/plugins`;
 
     if (!fs.existsSync(osConfigPath)) {
       fs.mkdirSync(osConfigPath);
@@ -371,6 +373,10 @@ class App extends Component {
 
     if (!fs.existsSync(appConfigPath)) {
       fs.mkdirSync(appConfigPath);
+    }
+
+    if (!fs.existsSync(pluginPath)) {
+      fs.mkdirSync(pluginPath);
     }
   }
 
@@ -402,52 +408,98 @@ class App extends Component {
    * @memberof App
    */
   async initExtensions() {
-    const { MenuItem } = remote;
-    const { applyExtensions, loadExtension } = this.props;
+    const { MenuItem, app } = remote;
+    const { applyExtensions, activateExtension } = this.props;
     const { submenu } = this.menu.getMenuItemById("new-project");
+    const osConfigPath = app.getPath("appData");
+    const appConfigPath = `${osConfigPath}/schemator`;
     const internalPath = "./plugins";
-    const extensionDirs = ["laravel"];
+    const externalPath = `${appConfigPath}/plugins`;
+    const internalDirs = ["laravel"];
+    const externalDirs = fs.readdirSync(externalPath);
 
-    const extensionPaths = extensionDirs.map(
-      dirName => `${internalPath}/${dirName}`
-    );
-
-    const extensions = extensionPaths.map(path => ({
+    const createPath = path => dirName => `${path}/${dirName}`;
+    const loadInternalExtension = path => ({
+      path,
+      type: "internal",
       manifest: require(`${path}/manifest.json`),
-      main: require(`${path}/main`).default
-    }));
-
-    const newExtensions = extensions.map((extension, index) => {
-      const { manifest, main } = extension;
-      const path = extensionPaths[index];
-      const iconPath = `${path}/${manifest.icon}`;
-      const image = manifest.icon
-        ? require(`${iconPath}`)
-        : imgDefaultExtension;
-
-      return {
-        id: uuid(),
-        ...manifest,
-        image,
-        main
-      };
+      main: require(`${path}/main`)
+    });
+    const loadExternalExtension = path => ({
+      path,
+      type: "external",
+      manifest: fs.readFileSync(`${path}/manifest.json`, "utf-8"),
+      main: fs.readFileSync(`${path}/main.js`, "utf-8")
     });
 
-    applyExtensions(newExtensions);
+    const internalPaths = internalDirs
+      .map(createPath(internalPath))
+      .map(loadInternalExtension);
+
+    const externalPaths = externalDirs
+      .map(createPath(externalPath))
+      .map(loadExternalExtension);
+
+    const loadedExtensions = [...internalPaths, ...externalPaths];
+
+    const extensions = loadedExtensions.map(extension => {
+      const { manifest, main, path, type } = extension;
+      let iconPath;
+      let image;
+
+      switch (type) {
+        case "internal":
+          iconPath = `${path}/${manifest.icon}`;
+          image = manifest.icon ? require(`${iconPath}`) : imgDefaultExtension;
+
+          return {
+            id: uuid(),
+            ...manifest,
+            image,
+            main: main.default
+          };
+
+        case "external":
+          const vm = new NodeVM({
+            require: {
+              external: true
+            }
+          });
+          const script = new VMScript(main);
+          const parsedManifest = JSON.parse(manifest);
+          const parsedMain = vm.run(script);
+          iconPath = `${path}/${parsedManifest.icon}`;
+          image = parsedManifest.icon
+            ? fs.readFileSync(`${iconPath}`)
+            : imgDefaultExtension;
+
+          return {
+            id: uuid(),
+            ...parsedManifest,
+            image,
+            main: parsedMain.default
+          };
+
+        default:
+          return null;
+      }
+    });
 
     // Make all extensions to be accessible from New Project menu item
-    newExtensions.forEach(extension => {
+    extensions.forEach(extension => {
       submenu.append(
         new MenuItem({
           id: extension.id,
           label: extension.name,
           click: () => {
-            loadExtension(extension);
+            activateExtension(extension);
             createProject();
           }
         })
       );
     });
+
+    applyExtensions(extensions);
   }
 
   render() {
@@ -473,7 +525,7 @@ App.propTypes = {
   modifyProject: PropTypes.func,
   applyRecentProjects: PropTypes.func,
   applyExtensions: PropTypes.func,
-  loadExtension: PropTypes.func
+  activateExtension: PropTypes.func
 };
 
 const mapStateToProps = ({ project, recentProjects }) => ({
@@ -489,7 +541,7 @@ const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
   applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
   applyExtensions: extensions => dispatch(setExtensions(extensions)),
-  loadExtension: extension => dispatch(setExtension(extension))
+  activateExtension: extension => dispatch(setExtension(extension))
 });
 
 export default connect(
