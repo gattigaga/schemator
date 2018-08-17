@@ -7,32 +7,7 @@ import {
   createRelation
 } from "schemator-utils";
 
-import {
-  capitalize,
-  toSnakeCase,
-  modelTemplate,
-  migrationTemplate
-} from "./helpers";
-
-// Option checkboxes would be used in table.
-const tableOptions = [
-  {
-    id: "id",
-    label: "ID"
-  },
-  {
-    id: "rememberToken",
-    label: "Remember Token"
-  },
-  {
-    id: "softDeletes",
-    label: "Soft Deletes"
-  },
-  {
-    id: "timestamps",
-    label: "Timestamps"
-  }
-];
+import { toSnakeCase, modelTemplate, migrationTemplate } from "./helpers";
 
 // Types would be used as field type.
 const fieldTypes = [
@@ -394,7 +369,6 @@ const onExport = (destinationPath, data) => {
 };
 
 export default {
-  tableOptions,
   fieldTypes,
   onInit,
   onCreateTable,
