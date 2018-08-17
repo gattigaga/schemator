@@ -469,9 +469,15 @@ class App extends Component {
           const parsedManifest = JSON.parse(manifest);
           const parsedMain = vm.run(script);
           iconPath = `${path}/${parsedManifest.icon}`;
-          image = parsedManifest.icon
-            ? fs.readFileSync(`${iconPath}`)
-            : imgDefaultExtension;
+
+          if (parsedManifest.icon) {
+            const rawData = fs.readFileSync(iconPath);
+            const buffer = Buffer.from(rawData);
+
+            image = "data:image/png;base64," + buffer.toString("base64");
+          } else {
+            image = imgDefaultExtension;
+          }
 
           return {
             id: uuid(),
