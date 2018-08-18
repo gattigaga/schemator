@@ -19,4 +19,14 @@ storiesOf("Extension", module)
       description="Create schema in one screen."
       onClick={action("clicked")}
     />
+  ))
+  .add("is active", () => (
+    <Extension
+      image={imgIcon}
+      name="Schema"
+      author="Gattigaga Hayyuta Dewa"
+      description="Create schema in one screen."
+      onClick={action("clicked")}
+      isActive
+    />
   ));

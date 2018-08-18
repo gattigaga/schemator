@@ -28,6 +28,12 @@ describe("Extension", () => {
     expect(wrapper).toMatchSnapshot();
   });
 
+  it("should renders in active", () => {
+    const { wrapper } = setup({ isActive: true });
+
+    expect(wrapper.props().isActive).toEqual(true);
+  });
+
   it("should calls 'onClick' while clicked", () => {
     const { wrapper, props } = setup();
 

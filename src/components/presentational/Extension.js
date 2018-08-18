@@ -10,7 +10,7 @@ const Container = styled.div`
   box-sizing: border-box;
   cursor: pointer;
   user-select: none;
-  background: #333;
+  background: ${({ isActive }) => (isActive ? "#3b3b3b" : "#333")};
   display: flex;
 
   &:hover {
@@ -25,8 +25,7 @@ const Image = styled.img`
   margin-right: 12px;
 `;
 
-const Wrapper = styled.div`
-`;
+const Wrapper = styled.div``;
 
 const Name = styled.h4`
   color: #ccc;
@@ -51,8 +50,8 @@ const Description = styled.p`
   margin: 0px;
 `;
 
-const Extension = ({ image, name, author, description, onClick }) => (
-  <Container onClick={onClick}>
+const Extension = ({ image, name, author, description, onClick, isActive }) => (
+  <Container onClick={onClick} isActive={isActive}>
     <Image src={image} />
     <Wrapper>
       <Name>{name}</Name>
