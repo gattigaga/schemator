@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import "typeface-roboto";
 
+import imgLogo from "../../assets/images/icon-black-256.png";
 import ExtensionListContainer from "./ExtensionListContainer";
 import SearchBox from "../presentational/SearchBox";
 
 const Container = styled.div`
-  height: 100%;
+  flex: 1;
+  display: flex;
 `;
 
 const Sidebar = styled.div`
@@ -18,6 +21,25 @@ const Sidebar = styled.div`
 
 const SearchWrapper = styled.div`
   padding: 12px;
+`;
+
+const Page = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Logo = styled.img`
+  width: 256px;
+  height: 256px;
+`;
+
+const Caption = styled.h1`
+  font-family: Roboto;
+  font-size: 32px;
+  color: #555;
 `;
 
 class Extensions extends Component {
@@ -43,6 +65,10 @@ class Extensions extends Component {
           </SearchWrapper>
           <ExtensionListContainer keyword={keyword} />
         </Sidebar>
+        <Page>
+          <Logo src={imgLogo} />
+          <Caption>Schemator</Caption>
+        </Page>
       </Container>
     );
   }
