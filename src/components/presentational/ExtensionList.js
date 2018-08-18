@@ -22,7 +22,7 @@ const EmptyText = styled.p`
   margin: 0px;
 `;
 
-const ExtensionList = ({ items, keyword, onClickItem }) => {
+const ExtensionList = ({ items, keyword, active, onClickItem }) => {
   const byName = item => item.name.match(new RegExp(keyword, "i"));
   const makeExcerpt = item => {
     const suffix = item.description.length > 22 ? "..." : "";
@@ -37,7 +37,12 @@ const ExtensionList = ({ items, keyword, onClickItem }) => {
     <Container>
       {filteredItems.length ? (
         filteredItems.map((item, index) => (
-          <Extension key={index} {...item} onClick={() => onClickItem(item)} />
+          <Extension
+            key={index}
+            {...item}
+            onClick={() => onClickItem(item)}
+            isActive={active === item.id}
+          />
         ))
       ) : (
         <EmptyText>No extensions found</EmptyText>
@@ -49,6 +54,7 @@ const ExtensionList = ({ items, keyword, onClickItem }) => {
 ExtensionList.propTypes = {
   items: PropTypes.array,
   keyword: PropTypes.string,
+  active: PropTypes.string,
   onClickItem: PropTypes.func
 };
 

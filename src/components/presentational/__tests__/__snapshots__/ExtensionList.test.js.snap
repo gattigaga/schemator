@@ -5,7 +5,9 @@ exports[`ExtensionList should renders default 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export to Laravel file"
+    id="1"
     image="image.png"
+    isActive={false}
     key="0"
     name="Laravel Exporter"
     onClick={[Function]}
@@ -13,7 +15,9 @@ exports[`ExtensionList should renders default 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export to SQL file"
+    id="2"
     image="image.png"
+    isActive={false}
     key="1"
     name="SQL Exporter"
     onClick={[Function]}
@@ -21,7 +25,44 @@ exports[`ExtensionList should renders default 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export to MongoDB file"
+    id="3"
     image="image.png"
+    isActive={false}
+    key="2"
+    name="MongoDB Exporter"
+    onClick={[Function]}
+  />
+</styled.div>
+`;
+
+exports[`ExtensionList should renders with active item 1`] = `
+<styled.div>
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to Laravel file"
+    id="1"
+    image="image.png"
+    isActive={false}
+    key="0"
+    name="Laravel Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to SQL file"
+    id="2"
+    image="image.png"
+    isActive={true}
+    key="1"
+    name="SQL Exporter"
+    onClick={[Function]}
+  />
+  <Extension
+    author="Gattigaga Hayyuta Dewa"
+    description="Export to MongoDB file"
+    id="3"
+    image="image.png"
+    isActive={false}
     key="2"
     name="MongoDB Exporter"
     onClick={[Function]}
@@ -34,7 +75,9 @@ exports[`ExtensionList should renders with excerpt 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to Larav..."
+    id="1"
     image="image.png"
+    isActive={false}
     key="0"
     name="Laravel Exporter"
     onClick={[Function]}
@@ -42,7 +85,9 @@ exports[`ExtensionList should renders with excerpt 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to SQL f..."
+    id="2"
     image="image.png"
+    isActive={false}
     key="1"
     name="SQL Exporter"
     onClick={[Function]}
@@ -50,7 +95,9 @@ exports[`ExtensionList should renders with excerpt 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to Mongo..."
+    id="3"
     image="image.png"
+    isActive={false}
     key="2"
     name="MongoDB Exporter"
     onClick={[Function]}
@@ -63,7 +110,9 @@ exports[`ExtensionList should renders with keyword 1`] = `
   <Extension
     author="Gattigaga Hayyuta Dewa"
     description="Export to MongoDB file"
+    id="3"
     image="image.png"
+    isActive={false}
     key="0"
     name="MongoDB Exporter"
     onClick={[Function]}

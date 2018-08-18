@@ -8,18 +8,21 @@ describe("ExtensionList", () => {
     const props = {
       items: [
         {
+          id: "1",
           name: "Laravel Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
           description: "Export to Laravel file"
         },
         {
+          id: "2",
           name: "SQL Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
           description: "Export to SQL file"
         },
         {
+          id: "3",
           name: "MongoDB Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
@@ -48,18 +51,21 @@ describe("ExtensionList", () => {
     const { wrapper } = setup({
       items: [
         {
+          id: "1",
           name: "Laravel Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to Laravel file"
         },
         {
+          id: "2",
           name: "SQL Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
           description: "Export scheme to SQL file"
         },
         {
+          id: "3",
           name: "MongoDB Exporter",
           image: "image.png",
           author: "Gattigaga Hayyuta Dewa",
@@ -79,6 +85,12 @@ describe("ExtensionList", () => {
 
   it("should renders without extensions", () => {
     const { wrapper } = setup({ items: [] });
+
+    expect(wrapper).toMatchSnapshot();
+  });
+
+  it("should renders with active item", () => {
+    const { wrapper } = setup({ active: "2" });
 
     expect(wrapper).toMatchSnapshot();
   });
