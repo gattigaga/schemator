@@ -1,5 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
+import "jest-styled-components";
 
 import Extension from "../Extension";
 
@@ -26,12 +27,14 @@ describe("Extension", () => {
     const { wrapper } = setup();
 
     expect(wrapper).toMatchSnapshot();
+    expect(wrapper).toHaveStyleRule("background", "#333");
   });
 
   it("should renders in active", () => {
     const { wrapper } = setup({ isActive: true });
 
     expect(wrapper.props().isActive).toEqual(true);
+    expect(wrapper).toHaveStyleRule("background", "#3b3b3b");
   });
 
   it("should calls 'onClick' while clicked", () => {
