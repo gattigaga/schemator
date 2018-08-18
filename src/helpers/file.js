@@ -10,7 +10,7 @@ import store from "../store/store";
 import { setExtension } from "../store/actions/extension";
 
 const { remote } = window.require("electron");
-const fs = window.require("fs");
+const fs = window.require("fs-extra");
 
 /**
  * Open dialog to create new project file based on extension.
@@ -251,6 +251,57 @@ export const exportProject = callback => {
 
       paths.forEach(path => fs.mkdirSync(path));
       files.forEach(file => fs.writeFileSync(file.path, file.content));
+
+      if (callback) {
+        callback();
+      }
+    }
+  );
+};
+
+/**
+ * Import new plugin.
+ *
+ * @param {function} [callback]
+ */
+export const importPlugin = callback => {
+  const { dialog } = remote;
+  const mainWindow = remote.getCurrentWindow();
+
+  dialog.showOpenDialog(
+    mainWindow,
+    {
+      properties: ["openDirectory"]
+    },
+    dirPaths => {
+      if (!dirPaths) {
+        return;
+      }
+
+      const dirPath = dirPaths[0];
+      const manifestPath = `${dirPath}/manifest.json`;
+      const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+      const manifest = JSON.parse(manifestContent);
+      const { app } = remote;
+      const osConfigPath = app.getPath("appData");
+      const appConfigPath = `${osConfigPath}/schemator`;
+      const pluginsPath = `${appConfigPath}/plugins`;
+      const targetPath = `${pluginsPath}/${manifest.id}`;
+      const paths = [osConfigPath, appConfigPath, pluginsPath, targetPath];
+      const files = ["manifest.json", "main.js", "icon.png"];
+
+      paths.forEach(path => {
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
+        }
+      });
+
+      files.forEach(file => {
+        const fromPath = `${dirPath}/${file}`;
+        const toPath = `${targetPath}/${file}`;
+
+        fs.copySync(fromPath, toPath);
+      });
 
       if (callback) {
         callback();

@@ -11,12 +11,14 @@ import { clearRelations } from "./store/actions/relations";
 import { setRecentProjects } from "./store/actions/recentProjects";
 import { setExtensions } from "./store/actions/extensions";
 import { setExtension } from "./store/actions/extension";
+import { setPage } from "./store/actions/page";
 import {
   createProject,
   openProject,
   loadProject,
   saveProject,
-  exportProject
+  exportProject,
+  importPlugin
 } from "./helpers/file";
 import StatusbarContainer from "./components/container/StatusbarContainer";
 import SidebarContainer from "./components/container/SidebarContainer";
@@ -180,7 +182,7 @@ class App extends Component {
    * @memberof App
    */
   createMenu() {
-    const { applyRecentProjects } = this.props;
+    const { applyRecentProjects, changePage } = this.props;
     const { Menu, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
     const zoomPercentages = [25, 33, 50, 67, 75, 80, 90, 100];
@@ -251,6 +253,42 @@ class App extends Component {
                 });
               });
             }
+          },
+          {
+            type: "separator"
+          },
+          {
+            id: "preferences",
+            label: "Preferences",
+            submenu: [
+              {
+                id: "plugin-list",
+                label: "Plugin List",
+                click: () => changePage("extensions")
+              },
+              {
+                id: "import-plugin",
+                label: "Import New Plugin",
+                click: () => {
+                  importPlugin(() => {
+                    dialog.showMessageBox(
+                      mainWindow,
+                      {
+                        type: "info",
+                        message:
+                          "Plugin successfully imported, Press OK to reload Schemator!",
+                        buttons: ["OK"]
+                      },
+                      response => {
+                        if (response === 0) {
+                          mainWindow.reload();
+                        }
+                      }
+                    );
+                  });
+                }
+              }
+            ]
           },
           {
             type: "separator"
@@ -407,7 +445,7 @@ class App extends Component {
    *
    * @memberof App
    */
-  async initExtensions() {
+  initExtensions() {
     const { MenuItem, app } = remote;
     const { applyExtensions, activateExtension } = this.props;
     const { submenu } = this.menu.getMenuItemById("new-project");
@@ -531,7 +569,8 @@ App.propTypes = {
   modifyProject: PropTypes.func,
   applyRecentProjects: PropTypes.func,
   applyExtensions: PropTypes.func,
-  activateExtension: PropTypes.func
+  activateExtension: PropTypes.func,
+  changePage: PropTypes.func
 };
 
 const mapStateToProps = ({ project, recentProjects }) => ({
@@ -547,7 +586,8 @@ const mapDispatchToProps = dispatch => ({
   modifyProject: project => dispatch(updateProject(project)),
   applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
   applyExtensions: extensions => dispatch(setExtensions(extensions)),
-  activateExtension: extension => dispatch(setExtension(extension))
+  activateExtension: extension => dispatch(setExtension(extension)),
+  changePage: pageID => dispatch(setPage(pageID))
 });
 
 export default connect(
