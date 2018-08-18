@@ -2,6 +2,7 @@
 
 exports[`ExtensionListContainer should renders default 1`] = `
 <ExtensionList
+  active="2"
   items={
     Array [
       Object {
@@ -25,5 +26,6 @@ exports[`ExtensionListContainer should renders default 1`] = `
     ]
   }
   keyword="Laravel"
+  onClickItem={[Function]}
 />
 `;

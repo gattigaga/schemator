@@ -32,6 +32,8 @@ describe("ExtensionListContainer", () => {
         }
       ],
       keyword: "Laravel",
+      active: "2",
+      onClickItem: jest.fn(),
       ...propOverrides
     };
 
