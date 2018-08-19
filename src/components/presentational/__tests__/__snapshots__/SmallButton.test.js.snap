@@ -9,3 +9,16 @@ exports[`SmallButton should renders default 1`] = `
   </styled.span>
 </styled.div>
 `;
+
+exports[`SmallButton should renders in disable 1`] = `
+<styled.div
+  isDisabled={true}
+  onClick={null}
+>
+  <styled.span
+    isDisabled={true}
+  >
+    Remove
+  </styled.span>
+</styled.div>
+`;

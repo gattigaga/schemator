@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import "typeface-roboto";
 
 const Container = styled.div`
@@ -11,26 +11,39 @@ const Container = styled.div`
   cursor: pointer;
   user-select: none;
 
-  &:hover {
-    background: #8e2929;
-  }
+  ${({ isDisabled }) =>
+    !isDisabled
+      ? css`
+          &:hover {
+            background: #8e2929;
+          }
+        `
+      : css`
+          background: #555;
+          cursor: not-allowed;
+        `};
 `;
 
-const Caption = styled.span`
+export const Caption = styled.span`
   font-family: Roboto;
   font-size: 12px;
-  color: white;
+  color: ${({ isDisabled }) => (isDisabled ? "#999" : "white")};
 `;
 
-const SmallButton = ({ className, caption, onClick }) => (
-  <Container className={className} onClick={onClick}>
-    <Caption>{caption}</Caption>
+const SmallButton = ({ className, caption, isDisabled, onClick }) => (
+  <Container
+    className={className}
+    onClick={!isDisabled ? onClick : null}
+    isDisabled={isDisabled}
+  >
+    <Caption isDisabled={isDisabled}>{caption}</Caption>
   </Container>
 );
 
 SmallButton.propTypes = {
   className: PropTypes.string,
   caption: PropTypes.string,
+  isDisabled: PropTypes.bool,
   onClick: PropTypes.func
 };
 
