@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SmallButton should renders default 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <styled.span>
+    Remove
+  </styled.span>
+</styled.div>
+`;
