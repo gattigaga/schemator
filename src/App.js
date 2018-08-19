@@ -493,6 +493,8 @@ class App extends Component {
           return {
             id: uuid(),
             ...manifest,
+            path,
+            type,
             image,
             main: main.default
           };
@@ -520,6 +522,8 @@ class App extends Component {
           return {
             id: uuid(),
             ...parsedManifest,
+            path,
+            type,
             image,
             main: parsedMain.default
           };
