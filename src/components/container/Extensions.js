@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import Markdown from "react-markdown";
 import "typeface-roboto";
 
 import imgLogo from "../../assets/images/icon-black-256.png";
@@ -15,6 +16,7 @@ const fs = window.require("fs-extra");
 const Container = styled.div`
   flex: 1;
   display: flex;
+  overflow: hidden;
 `;
 
 const Sidebar = styled.div`
@@ -29,11 +31,6 @@ const SearchWrapper = styled.div`
   padding: 12px;
 `;
 
-const Page = styled.div`
-  flex: 1;
-  display: flex;
-`;
-
 const BlankWrapper = styled.div`
   flex: 1;
   display: flex;
@@ -44,6 +41,11 @@ const BlankWrapper = styled.div`
 
 const ContentWrapper = styled.div`
   flex: 1;
+  flex-direction: column;
+  display: flex;
+  background: #383838;
+  box-sizing: border-box;
+  overflow: auto;
 `;
 
 const Logo = styled.img`
@@ -66,7 +68,7 @@ const DetailWrapper = styled.div`
 
 const Name = styled.h1`
   font-family: Roboto;
-  color: white;
+  color: #ccc;
   margin-top: 0px;
   margin-bottom: 8px;
 `;
@@ -74,7 +76,7 @@ const Name = styled.h1`
 const Author = styled.p`
   font-family: Roboto;
   font-size: 16px;
-  color: #aaa;
+  color: #888;
   margin: 0px;
   margin-bottom: 32px;
 `;
@@ -82,12 +84,41 @@ const Author = styled.p`
 const Description = styled.p`
   font-family: Roboto;
   font-size: 16px;
-  color: white;
+  color: #ccc;
   margin: 0px;
 `;
 
 const StyledButton = styled(SmallButton)`
   margin-top: 16px;
+`;
+
+const StyledMarkdown = styled(Markdown)`
+  font-family: Roboto;
+  color: #ccc;
+  padding: 32px;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: min-content;
+
+  & a {
+    color: white;
+  }
+
+  & img {
+    max-width: 100%;
+  }
+`;
+
+const EmptyWrapper = styled.div`
+  display: flex;
+  flex: 1;
+`;
+
+const EmptyText = styled.p`
+  font-family: Roboto;
+  font-size: 24px;
+  color: #ccc;
+  margin: auto;
 `;
 
 class Extensions extends Component {
@@ -174,29 +205,34 @@ class Extensions extends Component {
             active={item && item.id}
           />
         </Sidebar>
-        <Page>
-          {!item ? (
-            <BlankWrapper>
-              <Logo src={imgLogo} />
-              <Caption>Schemator</Caption>
-            </BlankWrapper>
-          ) : (
-            <ContentWrapper>
-              <DetailWrapper>
-                <Name>{item.name}</Name>
-                <Author>by {item.author}</Author>
-                <Description>{item.description}</Description>
-                {item.type === "external" && (
-                  <StyledButton
-                    caption="Delete"
-                    onClick={this.deleteExtension}
-                    isDisabled={extension && extension.id === item.id}
-                  />
-                )}
-              </DetailWrapper>
-            </ContentWrapper>
-          )}
-        </Page>
+        {!item ? (
+          <BlankWrapper>
+            <Logo src={imgLogo} />
+            <Caption>Schemator</Caption>
+          </BlankWrapper>
+        ) : (
+          <ContentWrapper>
+            <DetailWrapper>
+              <Name>{item.name}</Name>
+              <Author>by {item.author}</Author>
+              <Description>{item.description}</Description>
+              {item.type === "external" && (
+                <StyledButton
+                  caption="Delete"
+                  onClick={this.deleteExtension}
+                  isDisabled={extension && extension.id === item.id}
+                />
+              )}
+            </DetailWrapper>
+            {item.readme ? (
+              <StyledMarkdown source={item.readme} />
+            ) : (
+              <EmptyWrapper>
+                <EmptyText>No README was provided.</EmptyText>
+              </EmptyWrapper>
+            )}
+          </ContentWrapper>
+        )}
       </Container>
     );
   }

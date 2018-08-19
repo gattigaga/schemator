@@ -288,7 +288,7 @@ export const importPlugin = callback => {
       const pluginsPath = `${appConfigPath}/plugins`;
       const targetPath = `${pluginsPath}/${manifest.id}`;
       const paths = [osConfigPath, appConfigPath, pluginsPath, targetPath];
-      const files = ["manifest.json", "main.js", "icon.png"];
+      const files = ["manifest.json", "main.js", "icon.png", "README.md"];
 
       paths.forEach(path => {
         if (!fs.existsSync(path)) {

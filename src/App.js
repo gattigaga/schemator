@@ -461,12 +461,14 @@ class App extends Component {
       path,
       type: "internal",
       manifest: require(`${path}/manifest.json`),
+      readme: null,
       main: require(`${path}/main`)
     });
     const loadExternalExtension = path => ({
       path,
       type: "external",
       manifest: fs.readFileSync(`${path}/manifest.json`, "utf-8"),
+      readme: fs.readFileSync(`${path}/README.md`, "utf-8"),
       main: fs.readFileSync(`${path}/main.js`, "utf-8")
     });
 
@@ -481,7 +483,7 @@ class App extends Component {
     const loadedExtensions = [...internalPaths, ...externalPaths];
 
     const extensions = loadedExtensions.map(extension => {
-      const { manifest, main, path, type } = extension;
+      const { manifest, readme, main, path, type } = extension;
       let iconPath;
       let image;
 
@@ -493,6 +495,7 @@ class App extends Component {
           return {
             id: uuid(),
             ...manifest,
+            readme,
             path,
             type,
             image,
@@ -522,6 +525,7 @@ class App extends Component {
           return {
             id: uuid(),
             ...parsedManifest,
+            readme,
             path,
             type,
             image,
