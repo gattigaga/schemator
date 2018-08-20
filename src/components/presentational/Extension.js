@@ -66,7 +66,8 @@ Extension.propTypes = {
   name: PropTypes.string,
   author: PropTypes.string,
   description: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  isActive: PropTypes.bool
 };
 
 export default Extension;
