@@ -1,6 +1,12 @@
 import { createRef } from "react";
 import path from "path";
 
+import {
+  osConfigPath,
+  appConfigPath,
+  pluginsPath,
+  recentProjectsPath
+} from "../config";
 import { setProject, updateProject } from "../store/actions/project";
 import { setTables } from "../store/actions/tables";
 import { setFields } from "../store/actions/fields";
@@ -35,10 +41,23 @@ export const createProject = () => {
         return;
       }
 
+      if (fs.existsSync(filePath)) {
+        const choice = dialog.showMessageBox(mainWindow, {
+          type: "question",
+          title: "File Already Exists",
+          message: "File already exists, you want to overwrite ?",
+          buttons: ["Yes", "No"]
+        });
+
+        if (choice !== 0) {
+          return;
+        }
+      }
+
       const { recentProjects, extension } = store.getState();
       const name = path.basename(filePath, ".json");
       const scheme = extension.main.onInit();
-      const { fields } = scheme;
+      const { tables, fields } = scheme;
 
       const project = {
         name,
@@ -47,7 +66,7 @@ export const createProject = () => {
         zoom: 100
       };
 
-      const tables = scheme.tables.map(table => ({
+      const newTables = scheme.tables.map(table => ({
         ...table,
         ref: createRef()
       }));
@@ -56,7 +75,7 @@ export const createProject = () => {
 
       const data = {
         project,
-        tables,
+        tables: newTables,
         fields,
         relations
       };
@@ -69,15 +88,18 @@ export const createProject = () => {
           return;
         }
 
-        const { app } = remote;
-        const osConfigPath = app.getPath("appData");
-        const appConfigPath = `${osConfigPath}/schemator`;
-        const fileRecents = `${appConfigPath}/recents.txt`;
+        const paths = [osConfigPath, appConfigPath, pluginsPath];
         const remainings = [...new Set([filePath, ...recentProjects])];
         const recents = remainings.slice(0, 10);
         const data = recents.join("\n");
 
-        fs.writeFileSync(fileRecents, data);
+        paths.forEach(path => {
+          if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+          }
+        });
+
+        fs.writeFileSync(recentProjectsPath, data);
         store.dispatch(setRecentProjects(recents));
         store.dispatch(setProject({ ...project, filePath, isModified: false }));
         store.dispatch(setTables(tables));
@@ -170,51 +192,59 @@ export const loadProject = (filePath, callback) => {
       return;
     }
 
-    const { recentProjects, extensions } = store.getState();
-    const { project, tables, fields, relations } = JSON.parse(content);
-    const { app } = remote;
-    const osConfigPath = app.getPath("appData");
-    const appConfigPath = `${osConfigPath}/schemator`;
-    const fileRecents = `${appConfigPath}/recents.txt`;
-    const remainings = [...new Set([filePath, ...recentProjects])];
-    const recents = remainings.slice(0, 10);
-    const data = recents.join("\n");
-    const extension = extensions.find(item => item.id === project.extensionID);
+    try {
+      const { recentProjects, extensions } = store.getState();
+      const { project, tables, fields, relations } = JSON.parse(content);
+      const paths = [osConfigPath, appConfigPath, pluginsPath];
+      const remainings = [...new Set([filePath, ...recentProjects])];
+      const recents = remainings.slice(0, 10);
+      const data = recents.join("\n");
+      const extension = extensions.find(
+        item => item.id === project.extensionID
+      );
 
-    if (!extension) {
-      dialog.showErrorBox("Error", "Extension not found !");
-      return;
-    }
+      paths.forEach(path => {
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
+        }
+      });
 
-    fs.writeFileSync(fileRecents, data);
-    store.dispatch(setRecentProjects(recents));
-    store.dispatch(setExtension(extension));
+      if (!extension) {
+        throw new Error("Extension not found");
+      }
 
-    store.dispatch(
-      setProject({
-        ...project,
-        filePath,
-        zoom: project.zoom || 100
-      })
-    );
+      fs.writeFileSync(recentProjectsPath, data);
+      store.dispatch(setRecentProjects(recents));
+      store.dispatch(setExtension(extension));
 
-    if (tables) {
-      const addRef = table => ({ ...table, ref: createRef() });
-      const newTables = tables.map(addRef);
+      store.dispatch(
+        setProject({
+          ...project,
+          filePath,
+          zoom: project.zoom || 100
+        })
+      );
 
-      store.dispatch(setTables(newTables));
-    }
+      if (tables) {
+        const addRef = table => ({ ...table, ref: createRef() });
+        const newTables = tables.map(addRef);
 
-    if (fields) {
-      store.dispatch(setFields(fields));
-    }
+        store.dispatch(setTables(newTables));
+      }
 
-    if (relations) {
-      store.dispatch(setRelations(relations));
-    }
+      if (fields) {
+        store.dispatch(setFields(fields));
+      }
 
-    if (callback) {
-      callback();
+      if (relations) {
+        store.dispatch(setRelations(relations));
+      }
+
+      if (callback) {
+        callback();
+      }
+    } catch (error) {
+      dialog.showErrorBox("Error", `${error.message} in ${filePath}`);
     }
   });
 };
@@ -249,7 +279,12 @@ export const exportProject = callback => {
 
       const { paths, files } = extension.main.onExport(dirPath, data);
 
-      paths.forEach(path => fs.mkdirSync(path));
+      paths.forEach(path => {
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
+        }
+      });
+
       files.forEach(file => fs.writeFileSync(file.path, file.content));
 
       if (callback) {
@@ -278,33 +313,33 @@ export const importPlugin = callback => {
         return;
       }
 
-      const dirPath = dirPaths[0];
-      const manifestPath = `${dirPath}/manifest.json`;
-      const manifestContent = fs.readFileSync(manifestPath, "utf-8");
-      const manifest = JSON.parse(manifestContent);
-      const { app } = remote;
-      const osConfigPath = app.getPath("appData");
-      const appConfigPath = `${osConfigPath}/schemator`;
-      const pluginsPath = `${appConfigPath}/plugins`;
-      const targetPath = `${pluginsPath}/${manifest.id}`;
-      const paths = [osConfigPath, appConfigPath, pluginsPath, targetPath];
-      const files = ["manifest.json", "main.js", "icon.png", "README.md"];
+      try {
+        const dirPath = dirPaths[0];
+        const manifestPath = `${dirPath}/manifest.json`;
+        const manifestContent = fs.readFileSync(manifestPath, "utf-8");
+        const manifest = JSON.parse(manifestContent);
+        const targetPath = `${pluginsPath}/${manifest.id}`;
+        const paths = [osConfigPath, appConfigPath, pluginsPath, targetPath];
+        const files = ["manifest.json", "main.js", "icon.png", "README.md"];
 
-      paths.forEach(path => {
-        if (!fs.existsSync(path)) {
-          fs.mkdirSync(path);
+        paths.forEach(path => {
+          if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+          }
+        });
+
+        files.forEach(file => {
+          const fromPath = `${dirPath}/${file}`;
+          const toPath = `${targetPath}/${file}`;
+
+          fs.copySync(fromPath, toPath);
+        });
+
+        if (callback) {
+          callback();
         }
-      });
-
-      files.forEach(file => {
-        const fromPath = `${dirPath}/${file}`;
-        const toPath = `${targetPath}/${file}`;
-
-        fs.copySync(fromPath, toPath);
-      });
-
-      if (callback) {
-        callback();
+      } catch (error) {
+        dialog.showErrorBox("Error", error.message);
       }
     }
   );
