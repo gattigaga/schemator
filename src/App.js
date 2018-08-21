@@ -2,8 +2,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import uuid from "uuid/v4";
 
+import {
+  osConfigPath,
+  appConfigPath,
+  pluginsPath,
+  recentProjectsPath
+} from "./config";
 import { clearProject, updateProject } from "./store/actions/project";
 import { clearTables } from "./store/actions/tables";
 import { clearFields } from "./store/actions/fields";
@@ -195,6 +200,7 @@ class App extends Component {
           {
             id: "new-project",
             label: "New Project",
+            enabled: false,
             submenu: []
           },
           {
@@ -400,22 +406,13 @@ class App extends Component {
    * @memberof App
    */
   initConfigFolder() {
-    const { app } = remote;
-    const osConfigPath = app.getPath("appData");
-    const appConfigPath = `${osConfigPath}/schemator`;
-    const pluginPath = `${appConfigPath}/plugins`;
+    const paths = [osConfigPath, appConfigPath, pluginsPath];
 
-    if (!fs.existsSync(osConfigPath)) {
-      fs.mkdirSync(osConfigPath);
-    }
-
-    if (!fs.existsSync(appConfigPath)) {
-      fs.mkdirSync(appConfigPath);
-    }
-
-    if (!fs.existsSync(pluginPath)) {
-      fs.mkdirSync(pluginPath);
-    }
+    paths.forEach(path => {
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+      }
+    });
   }
 
   /**
@@ -424,16 +421,11 @@ class App extends Component {
    * @memberof App
    */
   initRecentProjects() {
-    const { app } = remote;
-    const osConfigPath = app.getPath("appData");
-    const appConfigPath = `${osConfigPath}/schemator`;
-    const fileRecents = `${appConfigPath}/recents.txt`;
-
-    if (!fs.existsSync(fileRecents)) {
-      fs.writeFileSync(fileRecents, "");
+    if (!fs.existsSync(recentProjectsPath)) {
+      fs.writeFileSync(recentProjectsPath, "");
     } else {
       const { applyRecentProjects } = this.props;
-      const content = fs.readFileSync(fileRecents, "utf8");
+      const content = fs.readFileSync(recentProjectsPath, "utf8");
       const recents = content.split("\n").filter(item => !!item);
 
       applyRecentProjects(recents);
@@ -441,105 +433,78 @@ class App extends Component {
   }
 
   /**
-   * Load all built-in extensions
+   * Load all extensions
    *
    * @memberof App
    */
   initExtensions() {
-    const { MenuItem, app } = remote;
+    const { MenuItem } = remote;
     const { applyExtensions, activateExtension } = this.props;
-    const { submenu } = this.menu.getMenuItemById("new-project");
-    const osConfigPath = app.getPath("appData");
-    const appConfigPath = `${osConfigPath}/schemator`;
-    const internalPath = "./plugins";
-    const externalPath = `${appConfigPath}/plugins`;
-    const internalDirs = ["laravel"];
-    const externalDirs = fs.readdirSync(externalPath);
+    const menuNewProject = this.menu.getMenuItemById("new-project");
+    const pluginDirs = fs.readdirSync(pluginsPath);
 
-    const createPath = path => dirName => `${path}/${dirName}`;
-    const loadInternalExtension = path => ({
+    const createPath = dirName => `${pluginsPath}/${dirName}`;
+    const hasAssets = path => {
+      const files = [
+        `${path}/manifest.json`,
+        `${path}/README.md`,
+        `${path}/main.js`
+      ];
+      const isValid = !files.map(fs.existsSync).includes(false);
+
+      return isValid;
+    };
+    const loadExtension = path => ({
       path,
-      type: "internal",
-      manifest: require(`${path}/manifest.json`),
-      readme: null,
-      main: require(`${path}/main`)
-    });
-    const loadExternalExtension = path => ({
-      path,
-      type: "external",
       manifest: fs.readFileSync(`${path}/manifest.json`, "utf-8"),
       readme: fs.readFileSync(`${path}/README.md`, "utf-8"),
       main: fs.readFileSync(`${path}/main.js`, "utf-8")
     });
 
-    const internalPaths = internalDirs
-      .map(createPath(internalPath))
-      .map(loadInternalExtension);
-
-    const externalPaths = externalDirs
-      .map(createPath(externalPath))
-      .map(loadExternalExtension);
-
-    const loadedExtensions = [...internalPaths, ...externalPaths];
+    const loadedExtensions = pluginDirs
+      .map(createPath)
+      .filter(hasAssets)
+      .map(loadExtension);
 
     const extensions = loadedExtensions.map(extension => {
-      const { manifest, readme, main, path, type } = extension;
-      let iconPath;
+      const { manifest, readme, main, path } = extension;
       let image;
 
-      switch (type) {
-        case "internal":
-          iconPath = `${path}/${manifest.icon}`;
-          image = manifest.icon ? require(`${iconPath}`) : imgDefaultExtension;
+      const vm = new NodeVM({
+        require: {
+          external: true
+        }
+      });
+      const script = new VMScript(main);
+      const parsedManifest = JSON.parse(manifest);
+      const parsedMain = vm.run(script);
+      const iconPath = `${path}/${parsedManifest.icon}`;
 
-          return {
-            id: uuid(),
-            ...manifest,
-            readme,
-            path,
-            type,
-            image,
-            main: main.default
-          };
+      if (parsedManifest.icon) {
+        const rawData = fs.readFileSync(iconPath);
+        const buffer = Buffer.from(rawData);
 
-        case "external":
-          const vm = new NodeVM({
-            require: {
-              external: true
-            }
-          });
-          const script = new VMScript(main);
-          const parsedManifest = JSON.parse(manifest);
-          const parsedMain = vm.run(script);
-          iconPath = `${path}/${parsedManifest.icon}`;
-
-          if (parsedManifest.icon) {
-            const rawData = fs.readFileSync(iconPath);
-            const buffer = Buffer.from(rawData);
-
-            image = "data:image/png;base64," + buffer.toString("base64");
-          } else {
-            image = imgDefaultExtension;
-          }
-
-          return {
-            id: uuid(),
-            ...parsedManifest,
-            readme,
-            path,
-            type,
-            image,
-            main: parsedMain.default
-          };
-
-        default:
-          return null;
+        image = "data:image/png;base64," + buffer.toString("base64");
+      } else {
+        image = imgDefaultExtension;
       }
+
+      return {
+        ...parsedManifest,
+        readme,
+        path,
+        image,
+        main: parsedMain.default
+      };
     });
+
+    if (extensions.length) {
+      menuNewProject.enabled = true;
+    }
 
     // Make all extensions to be accessible from New Project menu item
     extensions.forEach(extension => {
-      submenu.append(
+      menuNewProject.submenu.append(
         new MenuItem({
           id: extension.id,
           label: extension.name,

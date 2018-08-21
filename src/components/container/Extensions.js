@@ -216,13 +216,11 @@ class Extensions extends Component {
               <Name>{item.name}</Name>
               <Author>by {item.author}</Author>
               <Description>{item.description}</Description>
-              {item.type === "external" && (
-                <StyledButton
-                  caption="Delete"
-                  onClick={this.deleteExtension}
-                  isDisabled={extension && extension.id === item.id}
-                />
-              )}
+              <StyledButton
+                caption="Delete"
+                onClick={this.deleteExtension}
+                isDisabled={extension && extension.id === item.id}
+              />
             </DetailWrapper>
             {item.readme ? (
               <StyledMarkdown source={item.readme} />
