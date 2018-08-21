@@ -438,7 +438,8 @@ class App extends Component {
    * @memberof App
    */
   initExtensions() {
-    const { MenuItem } = remote;
+    const { MenuItem, dialog } = remote;
+    const mainWindow = remote.getCurrentWindow();
     const { applyExtensions, activateExtension } = this.props;
     const menuNewProject = this.menu.getMenuItemById("new-project");
     const pluginDirs = fs.readdirSync(pluginsPath);
@@ -454,49 +455,62 @@ class App extends Component {
 
       return isValid;
     };
-    const loadExtension = path => ({
-      path,
-      manifest: fs.readFileSync(`${path}/manifest.json`, "utf-8"),
-      readme: fs.readFileSync(`${path}/README.md`, "utf-8"),
-      main: fs.readFileSync(`${path}/main.js`, "utf-8")
-    });
+    const loadExtension = path => {
+      try {
+        const manifest = fs.readFileSync(`${path}/manifest.json`, "utf-8");
+        const readme = fs.readFileSync(`${path}/README.md`, "utf-8");
+        const main = fs.readFileSync(`${path}/main.js`, "utf-8");
+        let image;
 
-    const loadedExtensions = pluginDirs
+        const vm = new NodeVM({
+          require: {
+            external: true
+          }
+        });
+        const script = new VMScript(main);
+        const parsedManifest = JSON.parse(manifest);
+        const parsedMain = vm.run(script);
+        const iconPath = `${path}/${parsedManifest.icon}`;
+
+        if (parsedManifest.icon) {
+          const rawData = fs.readFileSync(iconPath);
+          const buffer = Buffer.from(rawData);
+
+          image = "data:image/png;base64," + buffer.toString("base64");
+        } else {
+          image = imgDefaultExtension;
+        }
+
+        return {
+          ...parsedManifest,
+          readme,
+          path,
+          image,
+          main: {
+            fieldTypes: [],
+            onInit: () => ({ tables: [], fields: [] }),
+            onCreateTable: () => null,
+            onCreateField: () => null,
+            onUpdate: () => [],
+            onExport: () => ({ paths: [], files: [] }),
+            ...parsedMain.default
+          }
+        };
+      } catch (error) {
+        dialog.showMessageBox(mainWindow, {
+          type: "error",
+          message: `${error.message} in ${path}.`,
+          buttons: ["OK"]
+        });
+
+        mainWindow.close();
+      }
+    };
+
+    const extensions = pluginDirs
       .map(createPath)
       .filter(hasAssets)
       .map(loadExtension);
-
-    const extensions = loadedExtensions.map(extension => {
-      const { manifest, readme, main, path } = extension;
-      let image;
-
-      const vm = new NodeVM({
-        require: {
-          external: true
-        }
-      });
-      const script = new VMScript(main);
-      const parsedManifest = JSON.parse(manifest);
-      const parsedMain = vm.run(script);
-      const iconPath = `${path}/${parsedManifest.icon}`;
-
-      if (parsedManifest.icon) {
-        const rawData = fs.readFileSync(iconPath);
-        const buffer = Buffer.from(rawData);
-
-        image = "data:image/png;base64," + buffer.toString("base64");
-      } else {
-        image = imgDefaultExtension;
-      }
-
-      return {
-        ...parsedManifest,
-        readme,
-        path,
-        image,
-        main: parsedMain.default
-      };
-    });
 
     if (extensions.length) {
       menuNewProject.enabled = true;
