@@ -2,9 +2,16 @@
 
 exports[`Statusbar should renders default 1`] = `
 <styled.div>
-  <styled.p>
-    LaravelScheme
-  </styled.p>
+  <styled.div>
+    <styled.p>
+      Plugin: 
+      Schemator Laravel
+    </styled.p>
+    <styled.p>
+      Project: 
+      LaravelScheme
+    </styled.p>
+  </styled.div>
   <styled.div>
     <Styled(MdZoomIn) />
     <styled.p>
@@ -17,10 +24,17 @@ exports[`Statusbar should renders default 1`] = `
 
 exports[`Statusbar should renders with modified project 1`] = `
 <styled.div>
-  <styled.p>
-    LaravelScheme
-     (Unsaved)
-  </styled.p>
+  <styled.div>
+    <styled.p>
+      Plugin: 
+      Schemator Laravel
+    </styled.p>
+    <styled.p>
+      Project: 
+      LaravelScheme
+       (Unsaved)
+    </styled.p>
+  </styled.div>
   <styled.div>
     <Styled(MdZoomIn) />
     <styled.p>

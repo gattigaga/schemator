@@ -7,6 +7,7 @@ describe("Statusbar", () => {
   const setup = propOverrides => {
     const props = {
       zoom: 75,
+      pluginName: "Schemator Laravel",
       projectName: "LaravelScheme",
       isProjectModified: false,
       ...propOverrides

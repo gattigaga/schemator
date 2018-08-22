@@ -21,11 +21,19 @@ const ZoomWrapper = styled.div`
   margin-left: auto;
 `;
 
+const LeftWrapper = styled.div`
+  display: flex;
+`;
+
 const Text = styled.p`
   color: white;
   font-size: 12px;
   font-family: Roboto;
   margin: 0px;
+`;
+
+const LeftText = Text.extend`
+  margin-right: 24px;
 `;
 
 const Icon = styled(MdZoomIn)`
@@ -34,13 +42,16 @@ const Icon = styled(MdZoomIn)`
   margin-right: 4px;
 `;
 
-const Statusbar = ({ projectName, zoom, isProjectModified }) => (
+const Statusbar = ({ pluginName, projectName, zoom, isProjectModified }) => (
   <Container>
     {projectName && (
-      <Text>
-        {projectName}
-        {isProjectModified && " (Unsaved)"}
-      </Text>
+      <LeftWrapper>
+        <LeftText>Plugin: {pluginName}</LeftText>
+        <LeftText>
+          Project: {projectName}
+          {isProjectModified && " (Unsaved)"}
+        </LeftText>
+      </LeftWrapper>
     )}
     <ZoomWrapper>
       <Icon />
@@ -50,6 +61,7 @@ const Statusbar = ({ projectName, zoom, isProjectModified }) => (
 );
 
 Statusbar.propTypes = {
+  pluginName: PropTypes.string,
   projectName: PropTypes.string,
   zoom: PropTypes.number,
   isProjectModified: PropTypes.bool
