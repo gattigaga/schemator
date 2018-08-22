@@ -1,10 +1,10 @@
-import { SET_EXTENSIONS, setExtensions } from "../extensions";
+import { SET_PLUGINS, setPlugins } from "../plugins";
 
-describe("SET_EXTENSIONS", () => {
+describe("SET_PLUGINS", () => {
   it("should return expected action", () => {
-    const extensions = [
+    const plugins = [
       {
-        id: "1",
+        id: "gattigaga-laravel",
         name: "Laravel",
         author: "Gattigaga Hayyuta Dewa",
         description: "Work on Laravel scheme and export to model and migration",
@@ -15,11 +15,11 @@ describe("SET_EXTENSIONS", () => {
     ];
 
     const expected = {
-      type: SET_EXTENSIONS,
-      payload: extensions
+      type: SET_PLUGINS,
+      payload: plugins
     };
 
-    const action = setExtensions(extensions);
+    const action = setPlugins(plugins);
 
     expect(action).toEqual(expected);
   });

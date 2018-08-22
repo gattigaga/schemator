@@ -1,18 +1,18 @@
-import { setExtensions } from "../../actions/extensions";
-import extensions from "../extensions";
+import { setPlugins } from "../../actions/plugins";
+import plugins from "../plugins";
 
-describe("extensions()", () => {
+describe("plugins()", () => {
   it("should returns initial state", () => {
     const expected = [];
-    const result = extensions(undefined, {});
+    const result = plugins(undefined, {});
 
     expect(result).toEqual(expected);
   });
 
-  it("should set all extensions", () => {
-    const myExtensions = [
+  it("should set all plugins", () => {
+    const myPlugins = [
       {
-        id: "1",
+        id: "gattigaga-laravel",
         name: "Laravel",
         author: "Gattigaga Hayyuta Dewa",
         description: "Work on Laravel scheme and export to model and migration",
@@ -21,9 +21,9 @@ describe("extensions()", () => {
         icon: "path/image.png"
       }
     ];
-    const expected = [...myExtensions];
-    const action = setExtensions(myExtensions);
-    const result = extensions(undefined, action);
+    const expected = myPlugins;
+    const action = setPlugins(myPlugins);
+    const result = plugins(undefined, action);
 
     expect(result).toEqual(expected);
   });
