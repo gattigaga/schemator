@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-
 import "typeface-roboto";
 
 const Container = styled.div`
@@ -50,7 +49,7 @@ const Description = styled.p`
   margin: 0px;
 `;
 
-const Extension = ({ image, name, author, description, onClick, isActive }) => (
+const Plugin = ({ image, name, author, description, onClick, isActive }) => (
   <Container onClick={onClick} isActive={isActive}>
     <Image src={image} />
     <Wrapper>
@@ -61,7 +60,7 @@ const Extension = ({ image, name, author, description, onClick, isActive }) => (
   </Container>
 );
 
-Extension.propTypes = {
+Plugin.propTypes = {
   image: PropTypes.string,
   name: PropTypes.string,
   author: PropTypes.string,
@@ -70,4 +69,4 @@ Extension.propTypes = {
   isActive: PropTypes.bool
 };
 
-export default Extension;
+export default Plugin;

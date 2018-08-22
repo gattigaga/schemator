@@ -2,9 +2,9 @@ import React from "react";
 import { shallow } from "enzyme";
 import "jest-styled-components";
 
-import Extension from "../Extension";
+import Plugin from "../Plugin";
 
-describe("Extension", () => {
+describe("Plugin", () => {
   const setup = propOverrides => {
     const props = {
       name: "Schema",
@@ -15,7 +15,7 @@ describe("Extension", () => {
       ...propOverrides
     };
 
-    const wrapper = shallow(<Extension {...props} />);
+    const wrapper = shallow(<Plugin {...props} />);
 
     return {
       wrapper,
