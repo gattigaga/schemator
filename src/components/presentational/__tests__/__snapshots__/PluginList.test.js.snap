@@ -123,7 +123,7 @@ exports[`PluginList should renders with keyword 1`] = `
 exports[`PluginList should renders without plugins 1`] = `
 <styled.div>
   <styled.p>
-    No extensions found
+    No plugins found
   </styled.p>
 </styled.div>
 `;

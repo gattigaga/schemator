@@ -45,7 +45,7 @@ const PluginList = ({ items, keyword, active, onClickItem }) => {
           />
         ))
       ) : (
-        <EmptyText>No extensions found</EmptyText>
+        <EmptyText>No plugins found</EmptyText>
       )}
     </Container>
   );
