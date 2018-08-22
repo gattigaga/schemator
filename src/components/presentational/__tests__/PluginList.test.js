@@ -1,9 +1,9 @@
 import React from "react";
 import { shallow } from "enzyme";
 
-import ExtensionList from "../ExtensionList";
+import PluginList from "../PluginList";
 
-describe("ExtensionList", () => {
+describe("PluginList", () => {
   const setup = propOverrides => {
     const props = {
       items: [
@@ -33,7 +33,7 @@ describe("ExtensionList", () => {
       ...propOverrides
     };
 
-    const wrapper = shallow(<ExtensionList {...props} />);
+    const wrapper = shallow(<PluginList {...props} />);
 
     return {
       wrapper,
@@ -83,7 +83,7 @@ describe("ExtensionList", () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  it("should renders without extensions", () => {
+  it("should renders without plugins", () => {
     const { wrapper } = setup({ items: [] });
 
     expect(wrapper).toMatchSnapshot();
@@ -100,7 +100,7 @@ describe("ExtensionList", () => {
 
     props.items.forEach((item, index) => {
       wrapper
-        .find("Extension")
+        .find("Plugin")
         .at(index)
         .simulate("click", item);
 

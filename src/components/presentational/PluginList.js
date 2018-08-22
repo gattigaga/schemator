@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import "typeface-roboto";
 
-import Extension from "./Extension";
+import Plugin from "./Plugin";
 
 const Container = styled.div`
   width: 240px;
@@ -22,7 +22,7 @@ const EmptyText = styled.p`
   margin: 0px;
 `;
 
-const ExtensionList = ({ items, keyword, active, onClickItem }) => {
+const PluginList = ({ items, keyword, active, onClickItem }) => {
   const byName = item => item.name.match(new RegExp(keyword, "i"));
   const makeExcerpt = item => {
     const suffix = item.description.length > 22 ? "..." : "";
@@ -37,7 +37,7 @@ const ExtensionList = ({ items, keyword, active, onClickItem }) => {
     <Container>
       {filteredItems.length ? (
         filteredItems.map((item, index) => (
-          <Extension
+          <Plugin
             key={index}
             {...item}
             onClick={() => onClickItem(item)}
@@ -51,17 +51,17 @@ const ExtensionList = ({ items, keyword, active, onClickItem }) => {
   );
 };
 
-ExtensionList.propTypes = {
+PluginList.propTypes = {
   items: PropTypes.array,
   keyword: PropTypes.string,
   active: PropTypes.string,
   onClickItem: PropTypes.func
 };
 
-ExtensionList.defaultProps = {
+PluginList.defaultProps = {
   items: [],
   keyword: "",
   onClickItem: () => {}
 };
 
-export default ExtensionList;
+export default PluginList;

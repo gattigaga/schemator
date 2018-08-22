@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ExtensionList should renders default 1`] = `
+exports[`PluginList should renders default 1`] = `
 <styled.div>
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to Laravel file"
     id="1"
@@ -12,7 +12,7 @@ exports[`ExtensionList should renders default 1`] = `
     name="Laravel Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to SQL file"
     id="2"
@@ -22,7 +22,7 @@ exports[`ExtensionList should renders default 1`] = `
     name="SQL Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to MongoDB file"
     id="3"
@@ -35,9 +35,9 @@ exports[`ExtensionList should renders default 1`] = `
 </styled.div>
 `;
 
-exports[`ExtensionList should renders with active item 1`] = `
+exports[`PluginList should renders with active item 1`] = `
 <styled.div>
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to Laravel file"
     id="1"
@@ -47,7 +47,7 @@ exports[`ExtensionList should renders with active item 1`] = `
     name="Laravel Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to SQL file"
     id="2"
@@ -57,7 +57,7 @@ exports[`ExtensionList should renders with active item 1`] = `
     name="SQL Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to MongoDB file"
     id="3"
@@ -70,9 +70,9 @@ exports[`ExtensionList should renders with active item 1`] = `
 </styled.div>
 `;
 
-exports[`ExtensionList should renders with excerpt 1`] = `
+exports[`PluginList should renders with excerpt 1`] = `
 <styled.div>
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to Larav..."
     id="1"
@@ -82,7 +82,7 @@ exports[`ExtensionList should renders with excerpt 1`] = `
     name="Laravel Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to SQL f..."
     id="2"
@@ -92,7 +92,7 @@ exports[`ExtensionList should renders with excerpt 1`] = `
     name="SQL Exporter"
     onClick={[Function]}
   />
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export scheme to Mongo..."
     id="3"
@@ -105,9 +105,9 @@ exports[`ExtensionList should renders with excerpt 1`] = `
 </styled.div>
 `;
 
-exports[`ExtensionList should renders with keyword 1`] = `
+exports[`PluginList should renders with keyword 1`] = `
 <styled.div>
-  <Extension
+  <Plugin
     author="Gattigaga Hayyuta Dewa"
     description="Export to MongoDB file"
     id="3"
@@ -120,7 +120,7 @@ exports[`ExtensionList should renders with keyword 1`] = `
 </styled.div>
 `;
 
-exports[`ExtensionList should renders without extensions 1`] = `
+exports[`PluginList should renders without plugins 1`] = `
 <styled.div>
   <styled.p>
     No extensions found
