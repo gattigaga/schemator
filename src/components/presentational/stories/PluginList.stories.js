@@ -3,16 +3,16 @@ import { storiesOf, action } from "@storybook/react";
 import styled from "styled-components";
 
 import imgIcon from "../../../assets/images/icon-black.png";
-import ExtensionList from "../ExtensionList";
+import PluginList from "../PluginList";
 
 const Container = styled.div`
   width: 240px;
 `;
 
-storiesOf("ExtensionList", module)
+storiesOf("PluginList", module)
   .addDecorator(story => <Container>{story()}</Container>)
   .add("default", () => (
-    <ExtensionList
+    <PluginList
       items={[
         {
           name: "Laravel Exporter",
@@ -37,7 +37,7 @@ storiesOf("ExtensionList", module)
     />
   ))
   .add("with excerpt", () => (
-    <ExtensionList
+    <PluginList
       items={[
         {
           name: "Laravel Exporter",
@@ -62,7 +62,7 @@ storiesOf("ExtensionList", module)
     />
   ))
   .add("with keyword", () => (
-    <ExtensionList
+    <PluginList
       keyword="mongo"
       items={[
         {
@@ -88,7 +88,7 @@ storiesOf("ExtensionList", module)
     />
   ))
   .add("with active item", () => (
-    <ExtensionList
+    <PluginList
       items={[
         {
           id: "1",
@@ -116,4 +116,4 @@ storiesOf("ExtensionList", module)
       active="2"
     />
   ))
-  .add("without extension", () => <ExtensionList />);
+  .add("without plugin", () => <PluginList />);
