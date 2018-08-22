@@ -13,13 +13,13 @@ import { setFields } from "../store/actions/fields";
 import { setRelations } from "../store/actions/relations";
 import { setRecentProjects } from "../store/actions/recentProjects";
 import store from "../store/store";
-import { setExtension } from "../store/actions/extension";
+import { setPlugin } from "../store/actions/plugin";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs-extra");
 
 /**
- * Open dialog to create new project file based on extension.
+ * Open dialog to create new project file based on plugin.
  *
  */
 export const createProject = () => {
@@ -54,14 +54,14 @@ export const createProject = () => {
         }
       }
 
-      const { recentProjects, extension } = store.getState();
-      const { onInit, onUpdate } = extension.main;
+      const { recentProjects, plugin } = store.getState();
+      const { onInit, onUpdate } = plugin.main;
       const name = path.basename(filePath, ".json");
       const { tables = [], fields = [] } = onInit() || {};
 
       const project = {
         name,
-        extensionID: extension.id,
+        pluginID: plugin.id,
         timestamp: Date.now(),
         zoom: 100
       };
@@ -177,8 +177,8 @@ export const saveProject = callback => {
 };
 
 /**
- * Load a project based on extension.
- * Project wouldn't be loaded if extension wasn't exists.
+ * Load a project based on plugin.
+ * Project wouldn't be loaded if plugin wasn't exists.
  *
  * @param {string} filePath Path where project exists.
  * @param {function} [callback]
@@ -193,15 +193,13 @@ export const loadProject = (filePath, callback) => {
     }
 
     try {
-      const { recentProjects, extensions } = store.getState();
+      const { recentProjects, plugins } = store.getState();
       const { project, tables, fields, relations } = JSON.parse(content);
       const paths = [osConfigPath, appConfigPath, pluginsPath];
       const remainings = [...new Set([filePath, ...recentProjects])];
       const recents = remainings.slice(0, 10);
       const data = recents.join("\n");
-      const extension = extensions.find(
-        item => item.id === project.extensionID
-      );
+      const plugin = plugins.find(item => item.id === project.pluginID);
 
       paths.forEach(path => {
         if (!fs.existsSync(path)) {
@@ -209,13 +207,13 @@ export const loadProject = (filePath, callback) => {
         }
       });
 
-      if (!extension) {
-        throw new Error("Extension not found");
+      if (!plugin) {
+        throw new Error("Plugin not found");
       }
 
       fs.writeFileSync(recentProjectsPath, data);
       store.dispatch(setRecentProjects(recents));
-      store.dispatch(setExtension(extension));
+      store.dispatch(setPlugin(plugin));
 
       store.dispatch(
         setProject({
@@ -250,7 +248,7 @@ export const loadProject = (filePath, callback) => {
 };
 
 /**
- * Export project based on extension.
+ * Export project based on plugin.
  *
  * @param {function} [callback]
  */
@@ -268,13 +266,7 @@ export const exportProject = callback => {
         return;
       }
 
-      const {
-        project,
-        tables,
-        fields,
-        relations,
-        extension
-      } = store.getState();
+      const { project, tables, fields, relations, plugin } = store.getState();
       const dirPath = dirPaths[0];
       const data = {
         project,
@@ -282,7 +274,7 @@ export const exportProject = callback => {
         fields,
         relations
       };
-      const { onExport } = extension.main;
+      const { onExport } = plugin.main;
       const { paths = [], files = [] } = onExport(dirPath, data) || {};
 
       paths.forEach(path => {
