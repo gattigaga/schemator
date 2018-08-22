@@ -64,7 +64,7 @@ describe("StatusbarContainer", () => {
   it("should maps dispatch to props", () => {
     const { wrapper, store } = setupConnected();
     const { toPage } = wrapper.props();
-    const pageID = "extensions";
+    const pageID = "plugins";
     const expected = {
       type: "SET_PAGE",
       payload: pageID

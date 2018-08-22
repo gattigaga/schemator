@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { MdDashboard, MdDesktopMac } from "react-icons/lib/md";
+import { MdDashboard, MdDescription } from "react-icons/lib/md";
 
 import { setPage } from "../../store/actions/page";
 import Sidebar from "../presentational/Sidebar";
@@ -10,13 +10,13 @@ export const SidebarContainer = ({ page, toPage }) => {
   const items = [
     {
       id: "workarea",
-      icon: MdDesktopMac,
+      icon: MdDescription,
       tooltip: "Work Area"
     },
     {
-      id: "extensions",
+      id: "plugins",
       icon: MdDashboard,
-      tooltip: "Extensions"
+      tooltip: "Plugins"
     }
   ];
 

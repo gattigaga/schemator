@@ -12,8 +12,8 @@ exports[`StatusbarContainer should renders default 1`] = `
       },
       Object {
         "icon": [Function],
-        "id": "extensions",
-        "tooltip": "Extensions",
+        "id": "plugins",
+        "tooltip": "Plugins",
       },
     ]
   }
