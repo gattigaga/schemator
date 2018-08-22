@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import ConnectedComponent, { PageSwitcher } from "../PageSwitcher";
 
 jest.mock("../WorkArea", () => "WorkArea");
-jest.mock("../Extensions", () => "Extensions");
+jest.mock("../Plugins", () => "Plugins");
 
 describe("PageSwitcher", () => {
   const setup = propOverrides => {
@@ -45,7 +45,7 @@ describe("PageSwitcher", () => {
   });
 
   it("should renders as specified page", () => {
-    const pages = ["workarea", "extensions"];
+    const pages = ["workarea", "plugins"];
 
     pages.forEach(page => {
       const { wrapper } = setup({ page });

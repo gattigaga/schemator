@@ -3,15 +3,15 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import WorkArea from "./WorkArea";
-import Extensions from "./Extensions";
+import Plugins from "./Plugins";
 
 export const PageSwitcher = ({ page }) => {
   switch (page) {
     case "workarea":
       return <WorkArea />;
 
-    case "extensions":
-      return <Extensions />;
+    case "plugins":
+      return <Plugins />;
 
     default:
       return <WorkArea />;
