@@ -125,21 +125,25 @@ class WorkArea extends Component {
       applyRelations
     } = this.props;
     const { mouse } = this.state;
-    const { table, field } = extension.main.onCreateTable(mouse);
-    const newTable = { ...table, ref: createRef() };
-    const newTables = [...tables, newTable];
+    const { onCreateTable, onUpdate } = extension.main;
+    const { table, field } = onCreateTable(mouse) || {};
 
-    const data = {
-      tables: newTables,
-      fields
-    };
+    if (table && field) {
+      const newTable = { ...table, ref: createRef() };
+      const newTables = [...tables, newTable];
 
-    const relations = extension.main.onUpdate(data);
+      const data = {
+        tables: newTables,
+        fields
+      };
 
-    applyRelations(relations);
-    createTable(newTable);
-    createField(field);
-    modifyProject({ isModified: true });
+      const relations = onUpdate(data) || [];
+
+      applyRelations(relations);
+      createTable(newTable);
+      createField(field);
+      modifyProject({ isModified: true });
+    }
   }
 
   /**
@@ -157,6 +161,7 @@ class WorkArea extends Component {
       applyFields,
       applyRelations
     } = this.props;
+    const { onUpdate } = extension.main;
     const tableID = this.hoveredTable;
     const newTables = tables.filter(table => table.id !== tableID);
     const newFields = fields.filter(field => field.tableID !== tableID);
@@ -166,7 +171,7 @@ class WorkArea extends Component {
       fields: newFields
     };
 
-    const relations = extension.main.onUpdate(data);
+    const relations = onUpdate(data) || [];
 
     applyRelations(relations);
     applyTables(newTables);
@@ -188,20 +193,22 @@ class WorkArea extends Component {
       createField,
       applyRelations
     } = this.props;
+    const { onCreateField, onUpdate } = extension.main;
     const tableID = this.hoveredTable;
-    const field = extension.main.onCreateField(tableID);
-    const newFields = [...fields, field];
+    const field = onCreateField(tableID);
 
-    const data = {
-      tables,
-      fields: newFields
-    };
+    if (field) {
+      const newFields = [...fields, field];
+      const data = {
+        tables,
+        fields: newFields
+      };
+      const relations = onUpdate(data) || [];
 
-    const relations = extension.main.onUpdate(data);
-
-    applyRelations(relations);
-    createField(field);
-    modifyProject({ isModified: true });
+      applyRelations(relations);
+      createField(field);
+      modifyProject({ isModified: true });
+    }
   }
 
   /**

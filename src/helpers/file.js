@@ -55,9 +55,9 @@ export const createProject = () => {
       }
 
       const { recentProjects, extension } = store.getState();
+      const { onInit, onUpdate } = extension.main;
       const name = path.basename(filePath, ".json");
-      const scheme = extension.main.onInit();
-      const { tables, fields } = scheme;
+      const { tables = [], fields = [] } = onInit() || {};
 
       const project = {
         name,
@@ -66,12 +66,12 @@ export const createProject = () => {
         zoom: 100
       };
 
-      const newTables = scheme.tables.map(table => ({
+      const newTables = tables.map(table => ({
         ...table,
         ref: createRef()
       }));
 
-      const relations = extension.main.onUpdate({ tables, fields });
+      const relations = onUpdate({ tables, fields }) || [];
 
       const data = {
         project,
@@ -255,7 +255,6 @@ export const loadProject = (filePath, callback) => {
  * @param {function} [callback]
  */
 export const exportProject = callback => {
-  const { project, tables, fields, relations, extension } = store.getState();
   const { dialog } = remote;
   const mainWindow = remote.getCurrentWindow();
 
@@ -269,6 +268,13 @@ export const exportProject = callback => {
         return;
       }
 
+      const {
+        project,
+        tables,
+        fields,
+        relations,
+        extension
+      } = store.getState();
       const dirPath = dirPaths[0];
       const data = {
         project,
@@ -276,8 +282,8 @@ export const exportProject = callback => {
         fields,
         relations
       };
-
-      const { paths, files } = extension.main.onExport(dirPath, data);
+      const { onExport } = extension.main;
+      const { paths = [], files = [] } = onExport(dirPath, data) || {};
 
       paths.forEach(path => {
         if (!fs.existsSync(path)) {

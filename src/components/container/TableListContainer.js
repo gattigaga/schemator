@@ -95,7 +95,7 @@ class TableListContainer extends Component {
       modifyField,
       applyRelations
     } = this.props;
-
+    const { onUpdate } = extension.main;
     const newFields = fields.map(field => {
       if (field.id === fieldID) {
         return { ...field, ...updatedData };
@@ -109,7 +109,7 @@ class TableListContainer extends Component {
       fields: newFields
     };
 
-    const relations = extension.main.onUpdate(data);
+    const relations = onUpdate(data) || [];
 
     applyRelations(relations);
     modifyField(fieldID, updatedData);
@@ -131,19 +131,21 @@ class TableListContainer extends Component {
       extension,
       applyRelations
     } = this.props;
-    const field = extension.main.onCreateField(tableID);
-    const newFields = [...fields, field];
+    const { onCreateField, onUpdate } = extension.main;
+    const field = onCreateField(tableID);
 
-    const data = {
-      tables,
-      fields: newFields
-    };
+    if (field) {
+      const newFields = [...fields, field];
+      const data = {
+        tables,
+        fields: newFields
+      };
+      const relations = onUpdate(data) || [];
 
-    const relations = extension.main.onUpdate(data);
-
-    applyRelations(relations);
-    createField(field);
-    modifyProject({ isModified: true });
+      applyRelations(relations);
+      createField(field);
+      modifyProject({ isModified: true });
+    }
   }
 
   /**
@@ -161,6 +163,7 @@ class TableListContainer extends Component {
       deleteField,
       applyRelations
     } = this.props;
+    const { onUpdate } = extension.main;
     const newFields = fields.filter(item => item.id !== fieldID);
 
     const data = {
@@ -168,7 +171,7 @@ class TableListContainer extends Component {
       fields: newFields
     };
 
-    const relations = extension.main.onUpdate(data);
+    const relations = onUpdate(data) || [];
 
     applyRelations(relations);
     deleteField(fieldID);
@@ -193,7 +196,7 @@ class TableListContainer extends Component {
       modifyTable,
       applyRelations
     } = this.props;
-
+    const { onUpdate } = extension.main;
     const newTables = tables.map(table => {
       if (table.id === tableID) {
         return { ...table, ...updatedData };
@@ -207,7 +210,7 @@ class TableListContainer extends Component {
       fields
     };
 
-    const relations = extension.main.onUpdate(data);
+    const relations = onUpdate(data) || [];
 
     applyRelations(relations);
     modifyTable(tableID, updatedData);
