@@ -65,7 +65,11 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}",
-      "!src/**/*.stories.js"
+      "!src/**/*.stories.js",
+      "!src/setupTests.js",
+      "!src/index.js",
+      "!src/electron.js",
+      "!src/config.js"
     ]
   }
 }
