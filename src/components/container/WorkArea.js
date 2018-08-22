@@ -118,14 +118,14 @@ class WorkArea extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       createTable,
       createField,
       applyRelations
     } = this.props;
     const { mouse } = this.state;
-    const { onCreateTable, onUpdate } = extension.main;
+    const { onCreateTable, onUpdate } = plugin.main;
     const { table, field } = onCreateTable(mouse) || {};
 
     if (table && field) {
@@ -155,13 +155,13 @@ class WorkArea extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       applyTables,
       applyFields,
       applyRelations
     } = this.props;
-    const { onUpdate } = extension.main;
+    const { onUpdate } = plugin.main;
     const tableID = this.hoveredTable;
     const newTables = tables.filter(table => table.id !== tableID);
     const newFields = fields.filter(field => field.tableID !== tableID);
@@ -188,12 +188,12 @@ class WorkArea extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       createField,
       applyRelations
     } = this.props;
-    const { onCreateField, onUpdate } = extension.main;
+    const { onCreateField, onUpdate } = plugin.main;
     const tableID = this.hoveredTable;
     const field = onCreateField(tableID);
 
@@ -300,7 +300,7 @@ class WorkArea extends Component {
 }
 
 WorkArea.propTypes = {
-  extension: PropTypes.object,
+  plugin: PropTypes.object,
   project: PropTypes.object,
   tables: PropTypes.array,
   fields: PropTypes.array,
@@ -312,11 +312,11 @@ WorkArea.propTypes = {
   applyRelations: PropTypes.func
 };
 
-const mapStateToProps = ({ project, tables, fields, extension }) => ({
+const mapStateToProps = ({ project, tables, fields, plugin }) => ({
   project,
   tables,
   fields,
-  extension
+  plugin
 });
 
 const mapDispatchToProps = dispatch => ({
