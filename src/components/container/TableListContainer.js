@@ -88,12 +88,12 @@ class TableListContainer extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       modifyField,
       applyRelations
     } = this.props;
-    const { onUpdate } = extension.main;
+    const { onUpdate } = plugin.main;
     const newFields = fields.map(field => {
       if (field.id === fieldID) {
         return { ...field, ...updatedData };
@@ -126,10 +126,10 @@ class TableListContainer extends Component {
       fields,
       modifyProject,
       createField,
-      extension,
+      plugin,
       applyRelations
     } = this.props;
-    const { onCreateField, onUpdate } = extension.main;
+    const { onCreateField, onUpdate } = plugin.main;
     const field = onCreateField(tableID);
 
     if (field) {
@@ -156,12 +156,12 @@ class TableListContainer extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       deleteField,
       applyRelations
     } = this.props;
-    const { onUpdate } = extension.main;
+    const { onUpdate } = plugin.main;
     const newFields = fields.filter(item => item.id !== fieldID);
 
     const data = {
@@ -189,12 +189,12 @@ class TableListContainer extends Component {
     const {
       tables,
       fields,
-      extension,
+      plugin,
       modifyProject,
       modifyTable,
       applyRelations
     } = this.props;
-    const { onUpdate } = extension.main;
+    const { onUpdate } = plugin.main;
     const newTables = tables.map(table => {
       if (table.id === tableID) {
         return { ...table, ...updatedData };
@@ -274,9 +274,9 @@ class TableListContainer extends Component {
   }
 
   render() {
-    const { tables, fields, menuItems, onContextMenu, extension } = this.props;
+    const { tables, fields, menuItems, onContextMenu, plugin } = this.props;
     const [menuAddTable, menuRemoveTable, menuAddField] = menuItems;
-    const types = extension ? extension.main.fieldTypes : [];
+    const types = plugin ? plugin.main.fieldTypes : [];
 
     return (
       <TableList
@@ -330,7 +330,7 @@ class TableListContainer extends Component {
 TableListContainer.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
-  extension: PropTypes.object,
+  plugin: PropTypes.object,
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
   modifyProject: PropTypes.func,
@@ -342,10 +342,10 @@ TableListContainer.propTypes = {
   onContextMenu: PropTypes.func
 };
 
-const mapStateToProps = ({ tables, fields, extension }) => ({
+const mapStateToProps = ({ tables, fields, plugin }) => ({
   tables,
   fields,
-  extension
+  plugin
 });
 
 const mapDispatchToProps = dispatch => ({
