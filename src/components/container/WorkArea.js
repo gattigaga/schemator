@@ -126,22 +126,21 @@ class WorkArea extends Component {
     } = this.props;
     const { mouse } = this.state;
     const { onCreateTable, onUpdate } = plugin.main;
-    const { table, field } = onCreateTable(mouse) || {};
+    const { table, fields: newFields = [] } = onCreateTable(mouse) || {};
 
-    if (table && field) {
+    if (table && newFields) {
       const newTable = { ...table, ref: createRef() };
-      const newTables = [...tables, newTable];
 
       const data = {
-        tables: newTables,
-        fields
+        tables: [...tables, newTable],
+        fields: [...fields, ...newFields]
       };
 
       const relations = onUpdate(data) || [];
 
       applyRelations(relations);
       createTable(newTable);
-      createField(field);
+      newFields.forEach(createField);
       modifyProject({ isModified: true });
     }
   }

@@ -474,7 +474,7 @@ class App extends Component {
           main: {
             fieldTypes: [],
             onInit: () => ({ tables: [], fields: [] }),
-            onCreateTable: () => null,
+            onCreateTable: () => ({ table: null, fields: [] }),
             onCreateField: () => null,
             onUpdate: () => [],
             onExport: () => ({ paths: [], files: [] }),
