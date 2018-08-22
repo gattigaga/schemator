@@ -75,7 +75,7 @@ export const createProject = () => {
 
       const data = {
         project,
-        tables: newTables,
+        tables,
         fields,
         relations
       };
@@ -102,7 +102,7 @@ export const createProject = () => {
         fs.writeFileSync(recentProjectsPath, data);
         store.dispatch(setRecentProjects(recents));
         store.dispatch(setProject({ ...project, filePath, isModified: false }));
-        store.dispatch(setTables(tables));
+        store.dispatch(setTables(newTables));
         store.dispatch(setFields(fields));
         store.dispatch(setRelations([]));
       });
