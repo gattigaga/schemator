@@ -3,16 +3,16 @@ import { storiesOf, action } from "@storybook/react";
 import styled from "styled-components";
 
 import imgIcon from "../../../assets/images/icon-black.png";
-import Extension from "../Extension";
+import Plugin from "../Plugin";
 
 const Container = styled.div`
   width: 240px;
 `;
 
-storiesOf("Extension", module)
+storiesOf("Plugin", module)
   .addDecorator(story => <Container>{story()}</Container>)
   .add("default", () => (
-    <Extension
+    <Plugin
       image={imgIcon}
       name="Schema"
       author="Gattigaga Hayyuta Dewa"
@@ -21,7 +21,7 @@ storiesOf("Extension", module)
     />
   ))
   .add("is active", () => (
-    <Extension
+    <Plugin
       image={imgIcon}
       name="Schema"
       author="Gattigaga Hayyuta Dewa"
