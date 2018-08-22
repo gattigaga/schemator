@@ -5,11 +5,7 @@ import { connect } from "react-redux";
 import { updateProject } from "../../store/actions/project";
 import { updateTable } from "../../store/actions/tables";
 import { addField, updateField, removeField } from "../../store/actions/fields";
-import {
-  addRelation,
-  removeRelation,
-  setRelations
-} from "../../store/actions/relations";
+import { setRelations } from "../../store/actions/relations";
 import TableList from "../presentational/TableList";
 
 class TableListContainer extends Component {
@@ -64,16 +60,18 @@ class TableListContainer extends Component {
     const byID = item => item.id === tableID;
     this.activeTable = tables.find(byID).ref;
 
-    const getAttributeNS = attr => {
-      const activeTableDOM = this.activeTable.current;
-      return parseFloat(activeTableDOM.getAttributeNS(null, attr));
-    };
-    const offset = this.getMousePosition(event);
+    if (this.activeTable && this.activeTable.current) {
+      const getAttributeNS = attr => {
+        const value = this.activeTable.current.getAttributeNS(null, attr);
+        return parseFloat(value);
+      };
+      const offset = this.getMousePosition(event);
 
-    offset.x -= getAttributeNS("x");
-    offset.y -= getAttributeNS("y");
+      offset.x -= getAttributeNS("x");
+      offset.y -= getAttributeNS("y");
 
-    this.setState({ offset });
+      this.setState({ offset });
+    }
   }
 
   /**
@@ -256,21 +254,23 @@ class TableListContainer extends Component {
    */
   updateTableOptions(event, tableID, optionID) {
     const { tables, modifyProject, modifyTable } = this.props;
-    const { options } = tables.find(item => item.id === tableID);
+    const table = tables.find(item => item.id === tableID);
 
-    modifyProject({ isModified: true });
-    modifyTable(tableID, {
-      options: options.map(option => {
-        if (option.id === optionID) {
-          return {
-            ...option,
-            isChecked: event.target.checked
-          };
-        }
+    if (table) {
+      modifyProject({ isModified: true });
+      modifyTable(tableID, {
+        options: table.options.map(option => {
+          if (option.id === optionID) {
+            return {
+              ...option,
+              isChecked: event.target.checked
+            };
+          }
 
-        return option;
-      })
-    });
+          return option;
+        })
+      });
+    }
   }
 
   render() {
@@ -330,7 +330,6 @@ class TableListContainer extends Component {
 TableListContainer.propTypes = {
   tables: PropTypes.array,
   fields: PropTypes.array,
-  relations: PropTypes.array,
   extension: PropTypes.object,
   menuItems: PropTypes.array,
   areaRef: PropTypes.object,
@@ -339,16 +338,13 @@ TableListContainer.propTypes = {
   deleteField: PropTypes.func,
   modifyTable: PropTypes.func,
   modifyField: PropTypes.func,
-  createRelation: PropTypes.func,
-  deleteRelation: PropTypes.func,
   applyRelations: PropTypes.func,
   onContextMenu: PropTypes.func
 };
 
-const mapStateToProps = ({ tables, fields, relations, extension }) => ({
+const mapStateToProps = ({ tables, fields, extension }) => ({
   tables,
   fields,
-  relations,
   extension
 });
 
@@ -358,8 +354,6 @@ const mapDispatchToProps = dispatch => ({
   deleteField: fieldID => dispatch(removeField(fieldID)),
   modifyTable: (id, data) => dispatch(updateTable(id, data)),
   modifyField: (id, data) => dispatch(updateField(id, data)),
-  createRelation: relation => dispatch(addRelation(relation)),
-  deleteRelation: relationID => dispatch(removeRelation(relationID)),
   applyRelations: relations => dispatch(setRelations(relations))
 });
 

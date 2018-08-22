@@ -105,20 +105,15 @@ class App extends Component {
           id: "clear-recent",
           label: "Clear Recently Opened",
           click: () => {
-            const { app } = remote;
-            const osConfigPath = app.getPath("appData");
-            const appConfigPath = `${osConfigPath}/schemator`;
-            const fileRecents = `${appConfigPath}/recents.txt`;
+            const paths = [osConfigPath, appConfigPath];
 
-            if (!fs.existsSync(osConfigPath)) {
-              fs.mkdirSync(osConfigPath);
-            }
+            paths.forEach(path => {
+              if (!fs.existsSync(path)) {
+                fs.mkdirSync(path);
+              }
+            });
 
-            if (!fs.existsSync(appConfigPath)) {
-              fs.mkdirSync(appConfigPath);
-            }
-
-            fs.writeFileSync(fileRecents, "");
+            fs.writeFileSync(recentProjectsPath, "");
             applyRecentProjects([]);
           }
         })
@@ -152,20 +147,15 @@ class App extends Component {
             id: "clear-recent",
             label: "Clear Recently Opened",
             click: () => {
-              const { app } = remote;
-              const osConfigPath = app.getPath("appData");
-              const appConfigPath = `${osConfigPath}/schemator`;
-              const fileRecents = `${appConfigPath}/recents.txt`;
+              const paths = [osConfigPath, appConfigPath];
 
-              if (!fs.existsSync(osConfigPath)) {
-                fs.mkdirSync(osConfigPath);
-              }
+              paths.forEach(path => {
+                if (!fs.existsSync(path)) {
+                  fs.mkdirSync(path);
+                }
+              });
 
-              if (!fs.existsSync(appConfigPath)) {
-                fs.mkdirSync(appConfigPath);
-              }
-
-              fs.writeFileSync(fileRecents, "");
+              fs.writeFileSync(recentProjectsPath, "");
               applyRecentProjects([]);
             }
           })
@@ -182,7 +172,7 @@ class App extends Component {
   }
 
   /**
-   * Create menubar
+   * Create menubar.
    *
    * @memberof App
    */
@@ -217,20 +207,15 @@ class App extends Component {
                 id: "clear-recent",
                 label: "Clear Recently Opened",
                 click: () => {
-                  const { app } = remote;
-                  const osConfigPath = app.getPath("appData");
-                  const appConfigPath = `${osConfigPath}/schemator`;
-                  const fileRecents = `${appConfigPath}/recents.txt`;
+                  const paths = [osConfigPath, appConfigPath];
 
-                  if (!fs.existsSync(osConfigPath)) {
-                    fs.mkdirSync(osConfigPath);
-                  }
+                  paths.forEach(path => {
+                    if (!fs.existsSync(path)) {
+                      fs.mkdirSync(path);
+                    }
+                  });
 
-                  if (!fs.existsSync(appConfigPath)) {
-                    fs.mkdirSync(appConfigPath);
-                  }
-
-                  fs.writeFileSync(fileRecents, "");
+                  fs.writeFileSync(recentProjectsPath, "");
                   applyRecentProjects([]);
                 }
               }
