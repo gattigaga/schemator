@@ -3,12 +3,12 @@ import { shallow } from "enzyme";
 import configureStore from "redux-mock-store";
 
 import ConnectedComponent, {
-  ExtensionListContainer
-} from "../ExtensionListContainer";
+  PluginListContainer
+} from "../PluginListContainer";
 
-jest.mock("../../presentational/ExtensionList", () => "ExtensionList");
+jest.mock("../../presentational/PluginList", () => "PluginList");
 
-describe("ExtensionListContainer", () => {
+describe("PluginListContainer", () => {
   const setup = propOverrides => {
     const props = {
       items: [
@@ -37,7 +37,7 @@ describe("ExtensionListContainer", () => {
       ...propOverrides
     };
 
-    const wrapper = shallow(<ExtensionListContainer {...props} />);
+    const wrapper = shallow(<PluginListContainer {...props} />);
 
     return {
       wrapper,
@@ -48,7 +48,7 @@ describe("ExtensionListContainer", () => {
   const setupConnected = () => {
     const mockStore = configureStore();
     const store = mockStore({
-      extensions: [
+      plugins: [
         {
           id: "1",
           name: "Laravel",
@@ -88,8 +88,8 @@ describe("ExtensionListContainer", () => {
 
   it("should maps state to props", () => {
     const { wrapper, store } = setupConnected();
-    const { extensions } = store.getState();
+    const { plugins } = store.getState();
 
-    expect(wrapper.props()).toMatchObject({ items: extensions });
+    expect(wrapper.props()).toMatchObject({ items: plugins });
   });
 });

@@ -2,15 +2,15 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import ExtensionList from "../presentational/ExtensionList";
+import PluginList from "../presentational/PluginList";
 
-export const ExtensionListContainer = ({
+export const PluginListContainer = ({
   items,
   keyword,
   active,
   onClickItem
 }) => (
-  <ExtensionList
+  <PluginList
     keyword={keyword}
     items={items}
     active={active}
@@ -18,13 +18,13 @@ export const ExtensionListContainer = ({
   />
 );
 
-ExtensionListContainer.propTypes = {
+PluginListContainer.propTypes = {
   items: PropTypes.array,
   keyword: PropTypes.string,
   active: PropTypes.string,
   onClickItem: PropTypes.func
 };
 
-export const mapStateToProps = ({ extensions }) => ({ items: extensions });
+export const mapStateToProps = ({ plugins }) => ({ items: plugins });
 
-export default connect(mapStateToProps)(ExtensionListContainer);
+export default connect(mapStateToProps)(PluginListContainer);

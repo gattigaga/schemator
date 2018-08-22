@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ExtensionListContainer should renders default 1`] = `
-<ExtensionList
+exports[`PluginListContainer should renders default 1`] = `
+<PluginList
   active="2"
   items={
     Array [
