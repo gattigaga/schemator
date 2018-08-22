@@ -4,15 +4,14 @@ import { connect } from "react-redux";
 
 import Statusbar from "../presentational/Statusbar";
 
-export const StatusbarContainer = ({ project }) => {
+export const StatusbarContainer = ({ project, plugin }) => {
   if (project) {
-    const { zoom, name, isModified } = project;
-
     return (
       <Statusbar
-        zoom={zoom}
-        projectName={name}
-        isProjectModified={isModified}
+        zoom={project.zoom}
+        pluginName={plugin.name}
+        projectName={project.name}
+        isProjectModified={project.isModified}
       />
     );
   }
@@ -21,9 +20,13 @@ export const StatusbarContainer = ({ project }) => {
 };
 
 StatusbarContainer.propTypes = {
-  project: PropTypes.object
+  project: PropTypes.object,
+  plugin: PropTypes.object
 };
 
-export const mapStateToProps = ({ project }) => ({ project });
+export const mapStateToProps = ({ project, plugin }) => ({
+  project,
+  plugin
+});
 
 export default connect(mapStateToProps)(StatusbarContainer);

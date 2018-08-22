@@ -12,6 +12,9 @@ describe("StatusbarContainer", () => {
         zoom: 75,
         isModified: false
       },
+      plugin: {
+        name: "Schemator Laravel"
+      },
       ...propOverrides
     };
 
@@ -30,6 +33,9 @@ describe("StatusbarContainer", () => {
         name: "LaravelScheme",
         zoom: 75,
         isModified: false
+      },
+      plugin: {
+        name: "Schemator Laravel"
       }
     });
 
@@ -55,8 +61,8 @@ describe("StatusbarContainer", () => {
 
   it("should maps state to props", () => {
     const { wrapper, store } = setupConnected();
-    const { project } = store.getState();
+    const { project, plugin } = store.getState();
 
-    expect(wrapper.props()).toMatchObject({ project });
+    expect(wrapper.props()).toMatchObject({ project, plugin });
   });
 });
