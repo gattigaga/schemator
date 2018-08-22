@@ -14,8 +14,8 @@ import { clearTables } from "./store/actions/tables";
 import { clearFields } from "./store/actions/fields";
 import { clearRelations } from "./store/actions/relations";
 import { setRecentProjects } from "./store/actions/recentProjects";
-import { setExtensions } from "./store/actions/extensions";
-import { setExtension } from "./store/actions/extension";
+import { setPlugins } from "./store/actions/plugins";
+import { setPlugin } from "./store/actions/plugin";
 import { setPage } from "./store/actions/page";
 import {
   createProject,
@@ -28,7 +28,7 @@ import {
 import StatusbarContainer from "./components/container/StatusbarContainer";
 import SidebarContainer from "./components/container/SidebarContainer";
 import PageSwitcher from "./components/container/PageSwitcher";
-import imgDefaultExtension from "./assets/images/icon-black.png";
+import imgDefaultPlugin from "./assets/images/icon-black.png";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
@@ -58,7 +58,7 @@ class App extends Component {
     this.createMenu();
     this.initConfigFolder();
     this.initRecentProjects();
-    this.initExtensions();
+    this.initPlugins();
   }
 
   componentDidUpdate(prevProps) {
@@ -255,7 +255,7 @@ class App extends Component {
               {
                 id: "plugin-list",
                 label: "Plugin List",
-                click: () => changePage("extensions")
+                click: () => changePage("plugins")
               },
               {
                 id: "import-plugin",
@@ -418,14 +418,14 @@ class App extends Component {
   }
 
   /**
-   * Load all extensions
+   * Load all plugins.
    *
    * @memberof App
    */
-  initExtensions() {
+  initPlugins() {
     const { MenuItem, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
-    const { applyExtensions, activateExtension } = this.props;
+    const { applyPlugins, activatePlugin } = this.props;
     const menuNewProject = this.menu.getMenuItemById("new-project");
     const pluginDirs = fs.readdirSync(pluginsPath);
 
@@ -440,7 +440,7 @@ class App extends Component {
 
       return isValid;
     };
-    const loadExtension = path => {
+    const loadPlugin = path => {
       try {
         const manifest = fs.readFileSync(`${path}/manifest.json`, "utf-8");
         const readme = fs.readFileSync(`${path}/README.md`, "utf-8");
@@ -463,7 +463,7 @@ class App extends Component {
 
           image = "data:image/png;base64," + buffer.toString("base64");
         } else {
-          image = imgDefaultExtension;
+          image = imgDefaultPlugin;
         }
 
         return {
@@ -492,30 +492,30 @@ class App extends Component {
       }
     };
 
-    const extensions = pluginDirs
+    const plugins = pluginDirs
       .map(createPath)
       .filter(hasAssets)
-      .map(loadExtension);
+      .map(loadPlugin);
 
-    if (extensions.length) {
+    if (plugins.length) {
       menuNewProject.enabled = true;
     }
 
-    // Make all extensions to be accessible from New Project menu item
-    extensions.forEach(extension => {
+    // Make all plugins to be accessible from New Project menu item
+    plugins.forEach(plugin => {
       menuNewProject.submenu.append(
         new MenuItem({
-          id: extension.id,
-          label: extension.name,
+          id: plugin.id,
+          label: plugin.name,
           click: () => {
-            activateExtension(extension);
+            activatePlugin(plugin);
             createProject();
           }
         })
       );
     });
 
-    applyExtensions(extensions);
+    applyPlugins(plugins);
   }
 
   render() {
@@ -540,8 +540,8 @@ App.propTypes = {
   removeAllRelations: PropTypes.func,
   modifyProject: PropTypes.func,
   applyRecentProjects: PropTypes.func,
-  applyExtensions: PropTypes.func,
-  activateExtension: PropTypes.func,
+  applyPlugins: PropTypes.func,
+  activatePlugin: PropTypes.func,
   changePage: PropTypes.func
 };
 
@@ -557,8 +557,8 @@ const mapDispatchToProps = dispatch => ({
   removeAllRelations: () => dispatch(clearRelations()),
   modifyProject: project => dispatch(updateProject(project)),
   applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
-  applyExtensions: extensions => dispatch(setExtensions(extensions)),
-  activateExtension: extension => dispatch(setExtension(extension)),
+  applyPlugins: plugins => dispatch(setPlugins(plugins)),
+  activatePlugin: plugin => dispatch(setPlugin(plugin)),
   changePage: pageID => dispatch(setPage(pageID))
 });
 
