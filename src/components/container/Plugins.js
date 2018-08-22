@@ -6,7 +6,7 @@ import Markdown from "react-markdown";
 import "typeface-roboto";
 
 import imgLogo from "../../assets/images/icon-black-256.png";
-import ExtensionListContainer from "./ExtensionListContainer";
+import PluginListContainer from "./PluginListContainer";
 import SearchBox from "../presentational/SearchBox";
 import SmallButton from "../presentational/SmallButton";
 
@@ -109,19 +109,7 @@ const StyledMarkdown = styled(Markdown)`
   }
 `;
 
-const EmptyWrapper = styled.div`
-  display: flex;
-  flex: 1;
-`;
-
-const EmptyText = styled.p`
-  font-family: Roboto;
-  font-size: 24px;
-  color: #ccc;
-  margin: auto;
-`;
-
-class Extensions extends Component {
+export class Plugins extends Component {
   constructor(props) {
     super(props);
 
@@ -130,15 +118,15 @@ class Extensions extends Component {
       item: null
     };
 
-    this.deleteExtension = this.deleteExtension.bind(this);
+    this.deletePlugin = this.deletePlugin.bind(this);
   }
 
   /**
-   * Delete an installed extension from it's path.
+   * Delete an installed plugin from it's path.
    *
-   * @memberof Extensions
+   * @memberof Plugins
    */
-  deleteExtension() {
+  deletePlugin() {
     const { item } = this.state;
     const { dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
@@ -180,7 +168,7 @@ class Extensions extends Component {
 
   render() {
     const { keyword, item } = this.state;
-    const { extensions, extension } = this.props;
+    const { plugins, plugin } = this.props;
 
     return (
       <Container>
@@ -191,15 +179,13 @@ class Extensions extends Component {
               onChange={event => this.setState({ keyword: event.target.value })}
             />
           </SearchWrapper>
-          <ExtensionListContainer
+          <PluginListContainer
             keyword={keyword}
             onClickItem={item => {
-              const extension = extensions.find(
-                extension => item.id === extension.id
-              );
+              const plugin = plugins.find(plugin => item.id === plugin.id);
 
               this.setState({
-                item: extension
+                item: plugin
               });
             }}
             active={item && item.id}
@@ -218,17 +204,11 @@ class Extensions extends Component {
               <Description>{item.description}</Description>
               <StyledButton
                 caption="Delete"
-                onClick={this.deleteExtension}
-                isDisabled={extension && extension.id === item.id}
+                onClick={this.deleteplugin}
+                isDisabled={plugin && plugin.id === item.id}
               />
             </DetailWrapper>
-            {item.readme ? (
-              <StyledMarkdown source={item.readme} />
-            ) : (
-              <EmptyWrapper>
-                <EmptyText>No README was provided.</EmptyText>
-              </EmptyWrapper>
-            )}
+            <StyledMarkdown source={item.readme} />
           </ContentWrapper>
         )}
       </Container>
@@ -236,14 +216,14 @@ class Extensions extends Component {
   }
 }
 
-Extensions.propTypes = {
-  extensions: PropTypes.array,
-  extension: PropTypes.object
+Plugins.propTypes = {
+  plugins: PropTypes.array,
+  plugin: PropTypes.object
 };
 
-const mapStateToProps = ({ extensions, extension }) => ({
-  extensions,
-  extension
+const mapStateToProps = ({ plugins, plugin }) => ({
+  plugins,
+  plugin
 });
 
-export default connect(mapStateToProps)(Extensions);
+export default connect(mapStateToProps)(Plugins);
