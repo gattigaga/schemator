@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -31,20 +31,39 @@ export const Input = styled.input`
   margin-right: 4px;
 `;
 
-const TableOption = ({ items, onChange }) => (
-  <Container>
-    {items.slice(0, 2).map((item, index) => (
-      <Item key={item.id} isFirst={index === 0}>
-        <Input
-          type="checkbox"
-          checked={item.isChecked}
-          onChange={event => onChange(event, item.id)}
-        />
-        <Label>{item.label}</Label>
-      </Item>
-    ))}
-  </Container>
-);
+class TableOption extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { items } = this.props;
+
+    const diffs = items.map((item, index) => {
+      const nextItem = nextProps.items[index];
+      const isCheckedDiff = nextItem.isChecked !== item.isChecked;
+
+      return isCheckedDiff;
+    });
+
+    return diffs.includes(true);
+  }
+
+  render() {
+    const { items, onChange } = this.props;
+
+    return (
+      <Container>
+        {items.slice(0, 2).map((item, index) => (
+          <Item key={item.id} isFirst={index === 0}>
+            <Input
+              type="checkbox"
+              checked={item.isChecked}
+              onChange={event => onChange(event, item.id)}
+            />
+            <Label>{item.label}</Label>
+          </Item>
+        ))}
+      </Container>
+    );
+  }
+}
 
 TableOption.propTypes = {
   items: PropTypes.array,
