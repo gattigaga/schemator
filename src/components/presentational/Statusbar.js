@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { MdZoomIn } from "react-icons/lib/md";
@@ -42,23 +42,41 @@ const Icon = styled(MdZoomIn)`
   margin-right: 4px;
 `;
 
-const Statusbar = ({ pluginName, projectName, zoom, isProjectModified }) => (
-  <Container>
-    {projectName && (
-      <LeftWrapper>
-        <LeftText>Plugin: {pluginName}</LeftText>
-        <LeftText>
-          Project: {projectName}
-          {isProjectModified && " (Unsaved)"}
-        </LeftText>
-      </LeftWrapper>
-    )}
-    <ZoomWrapper>
-      <Icon />
-      <Text>{zoom}%</Text>
-    </ZoomWrapper>
-  </Container>
-);
+class Statusbar extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { pluginName, projectName, zoom, isProjectModified } = this.props;
+    const diffs = [
+      nextProps.pluginName !== pluginName,
+      nextProps.projectName !== projectName,
+      nextProps.zoom !== zoom,
+      nextProps.isProjectModified !== isProjectModified
+    ];
+
+    return diffs.includes(true);
+  }
+
+  render() {
+    const { pluginName, projectName, zoom, isProjectModified } = this.props;
+
+    return (
+      <Container>
+        {projectName && (
+          <LeftWrapper>
+            <LeftText>Plugin: {pluginName}</LeftText>
+            <LeftText>
+              Project: {projectName}
+              {isProjectModified && " (Unsaved)"}
+            </LeftText>
+          </LeftWrapper>
+        )}
+        <ZoomWrapper>
+          <Icon />
+          <Text>{zoom}%</Text>
+        </ZoomWrapper>
+      </Container>
+    );
+  }
+}
 
 Statusbar.propTypes = {
   pluginName: PropTypes.string,
