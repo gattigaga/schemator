@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { MdClose } from "react-icons/lib/md";
@@ -57,31 +57,50 @@ const Column = styled.div`
   padding: 4px;
 `;
 
-const TableInput = ({
-  name,
-  type,
-  types,
-  onClickRemove,
-  onChangeName,
-  onChangeType,
-  isTypeDisabled
-}) => (
-  <Container>
-    <Column>
-      <Input type="text" value={name} onChange={onChangeName} />
-    </Column>
-    <Column>
-      <Select value={type} onChange={onChangeType} disabled={isTypeDisabled}>
-        {types.map(type => (
-          <option key={type.id} value={type.id}>
-            {type.label}
-          </option>
-        ))}
-      </Select>
-    </Column>
-    <CloseButton onClick={onClickRemove} />
-  </Container>
-);
+class TableInput extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { name, type, isTypeDisabled } = this.props;
+    const isNameDiff = nextProps.name !== name;
+    const isTypeDiff = nextProps.type !== type;
+    const isTypeDisabledDiff = nextProps.isTypeDisabled !== isTypeDisabled;
+
+    return isNameDiff || isTypeDiff || isTypeDisabledDiff;
+  }
+
+  render() {
+    const {
+      name,
+      type,
+      types,
+      onClickRemove,
+      onChangeName,
+      onChangeType,
+      isTypeDisabled
+    } = this.props;
+
+    return (
+      <Container>
+        <Column>
+          <Input type="text" value={name} onChange={onChangeName} />
+        </Column>
+        <Column>
+          <Select
+            value={type}
+            onChange={onChangeType}
+            disabled={isTypeDisabled}
+          >
+            {types.map(type => (
+              <option key={type.id} value={type.id}>
+                {type.label}
+              </option>
+            ))}
+          </Select>
+        </Column>
+        <CloseButton onClick={onClickRemove} />
+      </Container>
+    );
+  }
+}
 
 TableInput.propTypes = {
   name: PropTypes.string,
