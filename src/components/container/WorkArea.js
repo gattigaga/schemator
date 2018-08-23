@@ -257,7 +257,16 @@ class WorkArea extends Component {
           innerRef={this.area}
           style={{ zoom }}
           onWheel={this.zoom}
-          onContextMenu={() => this.menu.popup({ window: appWindow })}
+          onContextMenu={event => {
+            this.menu.popup({ window: appWindow });
+
+            this.setState({
+              mouse: {
+                x: event.clientX,
+                y: event.clientY
+              }
+            });
+          }}
           onMouseEnter={() => {
             if (menuAddTable) {
               menuAddTable.visible = !!project;
@@ -268,14 +277,6 @@ class WorkArea extends Component {
               menuAddTable.visible = false;
             }
           }}
-          onMouseMove={event =>
-            this.setState({
-              mouse: {
-                x: event.clientX,
-                y: event.clientY
-              }
-            })
-          }
         >
           <BGLines
             totalHorizontal={totalHorizontalLines}
