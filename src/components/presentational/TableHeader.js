@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -27,11 +27,23 @@ export const Caption = styled.input`
   text-align: center;
 `;
 
-const TableHeader = ({ caption, onChangeCaption }) => (
-  <Header>
-    <Caption type="text" value={caption} onChange={onChangeCaption} />
-  </Header>
-);
+class TableHeader extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { caption } = this.props;
+
+    return nextProps.caption !== caption;
+  }
+
+  render() {
+    const { caption, onChangeCaption } = this.props;
+
+    return (
+      <Header>
+        <Caption type="text" value={caption} onChange={onChangeCaption} />
+      </Header>
+    );
+  }
+}
 
 TableHeader.propTypes = {
   caption: PropTypes.string,
