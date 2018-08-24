@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RelationLines should renders default 1`] = `
-<g>
+<React.Fragment>
   <styled.path
     d="M32 32 C96 32 64 128 128 128"
     key="0"
@@ -10,5 +10,5 @@ exports[`RelationLines should renders default 1`] = `
     d="M240 32 C176 32 224 128 160 128"
     key="1"
   />
-</g>
+</React.Fragment>
 `;

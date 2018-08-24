@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 
 import TableBox from "./TableBox";
@@ -19,7 +19,7 @@ const TableList = ({
   onChangeName,
   onChangeOptions
 }) => (
-  <g>
+  <Fragment>
     {tables.map(table => {
       const byTableID = ({ tableID }) => tableID === table.id;
       const currentFields = fields.filter(byTableID);
@@ -53,7 +53,7 @@ const TableList = ({
         />
       );
     })}
-  </g>
+  </Fragment>
 );
 
 TableList.propTypes = {

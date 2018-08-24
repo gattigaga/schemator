@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, Fragment } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -12,7 +12,7 @@ class BGLines extends PureComponent {
     const { totalHorizontal, totalVertical, gap } = this.props;
 
     return (
-      <g>
+      <Fragment>
         {[...Array(totalHorizontal)].map((_, index) => {
           const y = (index + 1) * gap;
           return <BGLine key={index} x1="0" y1={y} x2="100%" y2={y} />;
@@ -21,7 +21,7 @@ class BGLines extends PureComponent {
           const x = (index + 1) * gap;
           return <BGLine key={index} x1={x} y1="0" x2={x} y2="100%" />;
         })}
-      </g>
+      </Fragment>
     );
   }
 }
