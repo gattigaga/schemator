@@ -35,14 +35,20 @@ class TableOption extends Component {
   shouldComponentUpdate(nextProps) {
     const { items } = this.props;
 
-    const diffs = items.map((item, index) => {
-      const nextItem = nextProps.items[index];
-      const isCheckedDiff = nextItem.isChecked !== item.isChecked;
+    const isItemsDiff =
+      nextProps.items.length !== items.length ||
+      items
+        .map((item, index) => {
+          const nextItem = nextProps.items[index];
+          const isIDDiff = nextItem.id !== item.id;
+          const isCheckedDiff = nextItem.isChecked !== item.isChecked;
+          const isLabelDiff = nextItem.label !== item.label;
 
-      return isCheckedDiff;
-    });
+          return isCheckedDiff || isLabelDiff || isIDDiff;
+        })
+        .includes(true);
 
-    return diffs.includes(true);
+    return isItemsDiff;
   }
 
   render() {
