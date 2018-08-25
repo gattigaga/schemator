@@ -1,8 +1,10 @@
 {
   "name": "schemator",
-  "version": "0.1.0",
+  "version": "2.0.0",
+  "author": "Gattigaga Hayyuta Dewa",
   "private": true,
-  "main": "src/electron.js",
+  "main": "public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "common-tags": "^1.8.0",
     "date-fns": "^1.29.0",
@@ -31,7 +33,11 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "electron": "electron ."
+    "electron-dev": "ELECTRON_URL=http://localhost:3000 electron .",
+    "electron-build": "electron-builder --dir",
+    "electron-dist": "electron-builder",
+    "preelectron-build": "npm run build",
+    "postinstall": "electron-builder install-app-deps"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
@@ -41,6 +47,7 @@
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
     "electron": "^2.0.5",
+    "electron-builder": "^20.28.2",
     "electron-devtools-installer": "^2.2.4",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
@@ -68,8 +75,22 @@
       "!src/**/*.stories.js",
       "!src/setupTests.js",
       "!src/index.js",
-      "!src/electron.js",
       "!src/config.js"
     ]
+  },
+  "build": {
+    "appId": "com.gattigaga.schemator",
+    "productName": "Schemator",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "linux": {
+      "category": "Development",
+      "target": "AppImage"
+    }
   }
 }
