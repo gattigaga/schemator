@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import { stripIndent } from "common-tags";
 
 import {
   osConfigPath,
@@ -181,6 +182,18 @@ class App extends Component {
     const { Menu, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
     const zoomPercentages = [25, 33, 50, 67, 75, 80, 90, 100];
+    const isDev = process.env.NODE_ENV === "development";
+
+    const devMenu = [
+      {
+        label: "Developer",
+        submenu: [
+          { role: "reload" },
+          { role: "forcereload" },
+          { role: "toggledevtools" }
+        ]
+      }
+    ];
 
     const template = [
       {
@@ -372,13 +385,28 @@ class App extends Component {
         ]
       },
       {
-        label: "Developer",
+        label: "Help",
         submenu: [
-          { role: "reload" },
-          { role: "forcereload" },
-          { role: "toggledevtools" }
+          {
+            label: "About",
+            click: () => {
+              const detail = stripIndent`
+              Version: 2.0.0
+              Author: Gattigaga Hayyuta Dewa
+              `;
+
+              dialog.showMessageBox(mainWindow, {
+                type: "info",
+                title: "About",
+                message: `Schemator`,
+                detail,
+                buttons: ["OK"]
+              });
+            }
+          }
         ]
-      }
+      },
+      ...(isDev ? devMenu : [])
     ];
 
     this.menu = Menu.buildFromTemplate(template);
