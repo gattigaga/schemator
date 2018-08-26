@@ -33,17 +33,9 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-<<<<<<< HEAD
     "electron": "ELECTRON_URL=http://localhost:3000 electron .",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder"
-=======
-    "electron-dev": "ELECTRON_URL=http://localhost:3000 electron .",
-    "electron-build": "electron-builder --dir",
-    "electron-dist": "electron-builder",
-    "preelectron-build": "npm run build",
-    "postinstall": "electron-builder install-app-deps"
->>>>>>> a2c3ba9b411d86d41d47e23901d7149799d088c0
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
