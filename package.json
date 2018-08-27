@@ -34,8 +34,8 @@
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
     "electron": "ELECTRON_URL=http://localhost:3000 electron .",
-    "pack": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder"
+    "pack": "yarn build && electron-builder --dir",
+    "release": "yarn build && electron-builder --publish onTag"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
@@ -79,6 +79,7 @@
   "build": {
     "appId": "com.gattigaga.schemator",
     "productName": "Schemator",
+    "publish": "github",
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -89,6 +90,10 @@
     "linux": {
       "category": "Development",
       "target": "AppImage"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg"
     }
   }
 }
