@@ -247,8 +247,8 @@ class WorkArea extends Component {
     const gap = 32;
     const width = (areaWidth / 25) * 100;
     const height = (areaHeight / 25) * 100;
-    const totalHorizontalLines = parseInt(width / gap);
-    const totalVerticalLines = parseInt(height / gap);
+    const totalHorizontalLines = Math.trunc(width / gap);
+    const totalVerticalLines = Math.trunc(height / gap);
     const [menuAddTable] = this.menu.items;
 
     return (
