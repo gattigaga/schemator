@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableInput should renders default 1`] = `
+<styled.div>
+  <styled.div>
+    <styled.input
+      onChange={[Function]}
+      type="text"
+      value="username"
+    />
+  </styled.div>
+  <styled.div>
+    <styled.select
+      onChange={[Function]}
+      value="string"
+    >
+      <option
+        key="string"
+        value="string"
+      >
+        String
+      </option>
+      <option
+        key="boolean"
+        value="boolean"
+      >
+        Boolean
+      </option>
+      <option
+        key="char"
+        value="char"
+      >
+        Char
+      </option>
+    </styled.select>
+  </styled.div>
+  <Styled(MdClose)
+    onClick={[Function]}
+  />
+</styled.div>
+`;

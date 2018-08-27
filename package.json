@@ -1,25 +1,30 @@
 {
   "name": "schemator",
-  "version": "0.1.0",
+  "version": "2.0.0",
+  "author": "Gattigaga Hayyuta Dewa",
   "private": true,
+  "main": "public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "common-tags": "^1.8.0",
     "date-fns": "^1.29.0",
+    "fs-extra": "^7.0.0",
+    "indent-string": "^3.2.0",
     "normalize.css": "^8.0.0",
     "pluralize": "^7.0.0",
     "prop-types": "^15.6.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-helmet": "^5.2.0",
     "react-icons": "^2.2.7",
-    "react-modal": "^3.4.5",
+    "react-markdown": "^3.4.1",
     "react-redux": "^5.0.7",
-    "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "redux": "^4.0.0",
+    "schemator-utils": "^1.0.0",
     "styled-components": "^3.3.2",
     "typeface-roboto": "^0.0.54",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "vm2": "^3.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -27,7 +32,10 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "electron": "ELECTRON_URL=http://localhost:3000 electron .",
+    "pack": "yarn build && electron-builder --dir",
+    "release": "yarn build && electron-builder --publish onTag"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
@@ -36,6 +44,9 @@
     "@storybook/react": "^3.4.7",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
+    "electron": "^2.0.5",
+    "electron-builder": "^20.28.2",
+    "electron-devtools-installer": "^2.2.4",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "enzyme-to-json": "^3.3.4",
@@ -49,7 +60,40 @@
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-react": "^7.9.1",
     "eslint-plugin-standard": "^3.1.0",
+    "jest-styled-components": "^5.0.1",
     "prettier": "^1.13.5",
     "redux-mock-store": "^1.5.3"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/**/*.stories.js",
+      "!src/setupTests.js",
+      "!src/index.js",
+      "!src/config.js"
+    ]
+  },
+  "build": {
+    "appId": "com.gattigaga.schemator",
+    "productName": "Schemator",
+    "publish": "github",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "linux": {
+      "category": "Development",
+      "target": "AppImage"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg"
+    }
   }
 }

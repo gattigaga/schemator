@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`store should not error 1`] = `
+Object {
+  "fields": Array [],
+  "page": "workarea",
+  "plugin": null,
+  "plugins": Array [],
+  "project": null,
+  "recentProjects": Array [],
+  "relations": Array [],
+  "tables": Array [],
+}
+`;

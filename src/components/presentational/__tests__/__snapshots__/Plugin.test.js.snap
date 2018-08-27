@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Plugin should renders default 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <styled.img
+    src="image.png"
+  />
+  <styled.div>
+    <styled.h4>
+      Schema
+    </styled.h4>
+    <styled.h5>
+      Gattigaga Hayyuta Dewa
+    </styled.h5>
+    <styled.p>
+      Create schema in one screen.
+    </styled.p>
+  </styled.div>
+</styled.div>
+`;

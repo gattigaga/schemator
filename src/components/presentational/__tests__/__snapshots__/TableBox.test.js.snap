@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableBox should renders default 1`] = `
+<foreignObject
+  height={220}
+  onContextMenu={[Function]}
+  onMouseDown={[Function]}
+  onMouseEnter={[Function]}
+  onMouseLeave={[Function]}
+  onMouseMove={[Function]}
+  onMouseUp={[Function]}
+  width={240}
+  x={32}
+  y={32}
+>
+  <styled.div>
+    <TableHeader
+      caption="User"
+      onChangeCaption={[Function]}
+    />
+    <TableInput
+      key="1"
+      name="fullname"
+      onChangeName={[Function]}
+      onChangeType={[Function]}
+      onClickRemove={[Function]}
+      type="string"
+      types={
+        Array [
+          Object {
+            "id": "string",
+            "label": "String",
+          },
+          Object {
+            "id": "boolean",
+            "label": "Boolean",
+          },
+          Object {
+            "id": "char",
+            "label": "Char",
+          },
+        ]
+      }
+    />
+    <TableInput
+      key="2"
+      name="username"
+      onChangeName={[Function]}
+      onChangeType={[Function]}
+      onClickRemove={[Function]}
+      type="string"
+      types={
+        Array [
+          Object {
+            "id": "string",
+            "label": "String",
+          },
+          Object {
+            "id": "boolean",
+            "label": "Boolean",
+          },
+          Object {
+            "id": "char",
+            "label": "Char",
+          },
+        ]
+      }
+    />
+    <TableOption
+      items={
+        Array [
+          Object {
+            "id": "id",
+            "isChecked": true,
+            "label": "ID",
+          },
+          Object {
+            "id": "rememberToken",
+            "isChecked": false,
+            "label": "Remember Token",
+          },
+        ]
+      }
+      key="0"
+      onChange={[Function]}
+    />
+    <TableOption
+      items={
+        Array [
+          Object {
+            "id": "softDeletes",
+            "isChecked": false,
+            "label": "Soft Deletes",
+          },
+          Object {
+            "id": "timestamps",
+            "isChecked": false,
+            "label": "Timestamps",
+          },
+        ]
+      }
+      key="1"
+      onChange={[Function]}
+    />
+    <TableButton
+      caption="Add New Field"
+      onClick={[Function]}
+    />
+  </styled.div>
+</foreignObject>
+`;

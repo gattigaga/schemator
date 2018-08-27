@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchBox should renders default 1`] = `
+<styled.input
+  onChange={[Function]}
+  value="Laravel"
+/>
+`;

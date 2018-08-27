@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PluginListContainer should renders default 1`] = `
+<PluginList
+  active="2"
+  items={
+    Array [
+      Object {
+        "author": "Gattigaga Hayyuta Dewa",
+        "description": "Export to Laravel",
+        "icon": "icon.png",
+        "id": "1",
+        "license": "MIT",
+        "name": "Laravel",
+        "version": "0.1.0",
+      },
+      Object {
+        "author": "Gattigaga Hayyuta Dewa",
+        "description": "Export to SQL",
+        "icon": "icon.png",
+        "id": "2",
+        "license": "GPL",
+        "name": "SQL",
+        "version": "1.0.0",
+      },
+    ]
+  }
+  keyword="Laravel"
+  onClickItem={[Function]}
+/>
+`;

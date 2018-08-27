@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PageSwitcher should renders as specified page 1`] = `<WorkArea />`;
+
+exports[`PageSwitcher should renders as specified page 2`] = `<Plugins />`;
+
+exports[`PageSwitcher should renders default 1`] = `<WorkArea />`;

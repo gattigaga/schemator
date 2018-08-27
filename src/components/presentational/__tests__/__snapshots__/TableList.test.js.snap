@@ -1,0 +1,178 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableList should renders default 1`] = `
+<React.Fragment>
+  <TableBox
+    fields={
+      Array [
+        Object {
+          "id": "079cff9a-7603-4d7a-b178-2da03d6faf8c",
+          "name": "name",
+          "tableID": "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
+          "type": "string",
+        },
+        Object {
+          "id": "34fd94df-d5d4-41ab-8f01-a2b95a2b2050",
+          "name": "email",
+          "tableID": "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
+          "type": "string",
+        },
+        Object {
+          "id": "6f159bff-ebe0-4d4e-8794-b75a1a34f79c",
+          "name": "password",
+          "tableID": "a79c8abc-bcc6-40e4-9c52-b8f343b91fec",
+          "type": "string",
+        },
+      ]
+    }
+    id="a79c8abc-bcc6-40e4-9c52-b8f343b91fec"
+    key="a79c8abc-bcc6-40e4-9c52-b8f343b91fec"
+    name="User"
+    onChangeFieldName={[Function]}
+    onChangeFieldType={[Function]}
+    onChangeName={[Function]}
+    onChangeOptions={[Function]}
+    onClickAddField={[Function]}
+    onClickRemoveField={[Function]}
+    onContextMenu={[Function]}
+    onMouseDown={[Function]}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
+    onMouseMove={[Function]}
+    onMouseUp={[Function]}
+    options={
+      Array [
+        Object {
+          "id": "id",
+          "isChecked": true,
+          "label": "ID",
+        },
+        Object {
+          "id": "rememberToken",
+          "isChecked": false,
+          "label": "Remember Token",
+        },
+        Object {
+          "id": "softDeletes",
+          "isChecked": false,
+          "label": "Soft Deletes",
+        },
+        Object {
+          "id": "timestamps",
+          "isChecked": false,
+          "label": "Timestamps",
+        },
+      ]
+    }
+    position={
+      Object {
+        "x": 92,
+        "y": 110,
+      }
+    }
+    timestamp={1530376280298}
+    types={
+      Array [
+        Object {
+          "id": "string",
+          "label": "String",
+        },
+        Object {
+          "id": "integer",
+          "label": "Integer",
+        },
+        Object {
+          "id": "text",
+          "label": "Text",
+        },
+      ]
+    }
+  />
+  <TableBox
+    fields={
+      Array [
+        Object {
+          "id": "26737c00-7a54-4b58-b112-f17060fa49f6",
+          "name": "title",
+          "tableID": "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
+          "type": "string",
+        },
+        Object {
+          "id": "ccbc8a47-ae75-4ab6-8d6f-7a90747d60be",
+          "name": "user_id",
+          "tableID": "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
+          "type": "integer",
+        },
+        Object {
+          "id": "5c0b69d3-f527-4a02-a095-1342f392b2c8",
+          "name": "content",
+          "tableID": "1817b56b-d1ba-47f9-983e-9f9fdc90a533",
+          "type": "text",
+        },
+      ]
+    }
+    id="1817b56b-d1ba-47f9-983e-9f9fdc90a533"
+    key="1817b56b-d1ba-47f9-983e-9f9fdc90a533"
+    name="Post"
+    onChangeFieldName={[Function]}
+    onChangeFieldType={[Function]}
+    onChangeName={[Function]}
+    onChangeOptions={[Function]}
+    onClickAddField={[Function]}
+    onClickRemoveField={[Function]}
+    onContextMenu={[Function]}
+    onMouseDown={[Function]}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
+    onMouseMove={[Function]}
+    onMouseUp={[Function]}
+    options={
+      Array [
+        Object {
+          "id": "id",
+          "isChecked": true,
+          "label": "ID",
+        },
+        Object {
+          "id": "rememberToken",
+          "isChecked": false,
+          "label": "Remember Token",
+        },
+        Object {
+          "id": "softDeletes",
+          "isChecked": false,
+          "label": "Soft Deletes",
+        },
+        Object {
+          "id": "timestamps",
+          "isChecked": false,
+          "label": "Timestamps",
+        },
+      ]
+    }
+    position={
+      Object {
+        "x": 548,
+        "y": 784,
+      }
+    }
+    timestamp={1530377404366}
+    types={
+      Array [
+        Object {
+          "id": "string",
+          "label": "String",
+        },
+        Object {
+          "id": "integer",
+          "label": "Integer",
+        },
+        Object {
+          "id": "text",
+          "label": "Text",
+        },
+      ]
+    }
+  />
+</React.Fragment>
+`;

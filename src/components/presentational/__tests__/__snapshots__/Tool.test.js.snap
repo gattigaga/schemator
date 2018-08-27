@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tool should renders default 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <Styled(Tooltip)
+    text="Save Schema"
+  />
+  <Styled(MdSave)
+    color="#999"
+    size={24}
+  />
+</styled.div>
+`;
+
+exports[`Tool should renders in active 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <Styled(Tooltip)
+    text="Save Schema"
+  />
+  <Styled(MdSave)
+    color="white"
+    size={24}
+  />
+</styled.div>
+`;
+
+exports[`Tool should renders without tooltip 1`] = `
+<styled.div
+  onClick={[Function]}
+>
+  <Styled(MdSave)
+    color="#999"
+    size={24}
+  />
+</styled.div>
+`;

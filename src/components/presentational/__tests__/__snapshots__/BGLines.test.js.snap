@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BGLines should renders default 1`] = `
+<React.Fragment>
+  <styled.line
+    key="0"
+    x1="0"
+    x2="100%"
+    y1={32}
+    y2={32}
+  />
+  <styled.line
+    key="1"
+    x1="0"
+    x2="100%"
+    y1={64}
+    y2={64}
+  />
+  <styled.line
+    key="2"
+    x1="0"
+    x2="100%"
+    y1={96}
+    y2={96}
+  />
+  <styled.line
+    key="0"
+    x1={32}
+    x2={32}
+    y1="0"
+    y2="100%"
+  />
+  <styled.line
+    key="1"
+    x1={64}
+    x2={64}
+    y1="0"
+    y2="100%"
+  />
+  <styled.line
+    key="2"
+    x1={96}
+    x2={96}
+    y1="0"
+    y2="100%"
+  />
+</React.Fragment>
+`;

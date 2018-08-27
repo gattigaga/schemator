@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatusbarContainer should renders default 1`] = `
+<Sidebar
+  active="workarea"
+  items={
+    Array [
+      Object {
+        "icon": [Function],
+        "id": "workarea",
+        "tooltip": "Work Area",
+      },
+      Object {
+        "icon": [Function],
+        "id": "plugins",
+        "tooltip": "Plugins",
+      },
+    ]
+  }
+  onClickItem={[Function]}
+/>
+`;

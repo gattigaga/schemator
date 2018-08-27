@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Statusbar should renders default 1`] = `
+<styled.div>
+  <styled.div>
+    <styled.p>
+      Plugin: 
+      Schemator Laravel
+    </styled.p>
+    <styled.p>
+      Project: 
+      LaravelScheme
+    </styled.p>
+  </styled.div>
+  <styled.div>
+    <Styled(MdZoomIn) />
+    <styled.p>
+      75
+      %
+    </styled.p>
+  </styled.div>
+</styled.div>
+`;
+
+exports[`Statusbar should renders with modified project 1`] = `
+<styled.div>
+  <styled.div>
+    <styled.p>
+      Plugin: 
+      Schemator Laravel
+    </styled.p>
+    <styled.p>
+      Project: 
+      LaravelScheme
+       (Unsaved)
+    </styled.p>
+  </styled.div>
+  <styled.div>
+    <Styled(MdZoomIn) />
+    <styled.p>
+      75
+      %
+    </styled.p>
+  </styled.div>
+</styled.div>
+`;
+
+exports[`Statusbar should renders without opened project 1`] = `
+<styled.div>
+  <styled.div>
+    <Styled(MdZoomIn) />
+    <styled.p>
+      75
+      %
+    </styled.p>
+  </styled.div>
+</styled.div>
+`;

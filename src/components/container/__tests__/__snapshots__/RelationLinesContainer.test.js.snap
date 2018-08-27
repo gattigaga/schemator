@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelationLinesContainer should renders default 1`] = `
+<RelationLines
+  items={
+    Array [
+      Object {
+        "x1": 332,
+        "x2": 548,
+        "y1": 128,
+        "y2": 802,
+      },
+    ]
+  }
+/>
+`;

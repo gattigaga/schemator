@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getPathPoints() should returns path points (x1 <= x2) 1`] = `"M32 32 C96 32 256 320 320 320"`;
+
+exports[`getPathPoints() should returns path points (x1 > x2) 1`] = `"M320 320 C256 320 96 32 32 32"`;
