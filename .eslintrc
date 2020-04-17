@@ -1,9 +1,5 @@
 {
-  "extends": ["standard", "standard-react", "prettier"],
-  "plugins": ["prettier"],
-  "rules": {
-    "prettier/prettier": "error"
-  },
+  "extends": ["react-app", "plugin:prettier/recommended"],
   "env": {
     "browser": true,
     "jest": true
