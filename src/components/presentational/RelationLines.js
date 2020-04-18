@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -11,13 +11,13 @@ const RelationLine = styled.path`
 `;
 
 const RelationLines = ({ items }) => (
-  <Fragment>
+  <>
     {items.map((item, index) => {
       const points = getPathPoints(item);
 
       return <RelationLine key={index} d={points} />;
     })}
-  </Fragment>
+  </>
 );
 
 RelationLines.propTypes = {
