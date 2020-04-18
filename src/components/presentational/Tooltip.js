@@ -29,7 +29,7 @@ const Arrow = styled.div`
 
 const Text = styled.span`
   color: white;
-  font-family: Roboto;
+  font-family: "Roboto";
   font-size: 10px;
   font-weight: bold;
 `;
