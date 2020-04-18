@@ -32,7 +32,7 @@ const Text = styled.p`
   margin: 0px;
 `;
 
-const LeftText = Text.extend`
+const LeftText = styled(Text)`
   margin-right: 24px;
 `;
 
