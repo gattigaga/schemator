@@ -1,5 +1,6 @@
 import React from "react";
-import { storiesOf, action } from "@storybook/react";
+import { storiesOf } from "@storybook/react";
+import { action } from "@storybook/addon-actions";
 import styled from "styled-components";
 
 import imgIcon from "../../../assets/images/icon-black.png";
@@ -10,7 +11,7 @@ const Container = styled.div`
 `;
 
 storiesOf("Plugin", module)
-  .addDecorator(story => <Container>{story()}</Container>)
+  .addDecorator((story) => <Container>{story()}</Container>)
   .add("default", () => (
     <Plugin
       image={imgIcon}
