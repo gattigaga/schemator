@@ -24,41 +24,46 @@ const Image = styled.img`
   margin-right: 12px;
 `;
 
-const Wrapper = styled.div``;
-
-const Name = styled.h4`
+const Name = styled.p`
   color: #ccc;
   font-size: 12px;
-  font-family: Roboto;
+  font-family: "Roboto";
+  font-weight: bold;
   margin: 0px;
   margin-bottom: 4px;
 `;
 
-const Author = styled.h5`
+const Author = styled.p`
   color: #888;
   font-size: 11px;
-  font-family: Roboto;
+  font-family: "Roboto";
+  font-weight: bold;
   margin: 0px;
   margin-bottom: 4px;
 `;
 
 const Description = styled.p`
   color: #ccc;
-  font-family: Roboto;
+  font-family: "Roboto";
   font-size: 11px;
   margin: 0px;
 `;
 
-const Plugin = ({ image, name, author, description, onClick, isActive }) => (
-  <Container onClick={onClick} isActive={isActive}>
-    <Image src={image} />
-    <Wrapper>
-      <Name>{name}</Name>
-      <Author>{author}</Author>
-      <Description>{description}</Description>
-    </Wrapper>
-  </Container>
-);
+const Plugin = ({ image, name, author, description, onClick, isActive }) => {
+  const suffix = description.length > 22 ? "..." : "";
+  const excerpt = description.slice(0, 22) + suffix;
+
+  return (
+    <Container onClick={onClick} isActive={isActive}>
+      <Image src={image} />
+      <div>
+        <Name>{name}</Name>
+        <Author>{author}</Author>
+        <Description>{excerpt}</Description>
+      </div>
+    </Container>
+  );
+};
 
 Plugin.propTypes = {
   image: PropTypes.string,
@@ -66,7 +71,7 @@ Plugin.propTypes = {
   author: PropTypes.string,
   description: PropTypes.string,
   onClick: PropTypes.func,
-  isActive: PropTypes.bool
+  isActive: PropTypes.bool,
 };
 
 export default Plugin;
