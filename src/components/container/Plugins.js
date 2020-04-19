@@ -1,13 +1,11 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 import Markdown from "react-markdown";
 import "typeface-roboto";
 
 import imgLogo from "../../assets/images/icon-black-256.png";
-import PluginListContainer from "./PluginListContainer";
-import SearchBox from "../presentational/SearchBox";
+import PluginList from "../presentational/PluginList";
 import SmallButton from "../presentational/SmallButton";
 
 const { remote } = window.require("electron");
@@ -75,7 +73,7 @@ const Name = styled.h1`
 
 const Author = styled.p`
   font-family: Roboto;
-  font-size: 16px;
+  font-size: 12px;
   color: #888;
   margin: 0px;
   margin-bottom: 32px;
@@ -109,25 +107,32 @@ const StyledMarkdown = styled(Markdown)`
   }
 `;
 
-export class Plugins extends Component {
-  constructor(props) {
-    super(props);
+const SearchBox = styled.input`
+  width: 100%;
+  background: #2b2b2b;
+  border: 1px solid #444;
+  outline: none;
+  color: white;
+  font-family: Roboto;
+  font-size: 12px;
+  padding: 8px;
+  box-sizing: border-box;
 
-    this.state = {
-      keyword: "",
-      item: null
-    };
-
-    this.deletePlugin = this.deletePlugin.bind(this);
+  &:focus {
+    border-color: #777;
   }
+`;
 
-  /**
-   * Delete an installed plugin from it's path.
-   *
-   * @memberof Plugins
-   */
-  deletePlugin() {
-    const { item } = this.state;
+const Plugins = () => {
+  const [keyword, setKeyword] = useState("");
+  const [item, setItem] = useState(null);
+
+  const { plugins, plugin } = useSelector(({ plugins, plugin }) => ({
+    plugins,
+    plugin,
+  }));
+
+  const deletePlugin = () => {
     const { dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
 
@@ -135,7 +140,7 @@ export class Plugins extends Component {
       type: "question",
       buttons: ["Yes", "No"],
       title: "Plugin would be deleted",
-      message: "Are you sure you want to delete this plugin ?"
+      message: "Are you sure you want to delete this plugin ?",
     });
 
     if (choice === 0) {
@@ -148,9 +153,9 @@ export class Plugins extends Component {
             type: "info",
             message:
               "Plugin successfully deleted, Press OK to reload Schemator!",
-            buttons: ["OK"]
+            buttons: ["OK"],
           },
-          response => {
+          (response) => {
             if (response === 0) {
               mainWindow.reload();
             }
@@ -160,70 +165,50 @@ export class Plugins extends Component {
         dialog.showMessageBox(mainWindow, {
           type: "info",
           message: "Plugin doesn't exists !",
-          buttons: ["OK"]
+          buttons: ["OK"],
         });
       }
     }
-  }
+  };
 
-  render() {
-    const { keyword, item } = this.state;
-    const { plugins, plugin } = this.props;
-
-    return (
-      <Container>
-        <Sidebar>
-          <SearchWrapper>
-            <SearchBox
-              value={keyword}
-              onChange={event => this.setState({ keyword: event.target.value })}
-            />
-          </SearchWrapper>
-          <PluginListContainer
-            keyword={keyword}
-            onClickItem={item => {
-              const plugin = plugins.find(plugin => item.id === plugin.id);
-
-              this.setState({
-                item: plugin
-              });
-            }}
-            active={item && item.id}
+  return (
+    <Container>
+      <Sidebar>
+        <SearchWrapper>
+          <SearchBox
+            value={keyword}
+            onChange={(event) => setKeyword(event.target.value)}
           />
-        </Sidebar>
-        {!item ? (
-          <BlankWrapper>
-            <Logo src={imgLogo} />
-            <Caption>Schemator</Caption>
-          </BlankWrapper>
-        ) : (
-          <ContentWrapper>
-            <DetailWrapper>
-              <Name>{item.name}</Name>
-              <Author>by {item.author}</Author>
-              <Description>{item.description}</Description>
-              <StyledButton
-                caption="Delete"
-                onClick={this.deleteplugin}
-                isDisabled={plugin && plugin.id === item.id}
-              />
-            </DetailWrapper>
-            <StyledMarkdown source={item.readme} />
-          </ContentWrapper>
-        )}
-      </Container>
-    );
-  }
-}
-
-Plugins.propTypes = {
-  plugins: PropTypes.array,
-  plugin: PropTypes.object
+        </SearchWrapper>
+        <PluginList
+          keyword={keyword}
+          items={plugins}
+          active={item && item.id}
+          onClickItem={setItem}
+        />
+      </Sidebar>
+      {!item ? (
+        <BlankWrapper>
+          <Logo src={imgLogo} />
+          <Caption>Schemator</Caption>
+        </BlankWrapper>
+      ) : (
+        <ContentWrapper>
+          <DetailWrapper>
+            <Name>{item.name}</Name>
+            <Author>Author : {item.author}</Author>
+            <Description>{item.description}</Description>
+            <StyledButton
+              caption="Delete"
+              onClick={deletePlugin}
+              isDisabled={plugin && plugin.id === item.id}
+            />
+          </DetailWrapper>
+          <StyledMarkdown source={item.readme} />
+        </ContentWrapper>
+      )}
+    </Container>
+  );
 };
 
-const mapStateToProps = ({ plugins, plugin }) => ({
-  plugins,
-  plugin
-});
-
-export default connect(mapStateToProps)(Plugins);
+export default Plugins;
