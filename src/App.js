@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { stripIndent } from "common-tags";
+import { MdDashboard, MdDescription } from "react-icons/lib/md";
 
 import {
   osConfigPath,
   appConfigPath,
   pluginsPath,
-  recentProjectsPath
+  recentProjectsPath,
 } from "./config";
 import { clearProject, updateProject } from "./store/actions/project";
 import { clearTables } from "./store/actions/tables";
@@ -24,12 +24,13 @@ import {
   loadProject,
   saveProject,
   exportProject,
-  importPlugin
+  importPlugin,
 } from "./helpers/file";
-import StatusbarContainer from "./components/container/StatusbarContainer";
-import SidebarContainer from "./components/container/SidebarContainer";
-import PageSwitcher from "./components/container/PageSwitcher";
+import Sidebar from "./components/presentational/Sidebar";
+import StatusBar from "./components/presentational/StatusBar";
 import imgDefaultPlugin from "./assets/images/icon-black.png";
+import WorkArea from "./components/container/WorkArea";
+import Plugins from "./components/container/Plugins";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
@@ -48,137 +49,33 @@ const Wrapper = styled.div`
   flex: 1;
 `;
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const menu = useRef(null);
+  const dispatch = useDispatch();
 
-    this.menu = null;
-  }
+  const { plugin, project, recentProjects, page } = useSelector(
+    ({ plugin, project, recentProjects, page }) => ({
+      plugin,
+      project,
+      recentProjects,
+      page,
+    })
+  );
 
-  componentDidMount() {
-    this.createMenu();
-    this.initConfigFolder();
-    this.initRecentProjects();
-    this.initPlugins();
-  }
+  const toolItems = [
+    {
+      id: "workarea",
+      icon: MdDescription,
+      tooltip: "Work Area",
+    },
+    {
+      id: "plugins",
+      icon: MdDashboard,
+      tooltip: "Plugins",
+    },
+  ];
 
-  componentDidUpdate(prevProps) {
-    const { Menu, MenuItem } = remote;
-    const { project, recentProjects, applyRecentProjects } = this.props;
-    const isProjectInitializedOrClosed = !prevProps.project || !project;
-    const isProjectChanged =
-      !!project &&
-      !!prevProps.project &&
-      prevProps.project.name !== project.name;
-
-    if (isProjectInitializedOrClosed || isProjectChanged) {
-      const menuIDs = [
-        "close-project",
-        "save-project",
-        "export-project",
-        "zoom-in",
-        "zoom-out"
-      ];
-
-      const menus = menuIDs.map(this.menu.getMenuItemById);
-
-      menus.forEach(item => {
-        item.enabled = !!project;
-      });
-
-      Menu.setApplicationMenu(this.menu);
-    }
-
-    if (recentProjects.length !== prevProps.recentProjects.length) {
-      const { submenu } = this.menu.getMenuItemById("open-recent");
-
-      submenu.clear();
-
-      const recents = recentProjects.map(label => {
-        return new MenuItem({
-          label,
-          click: () => loadProject(label)
-        });
-      });
-
-      submenu.append(
-        new MenuItem({
-          id: "clear-recent",
-          label: "Clear Recently Opened",
-          click: () => {
-            const paths = [osConfigPath, appConfigPath];
-
-            paths.forEach(path => {
-              if (!fs.existsSync(path)) {
-                fs.mkdirSync(path);
-              }
-            });
-
-            fs.writeFileSync(recentProjectsPath, "");
-            applyRecentProjects([]);
-          }
-        })
-      );
-
-      if (recents.length) {
-        submenu.append(new MenuItem({ type: "separator" }));
-      }
-
-      recents.forEach(submenu.append);
-      Menu.setApplicationMenu(this.menu);
-    } else {
-      const comparison = recentProjects.map(
-        (item, index) => item === prevProps.recentProjects[index]
-      );
-
-      if (comparison.includes(false)) {
-        const { submenu } = this.menu.getMenuItemById("open-recent");
-
-        submenu.clear();
-
-        const recents = recentProjects.map(label => {
-          return new MenuItem({
-            label,
-            click: () => loadProject(label)
-          });
-        });
-
-        submenu.append(
-          new MenuItem({
-            id: "clear-recent",
-            label: "Clear Recently Opened",
-            click: () => {
-              const paths = [osConfigPath, appConfigPath];
-
-              paths.forEach(path => {
-                if (!fs.existsSync(path)) {
-                  fs.mkdirSync(path);
-                }
-              });
-
-              fs.writeFileSync(recentProjectsPath, "");
-              applyRecentProjects([]);
-            }
-          })
-        );
-
-        if (recents.length) {
-          submenu.append(new MenuItem({ type: "separator" }));
-        }
-
-        recents.forEach(submenu.append);
-        Menu.setApplicationMenu(this.menu);
-      }
-    }
-  }
-
-  /**
-   * Create menubar.
-   *
-   * @memberof App
-   */
-  createMenu() {
-    const { applyRecentProjects, changePage } = this.props;
+  const createMenu = () => {
     const { Menu, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
     const zoomPercentages = [25, 33, 50, 67, 75, 80, 90, 100];
@@ -190,9 +87,9 @@ class App extends Component {
         submenu: [
           { role: "reload" },
           { role: "forcereload" },
-          { role: "toggledevtools" }
-        ]
-      }
+          { role: "toggledevtools" },
+        ],
+      },
     ];
 
     const template = [
@@ -204,13 +101,13 @@ class App extends Component {
             id: "new-project",
             label: "New Project",
             enabled: false,
-            submenu: []
+            submenu: [],
           },
           {
             id: "open-project",
             label: "Open Project",
             accelerator: "CmdOrCtrl+O",
-            click: () => openProject()
+            click: () => openProject(),
           },
           {
             id: "open-recent",
@@ -222,17 +119,17 @@ class App extends Component {
                 click: () => {
                   const paths = [osConfigPath, appConfigPath];
 
-                  paths.forEach(path => {
+                  paths.forEach((path) => {
                     if (!fs.existsSync(path)) {
                       fs.mkdirSync(path);
                     }
                   });
 
                   fs.writeFileSync(recentProjectsPath, "");
-                  applyRecentProjects([]);
-                }
-              }
-            ]
+                  dispatch(setRecentProjects([]));
+                },
+              },
+            ],
           },
           { type: "separator" },
           {
@@ -240,7 +137,7 @@ class App extends Component {
             label: "Save",
             accelerator: "CmdOrCtrl+S",
             enabled: false,
-            click: () => saveProject()
+            click: () => saveProject(),
           },
           { type: "separator" },
           {
@@ -253,14 +150,12 @@ class App extends Component {
                 dialog.showMessageBox(mainWindow, {
                   type: "info",
                   message: "Project successfully exported!",
-                  buttons: ["OK"]
+                  buttons: ["OK"],
                 });
               });
-            }
+            },
           },
-          {
-            type: "separator"
-          },
+          { type: "separator" },
           {
             id: "preferences",
             label: "Preferences",
@@ -268,7 +163,7 @@ class App extends Component {
               {
                 id: "plugin-list",
                 label: "Plugin List",
-                click: () => changePage("plugins")
+                click: () => dispatch(setPage("plugins")),
               },
               {
                 id: "import-plugin",
@@ -281,42 +176,32 @@ class App extends Component {
                         type: "info",
                         message:
                           "Plugin successfully imported, Press OK to reload Schemator!",
-                        buttons: ["OK"]
+                        buttons: ["OK"],
                       },
-                      response => {
+                      (response) => {
                         if (response === 0) {
                           mainWindow.reload();
                         }
                       }
                     );
                   });
-                }
-              }
-            ]
+                },
+              },
+            ],
           },
-          {
-            type: "separator"
-          },
+          { type: "separator" },
           {
             id: "close-project",
             label: "Close Project",
             accelerator: "CmdOrCtrl+W",
             enabled: false,
             click: () => {
-              const {
-                project,
-                removeProject,
-                removeAllTables,
-                removeAllFields,
-                removeAllRelations
-              } = this.props;
-
               if (project.isModified) {
                 const choice = dialog.showMessageBox(mainWindow, {
                   type: "question",
                   buttons: ["Yes", "No"],
                   title: "Your current project has been modified",
-                  message: "Do you want to save changes your current project ?"
+                  message: "Do you want to save changes your current project ?",
                 });
 
                 if (choice === 0) {
@@ -324,24 +209,22 @@ class App extends Component {
                 }
               }
 
-              removeProject();
-              removeAllTables();
-              removeAllFields();
-              removeAllRelations();
-            }
+              dispatch(clearProject());
+              dispatch(clearTables());
+              dispatch(clearFields());
+              dispatch(clearRelations());
+            },
           },
-          {
-            type: "separator"
-          },
+          { type: "separator" },
           {
             id: "exit",
             label: "Exit",
             accelerator: "CmdOrCtrl+Q",
             click: () => {
               remote.getCurrentWindow().close();
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         label: "View",
@@ -351,38 +234,40 @@ class App extends Component {
             label: "Zoom In",
             enabled: false,
             click: () => {
-              const { project, modifyProject } = this.props;
               const { zoom } = project;
               const zoomIndex = zoomPercentages.findIndex(
-                item => item === zoom
+                (item) => item === zoom
               );
 
               if (zoomIndex < zoomPercentages.length - 1) {
-                modifyProject({
-                  zoom: zoomPercentages[zoomIndex + 1]
-                });
+                dispatch(
+                  updateProject({
+                    zoom: zoomPercentages[zoomIndex + 1],
+                  })
+                );
               }
-            }
+            },
           },
           {
             id: "zoom-out",
             label: "Zoom Out",
             enabled: false,
             click: () => {
-              const { project, modifyProject } = this.props;
               const { zoom } = project;
               const zoomIndex = zoomPercentages.findIndex(
-                item => item === zoom
+                (item) => item === zoom
               );
 
               if (zoomIndex > 0) {
-                modifyProject({
-                  zoom: zoomPercentages[zoomIndex - 1]
-                });
+                dispatch(
+                  updateProject({
+                    zoom: zoomPercentages[zoomIndex - 1],
+                  })
+                );
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         label: "Help",
@@ -400,86 +285,72 @@ class App extends Component {
                 title: "About",
                 message: `Schemator`,
                 detail,
-                buttons: ["OK"]
+                buttons: ["OK"],
               });
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
-      ...(isDev ? devMenu : [])
+      ...(isDev ? devMenu : []),
     ];
 
-    this.menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(this.menu);
-  }
+    menu.current = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu.current);
+  };
 
-  /**
-   * Initialize app config folder
-   *
-   * @memberof App
-   */
-  initConfigFolder() {
+  const initConfigFolders = () => {
     const paths = [osConfigPath, appConfigPath, pluginsPath];
 
-    paths.forEach(path => {
+    paths.forEach((path) => {
       if (!fs.existsSync(path)) {
         fs.mkdirSync(path);
       }
     });
-  }
+  };
 
-  /**
-   * Load histories file if exists otherwise create it
-   *
-   * @memberof App
-   */
-  initRecentProjects() {
+  const initRecentProjects = () => {
     if (!fs.existsSync(recentProjectsPath)) {
       fs.writeFileSync(recentProjectsPath, "");
     } else {
-      const { applyRecentProjects } = this.props;
       const content = fs.readFileSync(recentProjectsPath, "utf8");
-      const recents = content.split("\n").filter(item => !!item);
+      const recents = content.split("\n").filter((item) => !!item);
 
-      applyRecentProjects(recents);
+      dispatch(setRecentProjects(recents));
     }
-  }
+  };
 
-  /**
-   * Load all plugins.
-   *
-   * @memberof App
-   */
-  initPlugins() {
+  const initPlugins = () => {
     const { MenuItem, dialog } = remote;
     const mainWindow = remote.getCurrentWindow();
-    const { applyPlugins, activatePlugin } = this.props;
-    const menuNewProject = this.menu.getMenuItemById("new-project");
+    const menuNewProject = menu.current.getMenuItemById("new-project");
     const pluginDirs = fs.readdirSync(pluginsPath);
 
-    const createPath = dirName => `${pluginsPath}/${dirName}`;
-    const hasAssets = path => {
+    const createPath = (dirName) => `${pluginsPath}/${dirName}`;
+
+    const hasAssets = (path) => {
       const files = [
         `${path}/manifest.json`,
         `${path}/README.md`,
-        `${path}/main.js`
+        `${path}/main.js`,
       ];
       const isValid = !files.map(fs.existsSync).includes(false);
 
       return isValid;
     };
-    const loadPlugin = path => {
+
+    const loadPlugin = (path) => {
       try {
         const manifest = fs.readFileSync(`${path}/manifest.json`, "utf-8");
         const readme = fs.readFileSync(`${path}/README.md`, "utf-8");
         const main = fs.readFileSync(`${path}/main.js`, "utf-8");
-        let image;
+        let image = imgDefaultPlugin;
 
         const vm = new NodeVM({
           require: {
-            external: true
-          }
+            external: true,
+          },
         });
+
         const script = new VMScript(main);
         const parsedManifest = JSON.parse(manifest);
         const parsedMain = vm.run(script);
@@ -490,8 +361,6 @@ class App extends Component {
           const buffer = Buffer.from(rawData);
 
           image = "data:image/png;base64," + buffer.toString("base64");
-        } else {
-          image = imgDefaultPlugin;
         }
 
         return {
@@ -506,14 +375,14 @@ class App extends Component {
             onCreateField: () => null,
             onUpdate: () => [],
             onExport: () => ({ paths: [], files: [] }),
-            ...parsedMain.default
-          }
+            ...parsedMain.default,
+          },
         };
       } catch (error) {
         dialog.showMessageBox(mainWindow, {
           type: "error",
           message: `${error.message} in ${path}.`,
-          buttons: ["OK"]
+          buttons: ["OK"],
         });
 
         mainWindow.close();
@@ -530,67 +399,119 @@ class App extends Component {
     }
 
     // Make all plugins to be accessible from New Project menu item
-    plugins.forEach(plugin => {
+    plugins.forEach((plugin) => {
       menuNewProject.submenu.append(
         new MenuItem({
           id: plugin.id,
           label: plugin.name,
           click: () => {
-            activatePlugin(plugin);
+            dispatch(setPlugin(plugin));
             createProject();
-          }
+          },
         })
       );
     });
 
-    applyPlugins(plugins);
-  }
+    dispatch(setPlugins(plugins));
+  };
 
-  render() {
-    return (
-      <Container>
-        <Wrapper>
-          <SidebarContainer />
-          <PageSwitcher />
-        </Wrapper>
-        <StatusbarContainer />
-      </Container>
+  const resetMenu = () => {
+    const { Menu } = remote;
+
+    const menuIDs = [
+      "close-project",
+      "save-project",
+      "export-project",
+      "zoom-in",
+      "zoom-out",
+    ];
+
+    const menus = menuIDs.map(menu.current.getMenuItemById);
+
+    menus.forEach((item) => {
+      item.enabled = !!project;
+    });
+
+    Menu.setApplicationMenu(menu.current);
+  };
+
+  const resetRecentProjects = () => {
+    const { Menu, MenuItem } = remote;
+    const { submenu } = menu.current.getMenuItemById("open-recent");
+
+    submenu.clear();
+
+    const recents = recentProjects.map((label) => {
+      return new MenuItem({
+        label,
+        click: () => loadProject(label),
+      });
+    });
+
+    submenu.append(
+      new MenuItem({
+        id: "clear-recent",
+        label: "Clear Recently Opened",
+        click: () => {
+          const paths = [osConfigPath, appConfigPath];
+
+          paths.forEach((path) => {
+            if (!fs.existsSync(path)) {
+              fs.mkdirSync(path);
+            }
+          });
+
+          fs.writeFileSync(recentProjectsPath, "");
+          dispatch(setRecentProjects([]));
+        },
+      })
     );
-  }
-}
 
-App.propTypes = {
-  project: PropTypes.object,
-  recentProjects: PropTypes.array,
-  removeProject: PropTypes.func,
-  removeAllTables: PropTypes.func,
-  removeAllFields: PropTypes.func,
-  removeAllRelations: PropTypes.func,
-  modifyProject: PropTypes.func,
-  applyRecentProjects: PropTypes.func,
-  applyPlugins: PropTypes.func,
-  activatePlugin: PropTypes.func,
-  changePage: PropTypes.func
+    if (recents.length) {
+      submenu.append(new MenuItem({ type: "separator" }));
+    }
+
+    recents.forEach(submenu.append);
+    Menu.setApplicationMenu(menu.current);
+  };
+
+  useEffect(() => {
+    createMenu();
+    initConfigFolders();
+    initRecentProjects();
+    initPlugins();
+  }, []);
+
+  useEffect(() => {
+    resetMenu();
+  }, [project]);
+
+  useEffect(() => {
+    resetRecentProjects();
+  }, [recentProjects]);
+
+  return (
+    <Container>
+      <Wrapper>
+        <Sidebar
+          items={toolItems}
+          onClickItem={(item) => dispatch(setPage(item.id))}
+          active={page}
+        />
+        {page === "plugins" ? <Plugins /> : <WorkArea />}
+      </Wrapper>
+      {project ? (
+        <StatusBar
+          zoom={project.zoom}
+          pluginName={plugin.name}
+          projectName={project.name}
+          isProjectModified={project.isModified}
+        />
+      ) : (
+        <StatusBar />
+      )}
+    </Container>
+  );
 };
 
-const mapStateToProps = ({ project, recentProjects }) => ({
-  project,
-  recentProjects
-});
-
-const mapDispatchToProps = dispatch => ({
-  removeProject: () => dispatch(clearProject()),
-  removeAllTables: () => dispatch(clearTables()),
-  removeAllFields: () => dispatch(clearFields()),
-  removeAllRelations: () => dispatch(clearRelations()),
-  modifyProject: project => dispatch(updateProject(project)),
-  applyRecentProjects: recents => dispatch(setRecentProjects(recents)),
-  applyPlugins: plugins => dispatch(setPlugins(plugins)),
-  activatePlugin: plugin => dispatch(setPlugin(plugin)),
-  changePage: pageID => dispatch(setPage(pageID))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default App;
