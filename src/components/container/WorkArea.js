@@ -254,7 +254,7 @@ class WorkArea extends Component {
     return (
       <Container isScrollable={!!project}>
         <Area
-          innerRef={this.area}
+          ref={this.area}
           style={{ zoom }}
           onWheel={this.zoom}
           onContextMenu={event => {
