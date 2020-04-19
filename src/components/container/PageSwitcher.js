@@ -1,11 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 
 import WorkArea from "./WorkArea";
 import Plugins from "./Plugins";
 
-export const PageSwitcher = ({ page }) => {
+export const PageSwitcher = () => {
+  const page = useSelector((state) => state.page);
+
   switch (page) {
     case "workarea":
       return <WorkArea />;
@@ -18,10 +19,4 @@ export const PageSwitcher = ({ page }) => {
   }
 };
 
-PageSwitcher.propTypes = {
-  page: PropTypes.string
-};
-
-const mapStateToProps = ({ page }) => ({ page });
-
-export default connect(mapStateToProps)(PageSwitcher);
+export default PageSwitcher;
