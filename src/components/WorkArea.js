@@ -96,6 +96,8 @@ const WorkArea = () => {
   const createContextMenu = () => {
     const { MenuItem } = remote;
 
+    menu.current = new Menu();
+
     menu.current.append(
       new MenuItem({
         label: "Add Table",
@@ -116,7 +118,7 @@ const WorkArea = () => {
       new MenuItem({
         label: "Add Field",
         visible: false,
-        click: createField,
+        click: () => createField(hoveredTable.current),
       })
     );
   };
@@ -171,9 +173,8 @@ const WorkArea = () => {
     dispatch(updateProject({ isModified: true }));
   };
 
-  const createField = () => {
+  const createField = (tableID) => {
     const { onCreateField, onUpdate } = plugin.main;
-    const tableID = hoveredTable.current;
     const field = onCreateField(tableID);
 
     if (field) {
@@ -328,7 +329,7 @@ const WorkArea = () => {
 
   useEffect(() => {
     createContextMenu();
-  }, []);
+  }, [plugin]);
 
   useEffect(() => {
     setAreaSize();
@@ -413,7 +414,7 @@ const WorkArea = () => {
                 onContextMenu={() => {
                   hoveredTable.current = table.id;
                 }}
-                onClickAddField={() => addField(table.id)}
+                onClickAddField={() => createField(table.id)}
                 onClickRemoveField={(field) => removeField(field.id)}
                 onChangeFieldName={(event, fieldID) =>
                   updateField(event, fieldID, "name")
