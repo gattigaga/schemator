@@ -1,15 +1,14 @@
-import React, { Component, createRef } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect, useRef, createRef } from "react";
 import styled from "styled-components";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { updateProject } from "../../store/actions/project";
-import { addTable, setTables } from "../../store/actions/tables";
+import { addTable, setTables, updateTable } from "../../store/actions/tables";
 import { addField, setFields } from "../../store/actions/fields";
 import { setRelations } from "../../store/actions/relations";
 import BGLines from "../presentational/BGLines";
-import RelationLinesContainer from "../container/RelationLinesContainer";
-import TableListContainer from "../container/TableListContainer";
+import RelationLines from "../presentational/RelationLines";
+import Table from "../presentational/Table";
 
 const { remote, screen } = window.require("electron");
 
@@ -25,106 +24,113 @@ const Area = styled.svg`
   transform-origin: top left;
 `;
 
-class WorkArea extends Component {
-  constructor(props) {
-    super(props);
+const WorkArea = () => {
+  const { Menu } = remote;
 
-    const { Menu } = remote;
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const area = useRef(null);
+  const activeTable = useRef(null);
+  const hoveredTable = useRef(null);
+  const menu = useRef(new Menu());
+  const dispatch = useDispatch();
 
-    this.state = {
-      mouse: {
-        x: 0,
-        y: 0
-      }
-    };
+  const { plugin, project, tables, fields, relations } = useSelector(
+    ({ plugin, project, tables, fields, relations }) => ({
+      plugin,
+      project,
+      tables,
+      fields,
+      relations,
+    })
+  );
 
-    this.area = createRef();
-    this.menu = new Menu();
-    this.hoveredTable = null;
+  const appWindow = remote.getCurrentWindow();
+  const zoom = project ? project.zoom / 100 : 1;
+  const areaWidth = area.current ? area.current.clientWidth : 1366;
+  const areaHeight = area.current ? area.current.clientHeight : 696;
+  const gap = 32;
+  const width = (areaWidth / 25) * 100;
+  const height = (areaHeight / 25) * 100;
+  const totalHorizontalLines = Math.trunc(width / gap);
+  const totalVerticalLines = Math.trunc(height / gap);
+  const [menuAddTable, menuRemoveTable, menuAddField] = menu.current.items;
+  const types = plugin ? plugin.main.fieldTypes : [];
 
-    this.addTable = this.addTable.bind(this);
-    this.removeTable = this.removeTable.bind(this);
-    this.addField = this.addField.bind(this);
-    this.zoom = this.zoom.bind(this);
-  }
+  const coordinates = relations
+    .map((relation) => {
+      const byTableID = (tableID) => (item) => item.tableID === tableID;
+      const byID = (itemID) => (item) => item.id === itemID;
 
-  componentDidMount() {
-    this.createContextMenus();
-  }
+      const { fieldID, fromTableID, toTableID } = relation;
+      // Table which contains foreign key
+      const fromTable = tables.find(byID(fromTableID));
+      // Table as a destination
+      const toTable = tables.find(byID(toTableID));
+      // Index of foreign key field
+      const fieldIndex = fields
+        .filter(byTableID(fromTableID))
+        .findIndex(byID(fieldID));
 
-  componentDidUpdate(prevProps) {
-    this.setAreaSize(prevProps);
-  }
+      return { fromTable, toTable, fieldIndex };
+    })
+    .filter(({ fromTable, toTable }) => fromTable && toTable)
+    .map((relation) => {
+      const { fromTable, toTable, fieldIndex } = relation;
+      const { position: fromPos } = fromTable;
+      const { position: toPos } = toTable;
+      const tableWidth = 240;
+      // Height of Table part (i.e. header, input or option)
+      const chunkHeight = 36;
 
-  /**
-   * Create all context menus.
-   *
-   * @memberof WorkArea
-   */
-  createContextMenus() {
+      const coordinate = {
+        x1: toPos.x <= fromPos.x ? toPos.x + tableWidth : toPos.x,
+        y1: toPos.y + chunkHeight / 2,
+        x2: fromPos.x <= toPos.x ? fromPos.x + tableWidth : fromPos.x,
+        y2: fromPos.y + chunkHeight * (fieldIndex + 1) + chunkHeight / 2,
+      };
+
+      return coordinate;
+    });
+
+  const createContextMenu = () => {
     const { MenuItem } = remote;
 
-    this.menu.append(
+    menu.current.append(
       new MenuItem({
         label: "Add Table",
         visible: false,
-        click: this.addTable
+        click: createTable,
       })
     );
 
-    this.menu.append(
+    menu.current.append(
       new MenuItem({
         label: "Remove Table",
         visible: false,
-        click: this.removeTable
+        click: removeTable,
       })
     );
 
-    this.menu.append(
+    menu.current.append(
       new MenuItem({
         label: "Add Field",
         visible: false,
-        click: this.addField
+        click: createField,
       })
     );
-  }
+  };
 
-  /**
-   * Set default size of working area in 100%.
-   *
-   * @param {object} prevProps
-   * @memberof WorkArea
-   */
-  setAreaSize(prevProps) {
-    const { project } = this.props;
+  const setAreaSize = () => {
+    const { workAreaSize } = screen.getPrimaryDisplay();
+    const width = (workAreaSize.width / 25) * 100;
+    const height = ((workAreaSize.height - 48) / 25) * 100;
 
-    if (prevProps.project !== project) {
-      const { workAreaSize } = screen.getPrimaryDisplay();
-      const area = this.area.current;
-      const width = (workAreaSize.width / 25) * 100;
-      const height = ((workAreaSize.height - 48) / 25) * 100;
+    area.current.style.width = `${width}px`;
+    area.current.style.height = `${height}px`;
+  };
 
-      area.style.width = `${width}px`;
-      area.style.height = `${height}px`;
-    }
-  }
-
-  /**
-   * Add new table.
-   *
-   * @memberof WorkArea
-   */
-  addTable() {
-    const {
-      tables,
-      fields,
-      plugin,
-      modifyProject,
-      createTable,
-      createField,
-      applyRelations
-    } = this.props;
-    const { mouse } = this.state;
+  const createTable = () => {
     const { onCreateTable, onUpdate } = plugin.main;
     const { table, fields: newFields = [] } = onCreateTable(mouse) || {};
 
@@ -133,91 +139,58 @@ class WorkArea extends Component {
 
       const data = {
         tables: [...tables, newTable],
-        fields: [...fields, ...newFields]
+        fields: [...fields, ...newFields],
       };
 
       const relations = onUpdate(data) || [];
 
-      applyRelations(relations);
-      createTable(newTable);
-      newFields.forEach(createField);
-      modifyProject({ isModified: true });
-    }
-  }
+      dispatch(setRelations(relations));
+      dispatch(addTable(newTable));
+      dispatch(updateProject({ isModified: true }));
 
-  /**
-   * Remove a table.
-   *
-   * @memberof WorkArea
-   */
-  removeTable() {
-    const {
-      tables,
-      fields,
-      plugin,
-      modifyProject,
-      applyTables,
-      applyFields,
-      applyRelations
-    } = this.props;
+      newFields.forEach((field) => dispatch(addField(field)));
+    }
+  };
+
+  const removeTable = () => {
     const { onUpdate } = plugin.main;
-    const tableID = this.hoveredTable;
-    const newTables = tables.filter(table => table.id !== tableID);
-    const newFields = fields.filter(field => field.tableID !== tableID);
+    const tableID = hoveredTable.current;
+    const newTables = tables.filter((table) => table.id !== tableID);
+    const newFields = fields.filter((field) => field.tableID !== tableID);
 
     const data = {
       tables: newTables,
-      fields: newFields
+      fields: newFields,
     };
 
     const relations = onUpdate(data) || [];
 
-    applyRelations(relations);
-    applyTables(newTables);
-    applyFields(newFields);
-    modifyProject({ isModified: true });
-  }
+    dispatch(setRelations(relations));
+    dispatch(setTables(newTables));
+    dispatch(setFields(newFields));
+    dispatch(updateProject({ isModified: true }));
+  };
 
-  /**
-   * Add new field inside table.
-   *
-   * @memberof WorkArea
-   */
-  addField() {
-    const {
-      tables,
-      fields,
-      plugin,
-      modifyProject,
-      createField,
-      applyRelations
-    } = this.props;
+  const createField = () => {
     const { onCreateField, onUpdate } = plugin.main;
-    const tableID = this.hoveredTable;
+    const tableID = hoveredTable.current;
     const field = onCreateField(tableID);
 
     if (field) {
       const newFields = [...fields, field];
       const data = {
         tables,
-        fields: newFields
+        fields: newFields,
       };
       const relations = onUpdate(data) || [];
 
-      applyRelations(relations);
-      createField(field);
-      modifyProject({ isModified: true });
+      dispatch(setRelations(relations));
+      dispatch(addField(field));
+      dispatch(updateProject({ isModified: true }));
     }
-  }
+  };
 
-  /**
-   * Handle zoom from mouse wheel offset.
-   *
-   * @param {object} event DOM event.
-   * @memberof WorkArea
-   */
-  zoom(event) {
-    const { project, modifyProject } = this.props;
+  const setZoom = (event) => {
     const { deltaY, ctrlKey } = event;
 
     if (project && ctrlKey) {
@@ -225,110 +198,237 @@ class WorkArea extends Component {
       const totalValues = zoomValues.length;
       const { zoom } = project;
       const offset = deltaY > 0 ? -1 : 1;
-      const index = zoomValues.findIndex(item => item === zoom);
+      const index = zoomValues.findIndex((item) => item === zoom);
       const newIndex = index + offset;
       const isOutOfBound = newIndex < 0 || newIndex > totalValues - 1;
 
       if (!isOutOfBound) {
         const newZoom = zoomValues[newIndex];
 
-        modifyProject({ zoom: newZoom });
+        dispatch(updateProject({ zoom: newZoom }));
       }
     }
-  }
+  };
 
-  render() {
-    const { project } = this.props;
-    const appWindow = remote.getCurrentWindow();
-    const zoom = project ? project.zoom / 100 : 1;
-    const area = this.area.current;
-    const areaWidth = area ? area.clientWidth : 1366;
-    const areaHeight = area ? area.clientHeight : 696;
-    const gap = 32;
-    const width = (areaWidth / 25) * 100;
-    const height = (areaHeight / 25) * 100;
-    const totalHorizontalLines = Math.trunc(width / gap);
-    const totalVerticalLines = Math.trunc(height / gap);
-    const [menuAddTable] = this.menu.items;
+  const getMousePosition = (event) => {
+    const ctm = area.current.getScreenCTM();
 
-    return (
-      <Container isScrollable={!!project}>
-        <Area
-          ref={this.area}
-          style={{ zoom }}
-          onWheel={this.zoom}
-          onContextMenu={event => {
-            this.menu.popup({ window: appWindow });
+    return {
+      x: (event.clientX - ctm.e) / ctm.a,
+      y: (event.clientY - ctm.f) / ctm.d,
+    };
+  };
 
-            this.setState({
-              mouse: {
-                x: event.clientX,
-                y: event.clientY
-              }
-            });
-          }}
-          onMouseEnter={() => {
-            if (menuAddTable) {
-              menuAddTable.visible = !!project;
-            }
-          }}
-          onMouseLeave={() => {
-            if (menuAddTable) {
-              menuAddTable.visible = false;
-            }
-          }}
-        >
-          <BGLines
-            totalHorizontal={totalHorizontalLines}
-            totalVertical={totalVerticalLines}
-            gap={32}
-          />
-          <g>
-            <RelationLinesContainer />
-            <TableListContainer
-              menuItems={this.menu.items}
-              areaRef={this.area}
-              onContextMenu={tableID => {
-                this.hoveredTable = tableID;
-              }}
-            />
-          </g>
-        </Area>
-      </Container>
-    );
-  }
-}
+  const saveTableOffset = (event, tableID) => {
+    const byID = (item) => item.id === tableID;
 
-WorkArea.propTypes = {
-  plugin: PropTypes.object,
-  project: PropTypes.object,
-  tables: PropTypes.array,
-  fields: PropTypes.array,
-  modifyProject: PropTypes.func,
-  createTable: PropTypes.func,
-  createField: PropTypes.func,
-  applyTables: PropTypes.func,
-  applyFields: PropTypes.func,
-  applyRelations: PropTypes.func
+    activeTable.current = tables.find(byID).ref.current;
+
+    if (activeTable.current) {
+      const getAttributeNS = (attr) => {
+        const value = activeTable.current.getAttributeNS(null, attr);
+        return parseFloat(value);
+      };
+
+      const newOffset = getMousePosition(event);
+
+      newOffset.x -= getAttributeNS("x");
+      newOffset.y -= getAttributeNS("y");
+
+      setOffset(newOffset);
+    }
+  };
+
+  const updateField = (event, fieldID, type) => {
+    const { value } = event.target;
+    const { onUpdate } = plugin.main;
+    const updatedData = { [type]: value };
+
+    const newFields = fields.map((field) => {
+      if (field.id === fieldID) {
+        return { ...field, ...updatedData };
+      }
+
+      return field;
+    });
+
+    const data = {
+      tables,
+      fields: newFields,
+    };
+
+    const relations = onUpdate(data) || [];
+
+    dispatch(setRelations(relations));
+    dispatch(updateField(fieldID, updatedData));
+    dispatch(updateProject({ isModified: true }));
+  };
+
+  const removeField = (fieldID) => {
+    const { onUpdate } = plugin.main;
+    const newFields = fields.filter((item) => item.id !== fieldID);
+
+    const data = {
+      tables,
+      fields: newFields,
+    };
+
+    const relations = onUpdate(data) || [];
+
+    dispatch(setRelations(relations));
+    dispatch(removeField(fieldID));
+    dispatch(updateProject({ isModified: true }));
+  };
+
+  const updateTableName = (event, tableID) => {
+    const { value } = event.target;
+    const { onUpdate } = plugin.main;
+    const updatedData = { name: value };
+
+    const newTables = tables.map((table) => {
+      if (table.id === tableID) {
+        return { ...table, ...updatedData };
+      }
+
+      return table;
+    });
+
+    const data = {
+      tables: newTables,
+      fields,
+    };
+
+    const relations = onUpdate(data) || [];
+
+    dispatch(setRelations(relations));
+    dispatch(updateTable(tableID, updatedData));
+    dispatch(updateProject({ isModified: true }));
+  };
+
+  const updateTablePosition = (event, tableID) => {
+    if (activeTable.current) {
+      event.preventDefault();
+
+      const activeTableDOM = activeTable.current;
+      const coord = getMousePosition(event);
+      const x = coord.x - offset.x;
+      const y = coord.y - offset.y;
+
+      activeTableDOM.setAttributeNS(null, "x", x);
+      activeTableDOM.setAttributeNS(null, "y", y);
+
+      dispatch(
+        updateTable(tableID, {
+          position: { x, y },
+        })
+      );
+      dispatch(updateProject({ isModified: true }));
+    }
+  };
+
+  useEffect(() => {
+    createContextMenu();
+  }, []);
+
+  useEffect(() => {
+    setAreaSize();
+  }, [project]);
+
+  return (
+    <Container isScrollable={!!project}>
+      <Area
+        ref={area}
+        style={{ zoom }}
+        onWheel={setZoom}
+        onContextMenu={(event) => {
+          menu.current.popup({ window: appWindow });
+
+          setMouse({
+            x: event.clientX,
+            y: event.clientY,
+          });
+        }}
+        onMouseEnter={() => {
+          if (menuAddTable) {
+            menuAddTable.visible = !!project;
+          }
+        }}
+        onMouseLeave={() => {
+          if (menuAddTable) {
+            menuAddTable.visible = false;
+          }
+        }}
+      >
+        <BGLines
+          totalHorizontal={totalHorizontalLines}
+          totalVertical={totalVerticalLines}
+          gap={32}
+        />
+        <g>
+          <RelationLines items={coordinates} />
+          {tables.map((table) => {
+            const byTableID = ({ tableID }) => tableID === table.id;
+            const currentFields = fields.filter(byTableID);
+
+            return (
+              <Table
+                key={table.id}
+                ref={table.ref}
+                {...table}
+                types={types}
+                fields={currentFields}
+                onMouseDown={(event) => saveTableOffset(event, table.id)}
+                onMouseUp={() => {
+                  activeTable.current = null;
+                }}
+                onMouseMove={(event) => updateTablePosition(event, table.id)}
+                onMouseEnter={() => {
+                  if (menuAddTable) {
+                    menuAddTable.visible = false;
+                  }
+
+                  if (menuRemoveTable) {
+                    menuRemoveTable.visible = true;
+                  }
+
+                  if (menuAddField) {
+                    menuAddField.visible = true;
+                  }
+                }}
+                onMouseLeave={() => {
+                  activeTable.current = null;
+
+                  if (menuAddTable) {
+                    menuAddTable.visible = true;
+                  }
+
+                  if (menuRemoveTable) {
+                    menuRemoveTable.visible = false;
+                  }
+
+                  if (menuAddField) {
+                    menuAddField.visible = false;
+                  }
+                }}
+                onContextMenu={() => {
+                  hoveredTable.current = table.id;
+                }}
+                onClickAddField={() => addField(table.id)}
+                onClickRemoveField={(field) => removeField(field.id)}
+                onChangeFieldName={(event, fieldID) =>
+                  updateField(event, fieldID, "name")
+                }
+                onChangeFieldType={(event, fieldID) =>
+                  updateField(event, fieldID, "type")
+                }
+                onChangeName={(event) => updateTableName(event, table.id)}
+              />
+            );
+          })}
+        </g>
+      </Area>
+    </Container>
+  );
 };
 
-const mapStateToProps = ({ project, tables, fields, plugin }) => ({
-  project,
-  tables,
-  fields,
-  plugin
-});
-
-const mapDispatchToProps = dispatch => ({
-  modifyProject: project => dispatch(updateProject(project)),
-  createTable: table => dispatch(addTable(table)),
-  createField: field => dispatch(addField(field)),
-  applyTables: tables => dispatch(setTables(tables)),
-  applyFields: fields => dispatch(setFields(fields)),
-  applyRelations: relations => dispatch(setRelations(relations))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(WorkArea);
+export default WorkArea;
