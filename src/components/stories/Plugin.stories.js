@@ -3,7 +3,7 @@ import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import styled from "styled-components";
 
-import imgIcon from "../../../assets/images/icon-black.png";
+import imgIcon from "../../assets/images/icon-black.png";
 import Plugin from "../Plugin";
 
 const Container = styled.div`

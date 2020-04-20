@@ -26,11 +26,11 @@ import {
   exportProject,
   importPlugin,
 } from "./helpers/file";
-import Sidebar from "./components/presentational/Sidebar";
-import StatusBar from "./components/presentational/StatusBar";
+import Sidebar from "./components/Sidebar";
+import StatusBar from "./components/StatusBar";
 import imgDefaultPlugin from "./assets/images/icon-black.png";
-import WorkArea from "./components/container/WorkArea";
-import Plugins from "./components/container/Plugins";
+import WorkArea from "./components/WorkArea";
+import Plugins from "./components/Plugins";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");

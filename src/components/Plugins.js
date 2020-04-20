@@ -4,9 +4,9 @@ import { useSelector } from "react-redux";
 import Markdown from "react-markdown";
 import "typeface-roboto";
 
-import imgLogo from "../../assets/images/icon-black-256.png";
-import PluginList from "../presentational/PluginList";
-import SmallButton from "../presentational/SmallButton";
+import imgLogo from "../assets/images/icon-black-256.png";
+import PluginList from "./PluginList";
+import SmallButton from "./SmallButton";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs-extra");

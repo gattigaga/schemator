@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, createRef } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 
-import { updateProject } from "../../store/actions/project";
-import { addTable, setTables, updateTable } from "../../store/actions/tables";
-import { addField, setFields } from "../../store/actions/fields";
-import { setRelations } from "../../store/actions/relations";
-import BGLines from "../presentational/BGLines";
-import RelationLines from "../presentational/RelationLines";
-import Table from "../presentational/Table";
+import { updateProject } from "../store/actions/project";
+import { addTable, setTables, updateTable } from "../store/actions/tables";
+import { addField, setFields } from "../store/actions/fields";
+import { setRelations } from "../store/actions/relations";
+import BGLines from "./BGLines";
+import RelationLines from "./RelationLines";
+import Table from "./Table";
 
 const { remote, screen } = window.require("electron");
 

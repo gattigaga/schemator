@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import { getPathPoints } from "../../helpers/layout";
+import { getPathPoints } from "../helpers/layout";
 
 const RelationLine = styled.path`
   fill: none;
