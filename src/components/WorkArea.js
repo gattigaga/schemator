@@ -4,7 +4,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { updateProject } from "../store/actions/project";
 import { addTable, setTables, updateTable } from "../store/actions/tables";
-import { addField, setFields, removeField } from "../store/actions/fields";
+import {
+  addField,
+  setFields,
+  removeField,
+  updateField,
+} from "../store/actions/fields";
 import { setRelations } from "../store/actions/relations";
 import BGLines from "./BGLines";
 import RelationLines from "./RelationLines";
@@ -240,7 +245,7 @@ const WorkArea = () => {
     }
   };
 
-  const updateField = (event, fieldID, type) => {
+  const editField = (event, fieldID, type) => {
     const { value } = event.target;
     const { onUpdate } = plugin.main;
     const updatedData = { [type]: value };
@@ -375,7 +380,8 @@ const WorkArea = () => {
               <Table
                 key={table.id}
                 ref={table.ref}
-                {...table}
+                name={table.name}
+                position={table.position}
                 types={types}
                 fields={currentFields}
                 onMouseDown={(event) => saveTableOffset(event, table.id)}
@@ -416,11 +422,11 @@ const WorkArea = () => {
                 }}
                 onClickAddField={() => createField(table.id)}
                 onClickRemoveField={(field) => deleteField(field.id)}
-                onChangeFieldName={(event, fieldID) =>
-                  updateField(event, fieldID, "name")
+                onChangeFieldName={(event, field) =>
+                  editField(event, field.id, "name")
                 }
-                onChangeFieldType={(event, fieldID) =>
-                  updateField(event, fieldID, "type")
+                onChangeFieldType={(event, field) =>
+                  editField(event, field.id, "type")
                 }
                 onChangeName={(event) => updateTableName(event, table.id)}
               />
