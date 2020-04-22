@@ -329,7 +329,7 @@ const WorkArea = () => {
 
   useEffect(() => {
     createContextMenu();
-  }, [plugin]);
+  }, [plugin, tables]);
 
   useEffect(() => {
     setAreaSize();
