@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { updateProject } from "../store/actions/project";
 import { addTable, setTables, updateTable } from "../store/actions/tables";
-import { addField, setFields } from "../store/actions/fields";
+import { addField, setFields, removeField } from "../store/actions/fields";
 import { setRelations } from "../store/actions/relations";
 import BGLines from "./BGLines";
 import RelationLines from "./RelationLines";
@@ -110,7 +110,7 @@ const WorkArea = () => {
       new MenuItem({
         label: "Remove Table",
         visible: false,
-        click: removeTable,
+        click: deleteTable,
       })
     );
 
@@ -154,7 +154,7 @@ const WorkArea = () => {
     }
   };
 
-  const removeTable = () => {
+  const deleteTable = () => {
     const { onUpdate } = plugin.main;
     const tableID = hoveredTable.current;
     const newTables = tables.filter((table) => table.id !== tableID);
@@ -265,7 +265,7 @@ const WorkArea = () => {
     dispatch(updateProject({ isModified: true }));
   };
 
-  const removeField = (fieldID) => {
+  const deleteField = (fieldID) => {
     const { onUpdate } = plugin.main;
     const newFields = fields.filter((item) => item.id !== fieldID);
 
@@ -329,7 +329,7 @@ const WorkArea = () => {
 
   useEffect(() => {
     createContextMenu();
-  }, [plugin, tables]);
+  }, [plugin, tables, fields]);
 
   useEffect(() => {
     setAreaSize();
@@ -415,7 +415,7 @@ const WorkArea = () => {
                   hoveredTable.current = table.id;
                 }}
                 onClickAddField={() => createField(table.id)}
-                onClickRemoveField={(field) => removeField(field.id)}
+                onClickRemoveField={(field) => deleteField(field.id)}
                 onChangeFieldName={(event, fieldID) =>
                   updateField(event, fieldID, "name")
                 }
