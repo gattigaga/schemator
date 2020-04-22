@@ -3,13 +3,17 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import "typeface-roboto";
 
-const Container = styled.div`
+const Button = styled.button`
   width: fit-content;
-  padding: 4px 12px;
+  border: 0px;
+  padding: 6px 12px 4px 12px;
   background: #b33939;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  font-family: "Roboto";
+  font-size: 12px;
+  color: ${({ isDisabled }) => (isDisabled ? "#999" : "white")};
 
   ${({ isDisabled }) => {
     if (isDisabled) {
@@ -27,20 +31,14 @@ const Container = styled.div`
   }}
 `;
 
-export const Caption = styled.span`
-  font-family: "Roboto";
-  font-size: 12px;
-  color: ${({ isDisabled }) => (isDisabled ? "#999" : "white")};
-`;
-
 const SmallButton = ({ className, caption, isDisabled, onClick }) => (
-  <Container
+  <Button
     className={className}
     onClick={!isDisabled ? onClick : null}
     isDisabled={isDisabled}
   >
-    <Caption isDisabled={isDisabled}>{caption}</Caption>
-  </Container>
+    {caption}
+  </Button>
 );
 
 SmallButton.propTypes = {
