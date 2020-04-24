@@ -11,7 +11,10 @@ const createWindow = () => {
     minWidth: 800,
     minHeight: 600,
     show: false,
-    icon: path.join(__dirname, "icons/128x128.png")
+    icon: path.join(__dirname, "icons/128x128.png"),
+    webPreferences: {
+      nodeIntegration: true,
+    },
   });
 
   const startURL =
@@ -19,7 +22,7 @@ const createWindow = () => {
     url.format({
       pathname: path.join(__dirname, "/../build/index.html"),
       protocol: "file:",
-      slashes: true
+      slashes: true,
     });
 
   // and load the main URL of the app.
@@ -38,14 +41,14 @@ if (process.env.NODE_ENV === "development") {
   const {
     default: installExtension,
     REACT_DEVELOPER_TOOLS,
-    REDUX_DEVTOOLS
+    REDUX_DEVTOOLS,
   } = require("electron-devtools-installer");
 
   app.on("ready", () => {
-    [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach(extension => {
+    [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS].forEach((extension) => {
       installExtension(extension)
-        .then(name => console.log(`Added Extension: ${name}`))
-        .catch(err => console.log("An error occurred: ", err));
+        .then((name) => console.log(`Added Extension: ${name}`))
+        .catch((err) => console.log("An error occurred: ", err));
     });
   });
 }

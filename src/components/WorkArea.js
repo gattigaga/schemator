@@ -15,11 +15,12 @@ import BGLines from "./BGLines";
 import RelationLines from "./RelationLines";
 import Table from "./Table";
 
-const { remote, screen } = window.require("electron");
+const { remote } = window.require("electron");
 
 const Container = styled.div`
   flex: 1;
   overflow: ${({ isScrollable }) => (isScrollable ? "scroll" : "hidden")};
+  height: calc(100vh - 24px);
 `;
 
 const Area = styled.svg`
@@ -129,7 +130,7 @@ const WorkArea = () => {
   };
 
   const setAreaSize = () => {
-    const { workAreaSize } = screen.getPrimaryDisplay();
+    const { workAreaSize } = remote.screen.getPrimaryDisplay();
     const width = (workAreaSize.width / 25) * 100;
     const height = ((workAreaSize.height - 48) / 25) * 100;
 
