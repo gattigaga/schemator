@@ -13,6 +13,7 @@ const fs = window.require("fs-extra");
 
 const Container = styled.div`
   flex: 1;
+  height: calc(100vh - 24px);
   display: flex;
   overflow: hidden;
 `;
