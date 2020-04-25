@@ -14,6 +14,7 @@ import { setRelations } from "../store/actions/relations";
 import BGLines from "../components/BGLines";
 import RelationLines from "../components/RelationLines";
 import Table from "../components/Table";
+import Field from "../components/Field";
 
 const { remote } = window.require("electron");
 
@@ -60,7 +61,7 @@ const WorkArea = () => {
   const height = (areaHeight / 25) * 100;
   const totalHorizontalLines = Math.trunc(width / gap);
   const totalVerticalLines = Math.trunc(height / gap);
-  const [menuAddTable, menuRemoveTable, menuAddField] = menu.current.items;
+  const [menuAddTable] = menu.current.items;
   const types = plugin ? plugin.main.fieldTypes : [];
 
   const coordinates = relations
@@ -160,9 +161,8 @@ const WorkArea = () => {
     }
   };
 
-  const deleteTable = () => {
+  const deleteTable = (tableID) => {
     const { onUpdate } = plugin.main;
-    const tableID = hoveredTable.current;
     const newTables = tables.filter((table) => table.id !== tableID);
     const newFields = fields.filter((field) => field.tableID !== tableID);
 
@@ -383,8 +383,6 @@ const WorkArea = () => {
                 ref={table.ref}
                 name={table.name}
                 position={table.position}
-                types={types}
-                fields={currentFields}
                 onMouseDown={(event) => saveTableOffset(event, table.id)}
                 onMouseUp={() => {
                   activeTable.current = null;
@@ -394,14 +392,6 @@ const WorkArea = () => {
                   if (menuAddTable) {
                     menuAddTable.visible = false;
                   }
-
-                  if (menuRemoveTable) {
-                    menuRemoveTable.visible = true;
-                  }
-
-                  if (menuAddField) {
-                    menuAddField.visible = true;
-                  }
                 }}
                 onMouseLeave={() => {
                   activeTable.current = null;
@@ -409,28 +399,23 @@ const WorkArea = () => {
                   if (menuAddTable) {
                     menuAddTable.visible = true;
                   }
-
-                  if (menuRemoveTable) {
-                    menuRemoveTable.visible = false;
-                  }
-
-                  if (menuAddField) {
-                    menuAddField.visible = false;
-                  }
                 }}
-                onContextMenu={() => {
-                  hoveredTable.current = table.id;
-                }}
+                onClickRemove={() => deleteTable(table.id)}
                 onClickAddField={() => createField(table.id)}
-                onClickRemoveField={(field) => deleteField(field.id)}
-                onChangeFieldName={(event, field) =>
-                  editField(event, field.id, "name")
-                }
-                onChangeFieldType={(event, field) =>
-                  editField(event, field.id, "type")
-                }
                 onChangeName={(event) => updateTableName(event, table.id)}
+              >
+                {currentFields.map((field) => (
+                  <Field
+                    key={field.id}
+                    types={types}
+                    name={field.name}
+                    type={field.type}
+                    onChangeName={(event) => editField(event, field.id)}
+                    onChangeType={(event) => editField(event, field.id)}
+                    onClickRemove={() => deleteField(field.id)}
               />
+                ))}
+              </Table>
             );
           })}
         </g>

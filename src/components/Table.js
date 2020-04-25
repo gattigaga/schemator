@@ -1,9 +1,7 @@
-import React, { forwardRef } from "react";
+import React, { Children, forwardRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { MdClose } from "react-icons/lib/md";
-
-import Field from "./Field";
 
 const Container = styled.div`
   width: 240px;
@@ -72,29 +70,24 @@ const CloseButton = styled(MdClose)`
 const Table = forwardRef(
   (
     {
+      children,
       position,
-      types,
       name,
-      fields,
       isActive,
       onChangeName,
-      onChangeFieldName,
-      onChangeFieldType,
       onClickRemove,
       onClickAddField,
-      onClickRemoveField,
       onMouseDown,
       onMouseUp,
       onMouseMove,
       onMouseEnter,
       onMouseLeave,
-      onContextMenu,
     },
     ref
   ) => {
     const { x, y } = position;
     const blockHeight = 36;
-    const totalBlocks = fields.length + 2;
+    const totalBlocks = Children.toArray(children).length + 2;
     const height = blockHeight * totalBlocks + 4;
 
     return (
@@ -109,24 +102,13 @@ const Table = forwardRef(
         onMouseMove={onMouseMove}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onContextMenu={onContextMenu}
       >
         <Container isActive={isActive}>
           <Header>
             <HeaderInput type="text" value={name} onChange={onChangeName} />
             <CloseButton onClick={onClickRemove} />
           </Header>
-          {fields.map((field) => (
-            <Field
-              key={field.id}
-              types={types}
-              name={field.name}
-              type={field.type}
-              onChangeName={(event) => onChangeFieldName(event, field)}
-              onChangeType={(event) => onChangeFieldType(event, field)}
-              onClickRemove={() => onClickRemoveField(field)}
-            />
-          ))}
+          {children}
           <Button onClick={onClickAddField}>Add New Field</Button>
         </Container>
       </foreignObject>
@@ -135,23 +117,18 @@ const Table = forwardRef(
 );
 
 Table.propTypes = {
+  children: PropTypes.node,
   position: PropTypes.object,
   name: PropTypes.string,
-  fields: PropTypes.array,
   isActive: PropTypes.bool,
   onMouseDown: PropTypes.func,
   onMouseUp: PropTypes.func,
   onMouseMove: PropTypes.func,
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
-  onContextMenu: PropTypes.func,
   onClickRemove: PropTypes.func,
   onClickAddField: PropTypes.func,
-  onClickRemoveField: PropTypes.func,
-  onChangeFieldName: PropTypes.func,
-  onChangeFieldType: PropTypes.func,
   onChangeName: PropTypes.func,
-  onChangeOptions: PropTypes.func,
 };
 
 Table.defaultProps = {
