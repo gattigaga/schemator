@@ -1,6 +1,7 @@
 import React, { forwardRef } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { MdClose } from "react-icons/lib/md";
 
 import Field from "./Field";
 
@@ -21,6 +22,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  position: relative;
 `;
 
 const HeaderInput = styled.input`
@@ -56,6 +58,17 @@ const Button = styled.button`
   }
 `;
 
+const CloseButton = styled(MdClose)`
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  padding: 8px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+`;
+
 const Table = forwardRef(
   (
     {
@@ -67,6 +80,7 @@ const Table = forwardRef(
       onChangeName,
       onChangeFieldName,
       onChangeFieldType,
+      onClickRemove,
       onClickAddField,
       onClickRemoveField,
       onMouseDown,
@@ -100,6 +114,7 @@ const Table = forwardRef(
         <Container isActive={isActive}>
           <Header>
             <HeaderInput type="text" value={name} onChange={onChangeName} />
+            <CloseButton onClick={onClickRemove} />
           </Header>
           {fields.map((field) => (
             <Field
@@ -130,6 +145,7 @@ Table.propTypes = {
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   onContextMenu: PropTypes.func,
+  onClickRemove: PropTypes.func,
   onClickAddField: PropTypes.func,
   onClickRemoveField: PropTypes.func,
   onChangeFieldName: PropTypes.func,
