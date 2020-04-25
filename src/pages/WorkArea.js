@@ -11,9 +11,9 @@ import {
   updateField,
 } from "../store/actions/fields";
 import { setRelations } from "../store/actions/relations";
-import BGLines from "./BGLines";
-import RelationLines from "./RelationLines";
-import Table from "./Table";
+import BGLines from "../components/BGLines";
+import RelationLines from "../components/RelationLines";
+import Table from "../components/Table";
 
 const { remote } = window.require("electron");
 

@@ -5,8 +5,8 @@ import Markdown from "react-markdown";
 import "typeface-roboto";
 
 import imgLogo from "../assets/images/icon-black-256.png";
-import PluginList from "./PluginList";
-import SmallButton from "./SmallButton";
+import PluginList from "../components/PluginList";
+import SmallButton from "../components/SmallButton";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs-extra");

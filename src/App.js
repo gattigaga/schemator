@@ -29,8 +29,8 @@ import {
 import Sidebar from "./components/Sidebar";
 import StatusBar from "./components/StatusBar";
 import imgDefaultPlugin from "./assets/images/icon-black.png";
-import WorkArea from "./components/WorkArea";
-import Plugins from "./components/Plugins";
+import WorkArea from "./pages/WorkArea";
+import Plugins from "./pages/Plugins";
 
 const { remote } = window.require("electron");
 const fs = window.require("fs");
